@@ -405,7 +405,8 @@ const ESTADOS = {
   publicado:  { texto: "Disponible",     clase: "ok",     resumen: n => n === 1 ? "disponible" : "disponibles" },
   prueba:     { texto: "Prueba cerrada", clase: "prueba", resumen: () => "en prueba cerrada" },
   desarrollo: { texto: "En desarrollo",  clase: "dev",    resumen: () => "en desarrollo" },
-  idea:       { texto: "Próximamente",   clase: "idea",   resumen: () => "próximamente" }
+  idea:       { texto: "Próximamente",   clase: "idea",   resumen: () => "próximamente" },
+  acceso:     { texto: "Acceso anticipado", clase: "prueba", resumen: () => "en acceso anticipado" },
 };
 
 /* ---- 3. PROYECTOS ----
@@ -473,23 +474,28 @@ const PROYECTOS = [
   },
   {
     id: "juego-de-cartas",
-    nombre: "Juego de Cartas Prehispánico", // nombre provisional
-    lema: "Duelos y fusiones con mitología prehispánica.",
+    nombre: "Cartas del Quinto Sol",
+    lema: "Duelos de fusión con mitología mexica.",
     tipo: "Juego",
-    estado: "desarrollo",
-    descripcion: "Juego de duelos de cartas inspirado en la mitología prehispánica. Fusiona cartas para crear criaturas más fuertes. Si la fusión falla, la carta descartada se va al Mictlán.",
+    estado: "acceso",
+    descripcion: "Juego de duelos de cartas inspirado en la mitología mexica. Fusiona cartas para crear criaturas más fuertes; si la fusión falla, la carta se va al Mictlán. Cada duelo cambia con el Reloj Solar y el signo del día, y tus cartas crecen contigo.",
     caracteristicas: [
-      "Sistema de fusiones de cartas",
-      "Cartas con varios tipos a la vez, como bestia, agua o deidad",
-      "Efectos de carta",
-      "En el plan: sobres, rarezas y dos monedas, cacao y jade"
+      "Fusiones de cartas, efectos y trampas",
+      "Reloj Solar: alba, mediodía, ocaso y medianoche cambian el duelo",
+      "Nahuales que toman su forma animal de noche",
+      "Signo del día del calendario mexica en cada duelo",
+      "Sube de nivel tus cartas y asciéndelas con 3 copias",
+      "Campaña contra duelistas y duelos contra amigos con código de sala"
     ],
-    plataformas: ["Web", "Android (más adelante)", "Steam (más adelante)"],
-    tecnologias: ["HTML y CSS", "Supabase", "Vercel"],
+    plataformas: ["Navegador (celular y PC)", "Instalable en PC y Android", "Google Play (más adelante)", "Steam (más adelante)"],
+    tecnologias: ["HTML y CSS", "TypeScript", "Supabase", "Vercel"],
     color: "#5cc8b0",
     icono: "cartas",
     portada: "",
-    enlaces: []
+    enlaces: [
+      { texto: "Jugar ahora", url: "https://cartas.seakingsstudios.com/" },
+      { texto: "Instalar en PC o Android", url: "https://cartas.seakingsstudios.com/descargar" }
+    ]
   }
 ];
 
@@ -498,7 +504,8 @@ const PROYECTOS = [
 const NOVEDADES = [
   { fecha: "2026-10-12", texto: "Arte o Cringe entra en prueba cerrada en Google Play.", proyecto: "arte-o-cringe" },
   { fecha: "2026-10-15", texto: "Abre la página de SeaKingsStudios con sus primeros tres proyectos." },
-  { fecha: "2026-10-15", texto: "Arte o Cringe ya se juega en el navegador y se instala en PC y Android.", proyecto: "arte-o-cringe" }
+  { fecha: "2026-10-15", texto: "Arte o Cringe ya se juega en el navegador y se instala en PC y Android.", proyecto: "arte-o-cringe" },
+  { fecha: "2026-10-17", texto: "Cartas del Quinto Sol abre en acceso anticipado: campaña, duelos contra amigos y se instala en PC y Android.", proyecto: "juego-de-cartas" },
 ];
 
 /* ---- 5. ICONOS para las cartas ----
