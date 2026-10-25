@@ -23,7 +23,7 @@ enlaces:
     url: /bitacora/bocon-estudio-en-vivo-con-obs
 nota: Bocón Estudio está en su última etapa de pruebas. Si quieres probarlo antes que nadie, escríbenos a seakingsgames@gmail.com.
 ficha:
-  Precio: Gratis, con un plan Pro opcional
+  Precio: Gratis
   Plataformas:
     - Navegador en PC, Mac y Chromebook
     - Instalable como programa desde Chrome o Edge
@@ -46,8 +46,8 @@ preguntas:
     r: No. La boca se mueve sola con la voz y los gestos se ponen arrastrando bloques en la línea de tiempo. Si nunca has animado, carga el ejemplo desde el menú Archivo y modifícalo.
   - p: ¿Puedo usar mis propios personajes?
     r: Sí. Puedes subir tu personaje en capas PNG, o una sola imagen y dejar que Bocón le arme los ojos y la boca. También trae personajes listos, como el ajolote, el gato, el robot y la calaverita.
-  - p: ¿Qué incluye la versión gratis?
-    r: Todo el editor. La versión gratis exporta MP4 en 720p y GIF con una marca pequeña de «Hecho con Bocón». El plan Pro quita la marca, exporta en 1080p y permite GIF y cuadros PNG sin fondo.
+  - p: ¿Cuánto cuesta?
+    r: Nada. Bocón Estudio es gratis con todas sus funciones. Exporta MP4 hasta 1080p, GIF y cuadros PNG sin fondo.
   - p: ¿Funciona en el celular?
     r: Sí, la pantalla se acomoda a celulares y tabletas. Para proyectos largos es más cómodo en una computadora con mouse y teclado.
   - p: ¿Dónde se guardan mis proyectos?
@@ -55,8 +55,6 @@ preguntas:
 historial:
   - fecha: 2026-10-09
     texto: Sale la primera versión de Bocón Estudio, con lip-sync automático y gestos en una línea de tiempo para varios personajes.
-  - fecha: 2026-10-23
-    texto: Se separa lo que es gratis de lo que es Pro y se preparan las cuentas para el lanzamiento.
 esquema:
   tipo: SoftwareApplication
   categoria: MultimediaApplication
@@ -119,7 +117,7 @@ Desde el botón Exportar eliges qué sacar:
 | GIF animado | Sin audio, para stickers y memes; puede ir sin fondo |
 | Cuadros PNG sin fondo (ZIP) | Cada cuadro transparente y el audio aparte, para editar en CapCut, Premiere o DaVinci |
 
-El video puede salir horizontal (16:9), vertical (9:16) o cuadrado (1:1), a 24 cuadros por segundo. Puedes exportar una sola escena o la película completa. En el formato vertical, la marca de la versión gratis va arriba a la izquierda para que no la tapen los botones de TikTok.
+El video puede salir horizontal (16:9), vertical (9:16) o cuadrado (1:1), a 24 cuadros por segundo. Puedes exportar una sola escena o la película completa, en 720p para que salga rápido o en 1080p para la mejor calidad.
 
 ## Modo en vivo para OBS
 
@@ -127,6 +125,6 @@ El modo en vivo convierte a tu personaje en un avatar para transmitir. Hablas al
 
 Lo explicamos completo en la guía de [Bocón Estudio en vivo con OBS](/bitacora/bocon-estudio-en-vivo-con-obs).
 
-## Gratis y Pro
+## Gratis y sin cuenta
 
-Todo el editor es gratis. La versión gratis exporta MP4 en 720p y GIF con una marca pequeña de «Hecho con Bocón». El plan Pro quita la marca, también en el modo en vivo, exporta MP4 en 1080p y permite GIF y cuadros PNG sin fondo. Si alguien cancela su plan, ya no se le cobra y conserva Pro hasta el final del periodo que pagó.
+Bocón Estudio es gratis, con todas sus funciones, y no necesitas crear una cuenta: abres el programa y empiezas a animar.

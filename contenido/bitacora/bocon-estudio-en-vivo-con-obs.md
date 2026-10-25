@@ -73,4 +73,3 @@ La opción **Oír la escena** te deja escuchar los sonidos y la música de tu es
 - **No pude usar el micrófono.** El navegador no tiene permiso. Da clic en el candado de la barra de direcciones, activa el micrófono para el sitio y vuelve a entrar al modo en vivo.
 - **En OBS la ventana se ve negra.** En Windows, prueba cambiar el método de captura de la fuente o desactivar la aceleración por hardware del navegador.
 - **El recorte deja un borde de color.** Sube un poco la similitud y la suavidad del filtro Chroma key en OBS.
-- **Aparece la marca de Bocón.** En la versión gratis, el modo en vivo muestra una marca pequeña. El plan Pro la quita.

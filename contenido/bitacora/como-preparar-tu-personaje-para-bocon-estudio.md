@@ -71,6 +71,8 @@ En Bocón, abre el editor de marioneta y usa **Subir varias** para elegir todos 
 
 Usa **Probar hablando** y los botones de gesto y pose de prueba para ver cómo se mueve antes de guardar. Cuando te guste, toca **Guardar en biblioteca** para usarlo en todos tus proyectos.
 
+<!-- anuncio -->
+
 ## Opción 2: marioneta desde una imagen
 
 Si solo tienes un dibujo completo del personaje, Bocón puede armarle la cara por ti. Desde Agregar, Personaje, elige crear una marioneta desde una imagen y sube tu dibujo.

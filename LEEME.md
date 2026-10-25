@@ -30,6 +30,8 @@ Este repositorio genera **www.seakingsstudios.com**. Las páginas no se escriben
 
 **Si un enlace todavía no existe**, déjalo con `url: ""` y el botón no se muestra.
 
+**Si un texto de los datos lleva dos puntos seguidos de un espacio** (por ejemplo `Ojo: algo`), ponlo entre comillas: `"Ojo: algo"`. Si no, el generador marca error y te dice en qué línea.
+
 ## Cómo agregar una guía o nota a la bitácora
 
 1. Crea un archivo en `contenido/bitacora/`, por ejemplo `novedades-de-octubre.md`.
