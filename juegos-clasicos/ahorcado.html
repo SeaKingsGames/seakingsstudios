@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#2d3e50">
+<title>Ahorcado · SeaKingsGames</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+  :root{
+    --bg:#2d3e50; --bg-2:#1c2a3a;
+    --panel:#3d4e60; --panel-2:#4d5e70;
+    --gold:#f4cf3a; --gold-deep:#b89800;
+    --green:#5fc99a; --red:#e85a6b; --blue:#5fa8e8;
+    --text:#fff; --text-dim:#9fb0c4;
+    --line:rgba(159,176,196,.2);
+    --shadow:0 4px 0 rgba(0,0,0,.25), 0 8px 20px rgba(0,0,0,.3);
+  }
+  html,body{height:100%}
+  body{
+    font-family:'Fredoka',system-ui,sans-serif;
+    background:radial-gradient(ellipse at top,#3d4e60 0%,var(--bg) 40%,var(--bg-2) 100%);
+    background-attachment:fixed;
+    color:var(--text); display:flex;flex-direction:column;min-height:100vh;
+    overscroll-behavior:none;touch-action:manipulation;
+  }
+  button{font-family:inherit;border:none;cursor:pointer;color:inherit;background:none}
+
+  .screen{display:none;flex-direction:column;min-height:100vh;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+  .screen.active{display:flex}
+
+  /* ---------- MENÚ ---------- */
+  #menu{align-items:center;justify-content:flex-start;gap:14px;padding:28px 24px 100px;flex:1;overflow-y:auto}
+  .logo{
+    font-family:'Bagel Fat One',sans-serif;
+    font-size:clamp(38px,11vw,64px);line-height:.95;text-align:center;
+    color:var(--gold);
+    text-shadow:0 4px 0 #8a6f00, 0 8px 24px rgba(244,207,58,.35);
+    letter-spacing:.5px;
+  }
+  .logo small{display:block;font-family:'Fredoka',sans-serif;font-weight:600;font-size:.28em;color:var(--text-dim);letter-spacing:3px;margin-top:8px;text-shadow:none}
+  .rope-deco{font-size:48px;margin-bottom:-4px;display:inline-block}
+
+  .section-title{font-size:13px;letter-spacing:3px;color:var(--text-dim);font-weight:600;margin-top:4px}
+
+  /* Categorías (grid 3 cols en móvil) */
+  .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(420px,94vw)}
+  @media(min-width:480px){.cat-grid{grid-template-columns:repeat(4,1fr)}}
+  .cat-btn{
+    padding:11px 8px;border-radius:12px;
+    background:var(--panel);color:#fff;
+    box-shadow:var(--shadow);
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    font-size:12px;font-weight:600;transition:transform .1s;
+    border:2px solid transparent;
+  }
+  .cat-btn:active{transform:translateY(2px)}
+  .cat-btn.selected{border-color:var(--gold);background:var(--panel-2)}
+  .cat-btn .ico{font-size:22px;line-height:1}
+
+  /* Dificultades */
+  .diff-list{display:flex;flex-direction:column;gap:10px;width:min(380px,94vw);margin-top:4px}
+  .diff-btn{
+    padding:14px 20px;border-radius:16px;background:var(--panel);
+    box-shadow:var(--shadow);
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:17px;font-weight:600;transition:transform .1s;
+  }
+  .diff-btn:active{transform:translateY(2px)}
+  .diff-btn .tag{font-size:12px;font-weight:600;padding:4px 10px;border-radius:8px;background:rgba(255,255,255,.12);color:var(--text-dim);letter-spacing:.5px}
+  .diff-btn[data-d="facil"] .tag{color:#9be37d;background:rgba(155,227,125,.15)}
+  .diff-btn[data-d="medio"] .tag{color:#7ec8ff;background:rgba(126,200,255,.15)}
+  .diff-btn[data-d="dificil"] .tag{color:#ffa84a;background:rgba(255,168,74,.15)}
+  .diff-btn[data-d="extraDificil"] .tag{color:#ff5e7a;background:rgba(255,94,122,.15)}
+
+  .record-line{font-size:12px;color:var(--text-dim);font-weight:500;margin-top:3px;font-variant-numeric:tabular-nums}
+
+  /* Banner ad menú */
+  .ad-banner-bottom{
+    position:fixed;left:0;right:0;bottom:env(safe-area-inset-bottom);
+    display:flex;justify-content:center;align-items:center;padding:8px 0;
+    background:rgba(28,42,58,.85);backdrop-filter:blur(8px);
+    z-index:20;min-height:50px;border-top:1px solid var(--line);
+  }
+  .ad-banner-bottom iframe{max-width:100%}
+
+  /* ---------- JUEGO ---------- */
+  #game{flex:1}
+  #game .topbar{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 4px;flex-shrink:0;gap:8px}
+  .icon-btn{
+    width:46px;height:46px;border-radius:50%;background:#fff;color:var(--bg-2);
+    display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);
+    font-size:22px;font-weight:700;transition:transform .1s;flex-shrink:0;
+  }
+  .icon-btn:active{transform:translateY(2px)}
+  .icon-btn.small{width:38px;height:38px;font-size:16px}
+  .level-title{text-align:center;flex:1;min-width:0}
+  .level-title .badge{
+    display:inline-block;font-size:10px;font-weight:600;letter-spacing:2px;
+    padding:3px 10px;border-radius:10px;background:rgba(255,255,255,.12);color:var(--text-dim);
+  }
+  .level-title h1{font-size:18px;font-weight:700;color:#fff}
+
+  .stats{display:flex;justify-content:center;gap:22px;padding:6px 16px 2px;font-size:13px;font-weight:600;color:var(--text-dim);font-variant-numeric:tabular-nums}
+  .stats .val{color:#fff;font-weight:700;font-size:17px}
+  .stats .val.danger{color:var(--red)}
+
+  /* Pista */
+  .hint-bar{text-align:center;padding:4px 16px;font-size:13px;color:var(--text-dim);min-height:22px;font-style:italic}
+
+  /* ---------- CANVAS ---------- */
+  .gallows-wrap{display:flex;justify-content:center;align-items:center;padding:10px;flex-shrink:0}
+  canvas#gallows{display:block;max-width:100%}
+
+  /* ---------- PALABRA ---------- */
+  .word{
+    display:flex;justify-content:center;gap:6px;flex-wrap:wrap;
+    padding:14px 16px;font-family:'Bagel Fat One',sans-serif;
+    font-variant-numeric:tabular-nums;
+  }
+  .letter-slot{
+    min-width:28px;height:40px;
+    border-bottom:3px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;
+    font-size:28px;color:#fff;
+    transition:transform .3s, color .3s;
+  }
+  .letter-slot.revealed{animation:revealLetter .35s cubic-bezier(.34,1.56,.64,1)}
+  .letter-slot.space{border-bottom:none;min-width:14px}
+  @keyframes revealLetter{0%{transform:translateY(20px) scale(.8);opacity:0}100%{transform:translateY(0) scale(1);opacity:1}}
+
+  /* letras erróneas */
+  .wrong-letters{
+    text-align:center;font-size:13px;color:var(--text-dim);font-weight:600;
+    padding:0 16px;min-height:24px;letter-spacing:2px;
+  }
+  .wrong-letters span{color:var(--red);font-size:18px;margin:0 3px;font-weight:700}
+
+  /* ---------- TECLADO ---------- */
+  .keyboard{
+    padding:8px 6px 12px;display:flex;flex-direction:column;gap:6px;
+    flex-shrink:0;margin-top:auto;
+  }
+  .kb-row{display:flex;justify-content:center;gap:5px}
+  .key{
+    flex:1;max-width:42px;height:46px;
+    background:linear-gradient(180deg,var(--panel-2) 0%,var(--panel) 100%);
+    border-radius:8px;font-size:16px;font-weight:700;
+    box-shadow:0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.1);
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .08s;color:#fff;
+  }
+  .key:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+  .key.correct{background:var(--green);color:#fff;box-shadow:0 3px 0 #3a9a70;animation:keyPop .3s}
+  .key.wrong{background:var(--red);color:#fff;box-shadow:0 3px 0 #a83040;animation:keyShake .3s}
+  .key.disabled{opacity:.5;pointer-events:none}
+  @keyframes keyPop{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+  @keyframes keyShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+
+  /* ---------- MODALES ---------- */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
+    z-index:100;display:none;align-items:center;justify-content:center;padding:20px;
+    animation:fadeIn .2s;
+  }
+  .modal-overlay.active{display:flex}
+  .modal{
+    background:linear-gradient(180deg,var(--panel) 0%,var(--bg-2) 100%);
+    border:1px solid var(--line);
+    border-radius:24px;padding:24px 20px;width:min(380px,100%);max-height:90vh;overflow-y:auto;
+    text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5);
+    animation:popIn .3s cubic-bezier(.34,1.56,.64,1);
+  }
+  .modal .emoji{font-size:60px;margin-bottom:4px;display:inline-block}
+  .modal h2{font-family:'Bagel Fat One',sans-serif;color:var(--gold);font-size:28px;line-height:1;margin-bottom:6px}
+  .modal h2.lose{color:var(--red)}
+  .modal p{color:var(--text-dim);font-size:15px;margin-bottom:14px}
+  .modal .answer{color:#fff;font-family:'Bagel Fat One',sans-serif;font-size:22px;letter-spacing:2px;margin:6px 0 14px}
+
+  .achievement-card{
+    background:linear-gradient(135deg,var(--gold) 0%,#e0a020 100%);
+    border-radius:18px;padding:18px;margin:12px 0;color:#3a2400;
+    box-shadow:0 8px 0 var(--gold-deep), inset 0 -2px 0 rgba(255,255,255,.3);
+  }
+  .ach-title{font-size:11px;letter-spacing:3px;font-weight:700;opacity:.7;margin-bottom:8px}
+  .ach-stats{display:flex;justify-content:space-around;gap:8px}
+  .ach-stat{flex:1}
+  .ach-num{font-family:'Bagel Fat One',sans-serif;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+  .ach-lbl{font-size:10px;font-weight:600;opacity:.7;letter-spacing:1px;margin-top:4px}
+  .new-record{display:inline-block;background:#e91e63;color:#fff;padding:4px 12px;border-radius:8px;font-size:11px;font-weight:700;letter-spacing:1.5px;margin-bottom:6px;animation:wobble .6s ease-in-out infinite}
+  @keyframes wobble{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+
+  .ad-label{font-size:10px;color:var(--text-dim);opacity:.6;letter-spacing:2px;margin:8px 0 4px}
+  .ad-slot{display:flex;justify-content:center;align-items:center;min-height:250px;background:rgba(0,0,0,.2);border-radius:12px;overflow:hidden}
+  .ad-slot iframe{max-width:100%;border:0}
+
+  .modal-btns{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+  .btn-row{display:flex;gap:8px}
+  .btn-row .btn-secondary{flex:1}
+  .btn-primary{padding:14px 22px;border-radius:14px;background:linear-gradient(180deg,var(--gold) 0%,#e0a020 100%);color:#3a2400;font-weight:700;font-size:17px;box-shadow:0 4px 0 var(--gold-deep)}
+  .btn-secondary{padding:13px 18px;border-radius:14px;background:rgba(255,255,255,.1);color:#fff;font-weight:600;font-size:15px;box-shadow:0 4px 0 rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;gap:6px}
+  .btn-ghost{padding:10px;color:var(--text-dim);font-size:14px;font-weight:500}
+
+  /* PWA install prompt */
+  .install-prompt{
+    position:fixed;bottom:80px;left:16px;right:16px;
+    background:linear-gradient(180deg,var(--panel) 0%,var(--bg-2) 100%);
+    border:1px solid var(--gold);
+    border-radius:16px;padding:14px 16px;
+    box-shadow:0 8px 20px rgba(0,0,0,.4);
+    display:none;align-items:center;gap:12px;
+    z-index:30;animation:slideUp .4s cubic-bezier(.34,1.56,.64,1);
+  }
+  .install-prompt.show{display:flex}
+  .install-prompt .ico{font-size:28px}
+  .install-prompt .txt{flex:1;font-size:13px;color:var(--text-dim);line-height:1.3}
+  .install-prompt .txt b{color:#fff;font-size:14px}
+  .install-prompt button{padding:8px 14px;border-radius:10px;background:var(--gold);color:#3a2400;font-weight:700;font-size:13px;flex-shrink:0}
+  .install-prompt .close{background:transparent;color:var(--text-dim);padding:4px 8px;font-size:18px}
+  @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes popIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+  .bounce{animation:bounce 1.2s infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+</style>
+</head>
+<body>
+
+<!-- ====================== MENÚ ====================== -->
+<section id="menu" class="screen active">
+  <div class="rope-deco">🪢</div>
+  <div class="logo">AHORCADO<small>SeaKingsGames · v2</small></div>
+
+  <div class="section-title">CATEGORÍA</div>
+  <div class="cat-grid" id="cat-grid"></div>
+
+  <div class="section-title">DIFICULTAD</div>
+  <div class="diff-list" id="diff-list"></div>
+
+  <a href="index.html" style="color:var(--text-dim);font-size:14px;text-decoration:none;margin-top:8px;margin-bottom:16px">← Volver al inicio</a>
+  <div class="ad-banner-bottom" id="ad-bottom-menu"></div>
+</section>
+
+<!-- ====================== JUEGO ====================== -->
+<section id="game" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" id="btn-back">‹</button>
+    <div class="level-title">
+      <div class="badge" id="diff-badge">FÁCIL · ANIMALES</div>
+      <h1>Partida <span id="level-num">1</span></h1>
+    </div>
+    <button class="icon-btn small" id="btn-sound">🔊</button>
+    <button class="icon-btn" id="btn-restart">↻</button>
+  </div>
+  <div class="stats">
+    <span>⏱️ <span class="val" id="stat-time">0:00</span></span>
+    <span>❤️ <span class="val" id="stat-lives">6</span></span>
+    <span>🔥 <span class="val" id="stat-streak">0</span></span>
+  </div>
+  <div class="hint-bar" id="hint-bar"></div>
+
+  <div class="gallows-wrap"><canvas id="gallows"></canvas></div>
+  <div class="word" id="word"></div>
+  <div class="wrong-letters" id="wrong-letters"></div>
+  <div class="keyboard" id="keyboard"></div>
+</section>
+
+<!-- ====================== MODAL: VICTORIA ====================== -->
+<div class="modal-overlay" id="modal-win">
+  <div class="modal">
+    <div class="emoji bounce">🎉</div>
+    <div id="new-record-tag" style="display:none"><span class="new-record">¡NUEVO RÉCORD!</span></div>
+    <h2>¡Lo adivinaste!</h2>
+    <p>La palabra era</p>
+    <div class="answer" id="win-answer"></div>
+    <div class="achievement-card">
+      <div class="ach-title">TU LOGRO</div>
+      <div class="ach-stats">
+        <div class="ach-stat"><div class="ach-num" id="win-time">0:00</div><div class="ach-lbl">TIEMPO</div></div>
+        <div class="ach-stat"><div class="ach-num" id="win-lives">6</div><div class="ach-lbl">VIDAS</div></div>
+        <div class="ach-stat"><div class="ach-num" id="win-streak">1</div><div class="ach-lbl">RACHA</div></div>
+      </div>
+    </div>
+    <div class="ad-label">PUBLICIDAD</div>
+    <div class="ad-slot" id="ad-win"></div>
+    <div class="modal-btns">
+      <button class="btn-primary" id="btn-next">Siguiente palabra →</button>
+      <div class="btn-row">
+        <button class="btn-secondary" id="btn-share">📤 Compartir</button>
+        <button class="btn-secondary" id="btn-save">💾 Guardar</button>
+      </div>
+      <button class="btn-ghost" id="btn-menu-win">Cambiar dificultad</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== MODAL: DERROTA ====================== -->
+<div class="modal-overlay" id="modal-lose">
+  <div class="modal">
+    <div class="emoji">💀</div>
+    <h2 class="lose">¡Game Over!</h2>
+    <p>La palabra era</p>
+    <div class="answer" id="lose-answer"></div>
+    <p style="margin-top:6px;font-size:14px">Racha final: <b id="lose-streak" style="color:#fff">0</b></p>
+    <div class="ad-label">PUBLICIDAD</div>
+    <div class="ad-slot" id="ad-lose"></div>
+    <div class="modal-btns">
+      <button class="btn-primary" id="btn-retry">Probar otra palabra</button>
+      <button class="btn-ghost" id="btn-menu-lose">Cambiar dificultad</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== MODAL: REINICIAR ====================== -->
+<div class="modal-overlay" id="modal-restart">
+  <div class="modal">
+    <div class="emoji">🔄</div>
+    <h2>¿Reiniciar partida?</h2>
+    <p>Perderás tu racha actual</p>
+    <div class="ad-label">PUBLICIDAD</div>
+    <div class="ad-slot" id="ad-restart"></div>
+    <div class="modal-btns">
+      <button class="btn-primary" id="btn-confirm-restart">Sí, reiniciar</button>
+      <button class="btn-secondary" id="btn-cancel-restart">Cancelar</button>
+      <button class="btn-ghost" id="btn-menu-restart">Volver al menú</button>
+    </div>
+  </div>
+</div>
+
+<!-- PWA install -->
+<div class="install-prompt" id="install-prompt">
+  <div class="ico">📲</div>
+  <div class="txt"><b>Instala Ahorcado</b><br>Juega sin internet</div>
+  <button id="btn-install">Instalar</button>
+  <button class="close" id="btn-install-close">✕</button>
+</div>
+
+<script>
+/* =====================================================
+   AHORCADO v2 · SeaKingsGames
+   15 temas · 600+ palabras · 4 dificultades
+   ===================================================== */
+
+/* ---------- AUDIO ---------- */
+const SFX = {
+  ctx:null, enabled: localStorage.getItem('sk-sound') !== '0',
+  init(){ if(this.ctx) return; try{ this.ctx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} },
+  tone(f,d=.1,t='sine',v=.15,attack=.005){
+    if(!this.enabled||!this.ctx) return;
+    const now=this.ctx.currentTime, o=this.ctx.createOscillator(), g=this.ctx.createGain();
+    o.type=t; o.frequency.value=f;
+    g.gain.setValueAtTime(0,now);
+    g.gain.linearRampToValueAtTime(v,now+attack);
+    g.gain.exponentialRampToValueAtTime(.0001,now+d);
+    o.connect(g).connect(this.ctx.destination);
+    o.start(now); o.stop(now+d+.02);
+  },
+  correct(){ this.tone(660,.08,'sine',.14); setTimeout(()=>this.tone(880,.1,'sine',.14),60); },
+  wrong()  { this.tone(180,.15,'sawtooth',.12); },
+  tap()    { this.tone(800,.03,'triangle',.08); },
+  victory(){ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>this.tone(f,i===3?.3:.12,'sine',.16),i*100)); },
+  defeat() { [392,349,294,247].forEach((f,i)=>setTimeout(()=>this.tone(f,i===3?.4:.15,'sawtooth',.14),i*150)); },
+  newRec() { [659,784,1047,1319].forEach((f,i)=>setTimeout(()=>this.tone(f,.14,'triangle',.15),i*70)); },
+};
+
+/* ---------- ADS (con sandbox para bloquear popups) ---------- */
+const ADS = {
+  banner50:  { key:'787e84f3bdee3100779130afe4802abc', width:320, height:50 },
+  medium250: { key:'c2f164720365b5dc18fae25f1c594072', width:300, height:250 },
+};
+function loadAd(el, cfg){
+  if(!el || el.dataset.loaded === '1') return;
+  el.dataset.loaded = '1';
+  const html =
+`<!DOCTYPE html><html><head><style>html,body{margin:0;padding:0;background:transparent;overflow:hidden}</style></head><body>
+<script type="text/javascript">var atOptions=${JSON.stringify({key:cfg.key,format:'iframe',height:cfg.height,width:cfg.width,params:{}})};<\/script>
+<script type="text/javascript" src="https://www.highperformanceformat.com/${cfg.key}/invoke.js"><\/script>
+</body></html>`;
+  const ifr = document.createElement('iframe');
+  ifr.srcdoc = html; ifr.width = cfg.width; ifr.height = cfg.height;
+  ifr.scrolling = 'no'; ifr.setAttribute('frameborder','0');
+  // sandbox bloquea window.open, top.location y otros métodos de popup/redirect
+  ifr.setAttribute('sandbox','allow-scripts allow-same-origin');
+  ifr.style.cssText = 'border:0;display:block;background:transparent;max-width:100%';
+  el.appendChild(ifr);
+}
+
+/* ---------- DICCIONARIO COMPLETO (15 temas) ---------- */
+const WORDS = {
+  animales: {
+    ico:'🐾', label:'Animales',
+    list:['perro','gato','elefante','jirafa','tortuga','tigre','leon','aguila','ballena','tiburon','delfin','caballo','conejo','venado','zorro','panda','koala','canguro','rinoceronte','hipopotamo','pinguino','flamingo','mariposa','oso','lobo','ardilla','murcielago','cocodrilo','iguana','pulpo','cangrejo','camaleon','salamandra','tucan','colibri','jaguar','puma','llama','vicuna','ajolote','quetzal','axolote','gorrion','coyote','bisonte','carpincho','nutria','tapir','perezoso','capibara','anaconda','piranha','tucutu','guacamayo','ocelote','tejon','marmota','alce','ciervo','foca','morsas','narval','ornitorrinco','numbat','quokka','wombat','suricata','mangosta','hiena','chacal','pantera','leopardo','guepardo','gorila','chimpance','orangutan','gibbon','lince','puercoespin','mapache','tlacuache','comadreja','erizo','topo','castor']
+  },
+  comida: {
+    ico:'🌮', label:'Comida',
+    list:['taco','pizza','hamburguesa','enchilada','quesadilla','tamale','pozole','mole','chilaquiles','guacamole','tortilla','frijoles','arroz','sopa','ensalada','pan','queso','pollo','carne','pescado','sushi','pasta','espagueti','lasagna','helado','pastel','chocolate','galleta','dona','flan','gelatina','churro','elote','esquite','torta','huarache','sope','gordita','tlacoyo','tlayuda','barbacoa','birria','menudo','carnitas','cochinita','pambazo','tostada','flautas','chiles','rellenos','caldo','caldillo','chilorio','machaca','discada','camarones','ceviche','tostadas','mixiotes','escamoles','chapulines']
+  },
+  naturaleza: {
+    ico:'🌿', label:'Naturaleza',
+    list:['montaña','volcan','selva','desierto','oceano','rio','lago','cascada','bosque','pradera','pantano','cueva','acantilado','glaciar','tundra','manantial','arrecife','manglares','savana','llanura','cordillera','meseta','peninsula','bahia','estrecho','delta','estuario','laguna','cenote','barranca','sierra','cerro','colina','lomas','arroyo','torrente','manantial','geyser','fumarola','terremoto','erupcion','tsunami','ciclone','tornado','huracane','neviza','granizo','aguanieve','relampago','trueno','aurora','eclipse']
+  },
+  tecnologia: {
+    ico:'💻', label:'Tecnología',
+    list:['computadora','telefono','internet','software','hardware','pantalla','teclado','raton','impresora','escaner','camara','microfono','altavoz','auricular','bateria','cargador','cable','router','antena','servidor','nube','codigo','programa','aplicacion','algoritmo','datos','archivo','carpeta','correo','mensaje','video','imagen','musica','podcast','streaming','blockchain','inteligencia','robotica','nanotecnologia','realidad','virtual','aumentada','satelite','cohete','dron','automovil','electrico','solar','panel','turbina','reactor','acelerador']
+  },
+  deportes: {
+    ico:'⚽', label:'Deportes',
+    list:['futbol','basquetbol','beisbol','tenis','golf','natacion','atletismo','boxeo','karate','judo','esgrima','ciclismo','patinaje','esqui','surf','voleibol','rugby','hockey','polo','arqueria','remo','vela','gimnasia','equitacion','escalada','ajedrez','billar','dardos','bolos','lucha','triatlon','maraton','baloncesto','handball','waterpolo','clavados','maratones','ultramaraton','parkour','eskalera','lacrosse','criquet','kabaddi','sumo','taekwondo','aikido','capoeira','kendo','fencing','biathlon','pentatlon','heptatlon','decatlon']
+  },
+  paises: {
+    ico:'🌎', label:'Países',
+    list:['mexico','argentina','brasil','chile','colombia','peru','espana','francia','italia','alemania','japon','china','india','rusia','canada','australia','egipto','grecia','portugal','holanda','belgica','suiza','suecia','noruega','finlandia','irlanda','islandia','jamaica','cuba','panama','honduras','uruguay','paraguay','bolivia','ecuador','venezuela','nicaragua','marruecos','tailandia','vietnam','filipinas','sudafrica','turquia','indonesia','nigeria','kenia','ghana','tanzania','senegal','marruecos','tunez','argelia','libia','mozambique','angola','zambia','malawi','rwanda','burundi']
+  },
+  profesiones: {
+    ico:'👔', label:'Profesiones',
+    list:['doctor','enfermero','maestro','ingeniero','arquitecto','abogado','contador','panadero','carpintero','plomero','electricista','mecanico','chofer','piloto','marinero','soldado','policia','bombero','periodista','escritor','pintor','musico','actor','bailarin','cantante','fotografo','disenador','programador','cocinero','mesero','vendedor','cajero','sastre','barbero','jardinero','agricultor','pescador','minero','dentista','veterinario','farmaceutico','astronomo','biologo','quimico','geologo','psicologo','terapeuta','fisioterapeuta','nutriologo','estilista','maquillista','esteticista','tatuador','diseño','industrial']
+  },
+  hogar: {
+    ico:'🏠', label:'Hogar',
+    list:['mesa','silla','cama','sofa','sillon','escritorio','armario','ropero','espejo','lampara','cortina','alfombra','almohada','sabana','cobija','toalla','plato','vaso','cuchara','tenedor','cuchillo','sarten','olla','refrigerador','licuadora','tostador','microondas','horno','lavadora','aspiradora','ventilador','television','reloj','telefono','llave','puerta','ventana','escalera','jardin','cochera','recamara','cocina','bano','sala','comedor','bodega','terraza','balcon','azotea','sotano']
+  },
+  colores: {
+    ico:'🎨', label:'Colores',
+    list:['rojo','azul','verde','amarillo','naranja','morado','rosa','negro','blanco','gris','marron','dorado','plateado','turquesa','violeta','magenta','cian','beige','coral','indigo','carmesi','escarlata','lavanda','salmon','oliva','lima','perla','crema','ocre','sepia','fucsia','ambar','malva','aguamarina','celeste','azulmarino','verde oscuro','purpura','lila','castaño','terracota','siena','pizarra','marfil','cobrizo','bronce','esmeralda','zafiro','rubí']
+  },
+  ciencia: {
+    ico:'🔬', label:'Ciencia',
+    list:['atomo','molecula','celula','proteina','acido','oxigeno','hidrogeno','electron','neutron','proton','foton','quark','graviton','plasma','estado','materia','energia','fuerza','velocidad','aceleracion','momentum','gravedad','magnetismo','electricidad','luz','sonido','calor','temperatura','presion','volumen','densidad','viscosidad','entropia','entalpía','fisica','quimica','biologia','geologia','astronomia','cosmologia','genetica','evolucion','ecosistema','biodiversidad','fotosintesis','mitosis','meiosis','transcripcion','traduccion','replicacion','mutacion']
+  },
+  historia: {
+    ico:'📜', label:'Historia',
+    list:['azteca','maya','inca','olmeca','tolteca','zapoteca','mixteca','teotihuacan','tenochtitlan','chichen','palenque','uxmal','monte','alban','conquista','colonia','independencia','revolucion','reforma','republica','porfiriato','cristiada','guerrilla','movimiento','democracia','dictadura','monarquia','feudalismo','esclavitud','abolicion','sufragio','feminismo','socialismo','capitalismo','comunismo','liberalismo','conservadurismo','faraon','piramide','gladiador','legionario','caballero','samurai','vikingo','guerrero','sacerdote','chamán']
+  },
+  musica: {
+    ico:'🎵', label:'Música',
+    list:['guitarra','piano','violin','trompeta','bateria','bajo','flauta','saxofon','clarinete','oboe','cello','arpa','acordeon','mandolina','banjo','ukulele','tuba','trombon','xilofono','marimba','tambor','congas','bongo','cajón','guiro','maracas','claves','quijada','vihuela','guitarron','requinto','sitar','gaita','cornamusa','balalaica','koto','shamisen','didgeridoo','mbira','kalimba','balafon','djembe','ritmo','melodia','armonia','contrapunto','acorde','escala','tonalidad','compas','tempo']
+  },
+  /* TEMA GLOBAL: palabras del mundo entero */
+  global: {
+    ico:'🌍', label:'Global',
+    list:['pizza','sushi','tacos','ramen','paella','kimchi','pho','hummus','falafel','gyros','kebab','curry','samosa','spring roll','baklava','crepe','croissant','baguette','pretzel','lasagna','moussaka','souvlaki','pierogi','stroganoff','goulash','schnitzel','bratwurst','wurst','haggis','scones','muffin','bagel','burrito','empanada','ceviche','brigadeiro','dulce','leche','churros','tiramisu','cannoli','gelato','waffles','pancake','cheesecake','brownie','donut','macaron','profiterol','creme brulee','fondue','raclette','poutine','smorrebrod','lutefisk','ikura','mochi','gyoza','pelmeni','mantu','borsch','strudel','injera','tagine','couscous','jollof','bobotie','peri peri']
+  },
+  cuerpo: {
+    ico:'🫀', label:'Cuerpo',
+    list:['cabeza','cuello','hombro','brazo','codo','muneca','mano','dedo','torso','pecho','espalda','cintura','cadera','pierna','rodilla','tobillo','pie','talon','cerebro','corazon','pulmon','higado','rinon','estomago','intestino','pancreas','bazo','vesicula','trachea','esofago','laringe','faringe','lengua','dientes','muela','encia','labio','mejilla','nariz','oreja','ojo','ceja','pestana','frente','menton','nuca','columna','vertebra','costilla','perone','femur','tibia','rotula','escapula','clavicula','pelvis','tendon','ligamento','nervio','vena','arteria']
+  },
+  espacio: {
+    ico:'🚀', label:'Espacio',
+    list:['planeta','estrella','galaxia','nebulosa','cometa','asteroide','meteoro','satelite','luna','sol','mercurio','venus','marte','jupiter','saturno','urano','neptuno','pluton','cosmos','universo','agujero','negro','supernova','pulsar','cuasar','magnetar','enana','blanca','gigante','roja','sistema','solar','milkyway','andromeda','orion','casiopea','telescopio','observatorio','cohete','capsula','orbita','apogeo','perigeo','gravedad','masa','luz','anos','parsec','nebula','cluster','constelacion','zodíaco','equinoccio','solsticio','eclipse','transito','ocultacion','aurora','magnetosfera']
+  },
+};
+
+const DIFFICULTIES = {
+  facil:        { minLen:3,  maxLen:5,  lives:7, label:'FÁCIL'         },
+  medio:        { minLen:6,  maxLen:7,  lives:6, label:'MEDIO'         },
+  dificil:      { minLen:8,  maxLen:9,  lives:5, label:'DIFÍCIL'       },
+  extraDificil: { minLen:10, maxLen:30, lives:5, label:'EXTRA DIFÍCIL' },
+};
+
+const ALPHABET = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ';
+
+/* ---------- ESTADO ---------- */
+const state = {
+  category: 'animales',
+  difficulty: 'facil',
+  level: 1,
+  streak: 0,
+  word: '', hint:'', display: [],
+  wrongLetters: [], rightLetters: [],
+  livesMax: 6, livesLeft: 6,
+  startTime:0, elapsed:0, ticking:false, timerId:null,
+  finished: false,
+  shake: 0,
+  recentWords: [],
+};
+const $ = id => document.getElementById(id);
+const canvas = $('gallows');
+const ctx = canvas.getContext('2d');
+
+/* ---------- UTILIDADES ---------- */
+function fmtTime(s){ const m=Math.floor(s/60), sec=Math.floor(s%60); return `${m}:${sec.toString().padStart(2,'0')}`; }
+function normalize(s){
+  return s.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/Ñ/g,'Ñ');
+}
+function startTimer(){
+  if(state.timerId) clearInterval(state.timerId);
+  state.timerId = setInterval(() => {
+    if(!state.ticking) return;
+    state.elapsed = (Date.now() - state.startTime)/1000;
+    $('stat-time').textContent = fmtTime(state.elapsed);
+  }, 250);
+}
+function stopTimer(){ if(state.timerId){clearInterval(state.timerId);state.timerId=null;} state.ticking=false; }
+
+/* ---------- ELEGIR PALABRA ---------- */
+function pickWord(){
+  const cfg = DIFFICULTIES[state.difficulty];
+  const pool = WORDS[state.category].list
+    .filter(w => w.length >= cfg.minLen && w.length <= cfg.maxLen)
+    .filter(w => !state.recentWords.includes(w));
+  if (pool.length === 0) {
+    state.recentWords = [];
+    return pickWord();
+  }
+  const w = pool[(Math.random()*pool.length)|0];
+  state.recentWords.push(w);
+  if (state.recentWords.length > 20) state.recentWords.shift();
+  return w;
+}
+
+/* ---------- NUEVA PARTIDA ---------- */
+function newGame(keepStreak=false){
+  const cfg = DIFFICULTIES[state.difficulty];
+  if (!keepStreak) state.streak = 0;
+  state.word = pickWord();
+  // pista: categoría + longitud
+  const cat = WORDS[state.category];
+  state.hint = `${cat.ico} ${cat.label} · ${state.word.length} letras`;
+  state.display = normalize(state.word).split('').map(ch => ch === ' ' ? ' ' : '_');
+  state.wrongLetters = [];
+  state.rightLetters = [];
+  state.livesMax = cfg.lives;
+  state.livesLeft = cfg.lives;
+  state.elapsed = 0; state.startTime = 0; state.ticking = false;
+  state.finished = false;
+  state.shake = 0;
+  stopTimer();
+
+  $('level-num').textContent = state.level;
+  $('diff-badge').textContent = `${cfg.label} · ${WORDS[state.category].label.toUpperCase()}`;
+  $('stat-time').textContent = '0:00';
+  $('stat-lives').textContent = state.livesLeft;
+  $('stat-lives').classList.remove('danger');
+  $('stat-streak').textContent = state.streak;
+  $('wrong-letters').innerHTML = '';
+  $('hint-bar').textContent = state.hint;
+
+  renderWord();
+  renderKeyboard();
+  requestAnimationFrame(() => { resizeCanvas(); drawGallows(); });
+}
+
+/* ---------- RENDER PALABRA ---------- */
+function renderWord(){
+  const el = $('word');
+  el.innerHTML = '';
+  const norm = normalize(state.word);
+  for (let i=0; i<state.word.length; i++) {
+    const slot = document.createElement('div');
+    const ch = norm[i];
+    if (ch === ' ') {
+      slot.className = 'letter-slot space';
+    } else {
+      slot.className = 'letter-slot';
+      slot.textContent = state.display[i] === '_' ? '' : state.display[i];
+    }
+    el.appendChild(slot);
+  }
+}
+
+/* ---------- RENDER TECLADO ---------- */
+function renderKeyboard(){
+  const layouts = [
+    ['Q','W','E','R','T','Y','U','I','O','P'],
+    ['A','S','D','F','G','H','J','K','L','Ñ'],
+    ['Z','X','C','V','B','N','M']
+  ];
+  const kb = $('keyboard');
+  kb.innerHTML = '';
+  layouts.forEach(row => {
+    const r = document.createElement('div');
+    r.className = 'kb-row';
+    row.forEach(ch => {
+      const k = document.createElement('button');
+      k.className = 'key';
+      k.textContent = ch;
+      k.dataset.letter = ch;
+      if (state.rightLetters.includes(ch)) k.classList.add('correct','disabled');
+      else if (state.wrongLetters.includes(ch)) k.classList.add('wrong','disabled');
+      k.addEventListener('click', () => onLetter(ch));
+      r.appendChild(k);
+    });
+    kb.appendChild(r);
+  });
+}
+
+/* ---------- GUESS ---------- */
+function onLetter(letter){
+  if (state.finished) return;
+  if (state.rightLetters.includes(letter) || state.wrongLetters.includes(letter)) return;
+  SFX.init();
+  if (!state.ticking){
+    state.ticking = true;
+    state.startTime = Date.now();
+    startTimer();
+  }
+  const norm = normalize(state.word);
+  let found = false;
+  for (let i=0; i<norm.length; i++) {
+    if (norm[i] === letter) { state.display[i] = letter; found = true; }
+  }
+  if (found) {
+    state.rightLetters.push(letter);
+    SFX.correct();
+    renderWord();
+    renderKeyboard();
+    if (checkWin()) setTimeout(onWin, 600);
+  } else {
+    state.wrongLetters.push(letter);
+    state.livesLeft--;
+    SFX.wrong();
+    $('stat-lives').textContent = state.livesLeft;
+    if (state.livesLeft <= 2) $('stat-lives').classList.add('danger');
+    const wl = $('wrong-letters');
+    wl.innerHTML = state.wrongLetters.map(l => `<span>${l}</span>`).join(' ');
+    state.shake = 10;
+    animateGallowsShake();
+    renderKeyboard();
+    if (state.livesLeft <= 0) setTimeout(onLose, 700);
+  }
+}
+
+function checkWin(){ return !state.display.includes('_'); }
+
+/* ---------- CANVAS GALLOWS ---------- */
+function resizeCanvas(){
+  const wrap = canvas.parentElement;
+  const dpr = devicePixelRatio || 1;
+  const aw = wrap.clientWidth - 20;
+  const size = Math.min(aw, 320);
+  canvas.style.width = size + 'px';
+  canvas.style.height = (size * 0.85) + 'px';
+  canvas.width = size * dpr;
+  canvas.height = size * 0.85 * dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+
+function drawGallows(){
+  const w = canvas.width / (devicePixelRatio||1);
+  const h = canvas.height / (devicePixelRatio||1);
+  ctx.clearRect(0, 0, w, h);
+  ctx.save();
+  if (state.shake > 0) ctx.translate((Math.random()-.5)*state.shake, (Math.random()-.5)*state.shake);
+
+  const errors = state.livesMax - state.livesLeft;
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+  // Base
+  ctx.strokeStyle = '#d4af6a'; ctx.lineWidth = Math.max(4, w*.018);
+  ctx.beginPath(); ctx.moveTo(w*.1,h*.92); ctx.lineTo(w*.55,h*.92); ctx.stroke();
+  // Punteado
+  ctx.fillStyle = 'rgba(212,175,106,.4)';
+  for(let i=0;i<5;i++){ctx.beginPath();ctx.arc(w*.12+i*w*.05,h*.93,2,0,Math.PI*2);ctx.fill();}
+  // Poste
+  ctx.strokeStyle='#a48851';
+  ctx.beginPath();ctx.moveTo(w*.2,h*.92);ctx.lineTo(w*.2,h*.08);ctx.stroke();
+  // Travesaño
+  ctx.beginPath();ctx.moveTo(w*.2,h*.08);ctx.lineTo(w*.68,h*.08);ctx.stroke();
+  // Diagonal
+  ctx.beginPath();ctx.moveTo(w*.2,h*.20);ctx.lineTo(w*.35,h*.08);ctx.stroke();
+  // Cuerda
+  ctx.strokeStyle='#8d6e2f';
+  ctx.beginPath();ctx.moveTo(w*.68,h*.08);ctx.lineTo(w*.68,h*.20);ctx.stroke();
+
+  if(errors===0){ctx.restore();return;}
+  if(errors>=1) drawHead(w,h,errors);
+  if(errors>=2) drawBody(w,h);
+  if(errors>=3) drawArm(w,h,-1);
+  if(errors>=4) drawArm(w,h,1);
+  if(errors>=5) drawLeg(w,h,-1);
+  if(errors>=6) drawLeg(w,h,1);
+  ctx.restore();
+}
+function drawHead(w,h,errors){
+  const cx=w*.68, cy=h*.30, r=h*.08;
+  ctx.strokeStyle='#e8c98a'; ctx.fillStyle='#fae5b3';
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#3a2820';
+  if(errors>=state.livesMax){
+    ctx.strokeStyle='#3a2820'; ctx.lineWidth=2.5;
+    [-1,1].forEach(s=>{const ex=cx+s*r*.4,ey=cy-r*.15;ctx.beginPath();ctx.moveTo(ex-3,ey-3);ctx.lineTo(ex+3,ey+3);ctx.moveTo(ex+3,ey-3);ctx.lineTo(ex-3,ey+3);ctx.stroke();});
+    ctx.lineWidth=Math.max(4,w*.018);
+    ctx.beginPath();ctx.arc(cx,cy+r*.55,r*.3,Math.PI*1.1,Math.PI*1.9);ctx.stroke();
+  } else {
+    [-1,1].forEach(s=>{ctx.beginPath();ctx.arc(cx+s*r*.35,cy-r*.1,r*.12,0,Math.PI*2);ctx.fill();});
+    ctx.strokeStyle='#3a2820';
+    if(state.livesLeft<=2){ctx.beginPath();ctx.arc(cx,cy+r*.55,r*.3,Math.PI*1.1,Math.PI*1.9);ctx.stroke();}
+    else{ctx.beginPath();ctx.moveTo(cx-r*.25,cy+r*.4);ctx.lineTo(cx+r*.25,cy+r*.4);ctx.stroke();}
+  }
+  ctx.strokeStyle='#a48851'; ctx.lineWidth=Math.max(4,w*.018);
+}
+function drawBody(w,h){ctx.strokeStyle='#5c8fbf';ctx.beginPath();ctx.moveTo(w*.68,h*.38);ctx.lineTo(w*.68,h*.62);ctx.stroke();}
+function drawArm(w,h,side){ctx.strokeStyle='#5c8fbf';ctx.beginPath();ctx.moveTo(w*.68,h*.43);ctx.lineTo(w*.68+side*w*.12,h*.55);ctx.stroke();}
+function drawLeg(w,h,side){ctx.strokeStyle='#2d3e50';ctx.beginPath();ctx.moveTo(w*.68,h*.62);ctx.lineTo(w*.68+side*w*.10,h*.78);ctx.stroke();}
+function animateGallowsShake(){
+  const dec=setInterval(()=>{state.shake=Math.max(0,state.shake-1);drawGallows();if(state.shake<=0)clearInterval(dec);},30);
+}
+
+window.addEventListener('resize',()=>{if($('game').classList.contains('active')){resizeCanvas();drawGallows();}});
+
+/* ---------- VICTORIA / DERROTA ---------- */
+function onWin(){
+  state.finished=true; stopTimer(); SFX.victory(); state.streak++;
+  const recKey=`sk-ah-rec-${state.difficulty}`;
+  let rec=null;
+  try{rec=JSON.parse(localStorage.getItem(recKey)||'null');}catch(e){}
+  const isNewRec=!rec||state.elapsed<rec.time;
+  if(isNewRec){
+    try{localStorage.setItem(recKey,JSON.stringify({time:state.elapsed,lives:state.livesLeft,date:Date.now()}));}catch(e){}
+    setTimeout(()=>SFX.newRec(),600);
+  }
+  const streakKey=`sk-ah-streak-${state.difficulty}`;
+  let best=parseInt(localStorage.getItem(streakKey)||'0',10);
+  if(state.streak>best){try{localStorage.setItem(streakKey,String(state.streak));}catch(e){}}
+  $('win-answer').textContent=state.word.toUpperCase();
+  $('win-time').textContent=fmtTime(state.elapsed);
+  $('win-lives').textContent=state.livesLeft;
+  $('win-streak').textContent=state.streak;
+  $('new-record-tag').style.display=isNewRec?'block':'none';
+  openModal('modal-win','ad-win',ADS.medium250);
+}
+function onLose(){
+  state.finished=true; stopTimer(); SFX.defeat();
+  state.display=normalize(state.word).split('');
+  renderWord(); drawGallows();
+  $('lose-answer').textContent=state.word.toUpperCase();
+  $('lose-streak').textContent=state.streak;
+  setTimeout(()=>openModal('modal-lose','ad-lose',ADS.medium250),500);
+}
+
+/* ---------- COMPARTIR / GUARDAR ---------- */
+function genAchievementCanvas(){
+  const c=document.createElement('canvas'); c.width=1080; c.height=1080;
+  const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,0,1080);
+  g.addColorStop(0,'#3d4e60'); g.addColorStop(1,'#1c2a3a');
+  x.fillStyle=g; x.fillRect(0,0,1080,1080);
+  x.strokeStyle='#f4cf3a'; x.lineWidth=18; x.strokeRect(40,40,1000,1000);
+  x.font='180px sans-serif'; x.textAlign='center'; x.fillText('🎉',540,240);
+  x.fillStyle='#f4cf3a'; x.font='bold 56px sans-serif'; x.fillText('¡PALABRA ADIVINADA!',540,330);
+  x.fillStyle='#fff'; x.font='bold 90px sans-serif'; x.fillText('Ahorcado',540,430);
+  x.fillStyle='#9fb0c4'; x.font='bold 38px sans-serif';
+  x.fillText(`${DIFFICULTIES[state.difficulty].label} · ${WORDS[state.category].label}`,540,490);
+  x.fillStyle='#fff'; x.font='bold 70px monospace'; x.fillText(state.word.toUpperCase(),540,580);
+  x.fillStyle='#f4cf3a'; roundRect(x,90,640,900,240,30); x.fill();
+  x.fillStyle='#3a2400'; x.font='bold 90px sans-serif';
+  x.fillText(fmtTime(state.elapsed),280,760); x.fillText(state.livesLeft+'❤',540,760); x.fillText(state.streak+'🔥',800,760);
+  x.fillStyle='rgba(58,36,0,.7)'; x.font='bold 24px sans-serif';
+  x.fillText('TIEMPO',280,820); x.fillText('VIDAS',540,820); x.fillText('RACHA',800,820);
+  x.fillStyle='#f4cf3a'; x.font='bold 48px sans-serif'; x.fillText('SeaKingsGames',540,990);
+  return c;
+}
+function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.arcTo(x+w,y,x+w,y+r,r);c.lineTo(x+w,y+h-r);c.arcTo(x+w,y+h,x+w-r,y+h,r);c.lineTo(x+r,y+h);c.arcTo(x,y+h,x,y+h-r,r);c.lineTo(x,y+r);c.arcTo(x,y,x+r,y,r);c.closePath();}
+async function shareAchievement(){
+  const c=genAchievementCanvas();
+  const text=`🎉 Ahorcado · ${DIFFICULTIES[state.difficulty].label}\n"${state.word.toUpperCase()}" en ${fmtTime(state.elapsed)} · Racha ${state.streak}🔥\nJuega: SeaKingsGames`;
+  c.toBlob(async(blob)=>{
+    const file=new File([blob],'logro.png',{type:'image/png'});
+    try{
+      if(navigator.canShare&&navigator.canShare({files:[file]})) await navigator.share({files:[file],text});
+      else if(navigator.share) await navigator.share({text});
+      else{downloadCanvas(c);if(navigator.clipboard)await navigator.clipboard.writeText(text);alert('Imagen descargada y texto copiado');}
+    }catch(e){}
+  },'image/png');
+}
+function saveAchievement(){downloadCanvas(genAchievementCanvas());}
+function downloadCanvas(c){
+  c.toBlob(blob=>{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`logro-ahorcado-${Date.now()}.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);},'image/png');
+}
+
+/* ---------- MODALES ---------- */
+function openModal(id,adId,adCfg){$(id).classList.add('active');if(adId)loadAd($(adId),adCfg);}
+function closeModal(id){$(id).classList.remove('active');}
+
+/* ---------- MENÚ ---------- */
+function buildCategoryGrid(){
+  const grid=$('cat-grid'); grid.innerHTML='';
+  Object.entries(WORDS).forEach(([k,c])=>{
+    const btn=document.createElement('button');
+    btn.className='cat-btn'+(k===state.category?' selected':'');
+    btn.dataset.cat=k;
+    btn.innerHTML=`<span class="ico">${c.ico}</span><span>${c.label}</span>`;
+    btn.onclick=()=>{SFX.init();SFX.tap();state.category=k;grid.querySelectorAll('.cat-btn').forEach(b=>b.classList.toggle('selected',b.dataset.cat===k));try{localStorage.setItem('sk-ah-cat',k);}catch(e){};};
+    grid.appendChild(btn);
+  });
+}
+function buildDiffMenu(){
+  const list=$('diff-list'); list.innerHTML='';
+  Object.entries(DIFFICULTIES).forEach(([k,cfg])=>{
+    let rec=null,streak=0;
+    try{rec=JSON.parse(localStorage.getItem(`sk-ah-rec-${k}`)||'null');}catch(e){}
+    try{streak=parseInt(localStorage.getItem(`sk-ah-streak-${k}`)||'0',10);}catch(e){}
+    const btn=document.createElement('button');
+    btn.className='diff-btn'; btn.dataset.d=k;
+    let recLine='';
+    if(rec||streak){const parts=[];if(rec)parts.push(`🏆 ${fmtTime(rec.time)}`);if(streak)parts.push(`🔥 ${streak}`);recLine=`<div class="record-line">${parts.join(' · ')}</div>`;}
+    btn.innerHTML=`<div><div>${cfg.label}</div>${recLine}</div><span class="tag">${cfg.lives}❤</span>`;
+    btn.onclick=()=>{SFX.init();SFX.tap();state.difficulty=k;state.level=1;state.streak=0;newGame();showScreen('game');};
+    list.appendChild(btn);
+  });
+}
+
+/* ---------- BOTONES ---------- */
+$('btn-back').onclick=()=>{SFX.tap();stopTimer();buildDiffMenu();showScreen('menu');};
+$('btn-restart').onclick=()=>{SFX.tap();openModal('modal-restart','ad-restart',ADS.medium250);};
+$('btn-sound').onclick=()=>{SFX.init();SFX.enabled=!SFX.enabled;localStorage.setItem('sk-sound',SFX.enabled?'1':'0');$('btn-sound').textContent=SFX.enabled?'🔊':'🔇';if(SFX.enabled)SFX.tap();};
+$('btn-sound').textContent=SFX.enabled?'🔊':'🔇';
+
+$('btn-next').onclick=()=>{closeModal('modal-win');state.level++;newGame(true);SFX.tap();};
+$('btn-share').onclick=()=>{SFX.tap();shareAchievement();};
+$('btn-save').onclick=()=>{SFX.tap();saveAchievement();};
+$('btn-menu-win').onclick=()=>{closeModal('modal-win');buildDiffMenu();showScreen('menu');SFX.tap();};
+
+$('btn-retry').onclick=()=>{closeModal('modal-lose');state.level=1;state.streak=0;newGame();SFX.tap();};
+$('btn-menu-lose').onclick=()=>{closeModal('modal-lose');buildDiffMenu();showScreen('menu');SFX.tap();};
+
+$('btn-confirm-restart').onclick=()=>{closeModal('modal-restart');state.streak=0;newGame();SFX.tap();};
+$('btn-cancel-restart').onclick=()=>{closeModal('modal-restart');SFX.tap();};
+$('btn-menu-restart').onclick=()=>{closeModal('modal-restart');stopTimer();buildDiffMenu();showScreen('menu');SFX.tap();};
+
+/* teclado físico */
+document.addEventListener('keydown',e=>{
+  if(!$('game').classList.contains('active')) return;
+  const ch=e.key.toUpperCase();
+  if(ch.length===1&&ALPHABET.includes(ch)) onLetter(ch);
+});
+
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $(name).classList.add('active');
+  if(name==='game') requestAnimationFrame(()=>{resizeCanvas();drawGallows();});
+}
+
+/* ---------- PWA ---------- */
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;if(!localStorage.getItem('sk-install-dismissed'))$('install-prompt').classList.add('show');});
+$('btn-install').onclick=async()=>{if(!deferredPrompt)return;$('install-prompt').classList.remove('show');deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;};
+$('btn-install-close').onclick=()=>{$('install-prompt').classList.remove('show');try{localStorage.setItem('sk-install-dismissed','1');}catch(e){}};
+window.addEventListener('appinstalled',()=>{$('install-prompt').classList.remove('show');});
+
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+/* ---------- INIT ---------- */
+try{const c=localStorage.getItem('sk-ah-cat');if(c&&WORDS[c])state.category=c;}catch(e){}
+buildCategoryGrid();
+buildDiffMenu();
+window.addEventListener('load',()=>{loadAd($('ad-bottom-menu'),ADS.banner50);});
+</script>
+</body>
+</html>
