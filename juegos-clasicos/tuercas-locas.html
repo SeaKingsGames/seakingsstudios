@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#2a1855">
+<title>Tuercas Locas · SeaKingsGames</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+  :root{
+    --bg:#2a1855; --bg-deep:#1a0f3a; --panel:#3a2470;
+    --silver:#d8dae0; --gold:#ffc83a; --text:#fff; --text-dim:#b8a8e0;
+    --shadow:0 4px 0 rgba(0,0,0,.25), 0 8px 20px rgba(0,0,0,.3);
+  }
+  html,body{height:100%;overflow:hidden}
+  body{
+    font-family:'Fredoka',system-ui,sans-serif;
+    background:radial-gradient(ellipse at top,#3a2470 0%,var(--bg) 40%,var(--bg-deep) 100%);
+    color:var(--text); display:flex;flex-direction:column;
+    overscroll-behavior:none; touch-action:manipulation;
+  }
+  button{font-family:inherit;border:none;cursor:pointer;color:inherit;background:none}
+
+  .screen{position:fixed;inset:0;display:none;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+  .screen.active{display:flex}
+
+  /* ---------- MENU ---------- */
+  #menu{align-items:center;justify-content:center;gap:24px;padding:30px 24px}
+  .logo{
+    font-family:'Bagel Fat One',sans-serif;
+    font-size:clamp(38px,11vw,64px);line-height:.95;text-align:center;
+    color:var(--gold);
+    text-shadow:0 4px 0 #b88300, 0 8px 24px rgba(255,200,58,.4);
+    letter-spacing:.5px;
+  }
+  .logo small{display:block;font-family:'Fredoka',sans-serif;font-weight:600;font-size:.28em;color:var(--text-dim);letter-spacing:3px;margin-top:8px;text-shadow:none}
+  .diff-list{display:flex;flex-direction:column;gap:12px;width:min(360px,90vw)}
+  .diff-btn{
+    padding:16px 22px;border-radius:18px;
+    background:linear-gradient(180deg,var(--panel),#2d1a5a);
+    box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.1);
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:19px;font-weight:600; transition:transform .1s;
+  }
+  .diff-btn:active{transform:translateY(2px)}
+  .diff-btn .tag{
+    font-size:12px;font-weight:600;padding:4px 10px;border-radius:8px;
+    background:rgba(255,255,255,.12);color:var(--text-dim);letter-spacing:.5px;
+  }
+  .diff-btn[data-d="facil"] .tag{color:#9be37d;background:rgba(155,227,125,.15)}
+  .diff-btn[data-d="medio"] .tag{color:#7ec8ff;background:rgba(126,200,255,.15)}
+  .diff-btn[data-d="dificil"] .tag{color:#ffa84a;background:rgba(255,168,74,.15)}
+  .diff-btn[data-d="extraDificil"] .tag{color:#ff5e7a;background:rgba(255,94,122,.15)}
+
+  /* ---------- BARRA SUPERIOR DEL JUEGO ---------- */
+  #game .topbar{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 4px;flex-shrink:0;gap:8px}
+  .icon-btn{
+    width:46px;height:46px;border-radius:50%;
+    background:#fff;color:var(--bg-deep);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 0 rgba(0,0,0,.25);
+    font-size:22px;font-weight:700; transition:transform .1s;
+    flex-shrink:0;
+  }
+  .icon-btn:active{transform:translateY(2px)}
+  .icon-btn.disabled{background:#5a4880;color:#8878b0;box-shadow:0 4px 0 rgba(0,0,0,.15);cursor:not-allowed}
+  .icon-btn.small{width:38px;height:38px;font-size:18px}
+  .level-title{text-align:center;flex:1;min-width:0}
+  .level-title .badge{
+    display:inline-block;font-size:10px;font-weight:600;letter-spacing:2px;
+    padding:3px 10px;border-radius:10px;background:rgba(255,255,255,.12);color:var(--text-dim);
+  }
+  .level-title h1{font-size:20px;font-weight:700;color:#fff}
+
+  /* ---------- STATS ---------- */
+  .stats{
+    display:flex;justify-content:center;gap:22px;padding:4px 16px 0;
+    font-size:13px;font-weight:600;color:var(--text-dim);
+    font-variant-numeric:tabular-nums;flex-shrink:0;
+  }
+  .stats .val{color:#fff;font-weight:700;font-size:16px}
+
+  /* ---------- TARJETA DE LOGRO ---------- */
+  .achievement-card{
+    background:linear-gradient(135deg,var(--gold) 0%,#ffaa20 100%);
+    border-radius:18px;padding:16px;margin:10px 0;
+    color:#3a2400;
+    box-shadow:0 8px 0 #a06800, inset 0 -2px 0 rgba(255,255,255,.3);
+  }
+  .ach-title{font-size:10px;letter-spacing:3px;font-weight:700;opacity:.7;margin-bottom:6px}
+  .ach-stats{display:flex;justify-content:space-around;gap:8px}
+  .ach-stat{flex:1}
+  .ach-num{
+    font-family:'Bagel Fat One',sans-serif;font-size:30px;line-height:1;
+    font-variant-numeric:tabular-nums;
+  }
+  .ach-lbl{font-size:10px;font-weight:600;opacity:.7;letter-spacing:1px;margin-top:3px}
+  .new-record{
+    display:inline-block;background:#e91e63;color:#fff;
+    padding:4px 12px;border-radius:8px;font-size:10px;font-weight:700;letter-spacing:1.5px;
+    margin-bottom:6px;animation:wobble 0.6s ease-in-out infinite;
+  }
+  @keyframes wobble{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+  .btn-row{display:flex;gap:8px}
+  .btn-row .btn-secondary{flex:1}
+  .record-line{
+    font-size:12px;color:var(--text-dim);font-weight:500;
+    margin-top:3px;font-variant-numeric:tabular-nums;
+  }
+
+  /* ---------- ÁREA DE STACKS ---------- */
+  .board{flex:1;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:6px 6px 0;position:relative}
+  .board-inner{display:grid;gap:6px 4px;justify-content:center;align-content:center;width:100%;max-height:100%}
+
+  .stack{
+    position:relative;display:flex;flex-direction:column-reverse;align-items:center;
+    cursor:pointer;transition:transform .15s ease;padding-top:22px;
+  }
+  .stack:active{transform:scale(.97)}
+  .stack.selected{transform:translateY(-2px)}
+
+  .rod{
+    position:absolute;left:50%;transform:translateX(-50%);
+    width:14%;background:linear-gradient(90deg,#9298a8 0%,#e8eaf0 50%,#9298a8 100%);
+    border-radius:3px;z-index:0;pointer-events:none;
+  }
+  .rod-pattern{position:absolute;inset:0;background-image:repeating-linear-gradient(180deg,rgba(0,0,0,.18) 0 2px,transparent 2px 5px);border-radius:inherit}
+
+  .cap{
+    width:38%;height:14px;
+    background:radial-gradient(ellipse at 30% 30%,#fff 0%,#d8dae0 40%,#8a90a2 100%);
+    border-radius:50%/60%;box-shadow:0 3px 0 rgba(0,0,0,.2);
+    position:relative;z-index:3;margin-bottom:-6px;transition:transform .2s;
+  }
+  .stack.selected .cap{transform:translateY(-8px)}
+
+  .base{
+    width:88%;height:14px;
+    background:radial-gradient(ellipse at 50% 30%,#f0f2f7 0%,#c8ccd6 50%,#7a8090 100%);
+    border-radius:50%/100%;box-shadow:0 4px 0 rgba(0,0,0,.25);
+    position:relative;z-index:3;margin-top:-4px;
+  }
+
+  .pieces{display:flex;flex-direction:column-reverse;align-items:center;width:100%;position:relative;z-index:2}
+  .piece{
+    width:88%;height:var(--piece-h,28px);position:relative;
+    display:flex;align-items:center;justify-content:center;
+    color:rgba(0,0,0,.45);font-weight:700;font-size:calc(var(--piece-h,28px) * .55);
+    transition:transform .2s ease;
+    filter:drop-shadow(0 2px 0 rgba(0,0,0,.18));
+  }
+  .piece::before{content:'';position:absolute;inset:0;background:var(--c,#888);clip-path:polygon(8% 0,92% 0,100% 50%,92% 100%,8% 100%,0 50%);z-index:-1}
+  .piece::after{content:'';position:absolute;left:0;right:0;top:0;height:35%;background:linear-gradient(180deg,rgba(255,255,255,.35) 0%,transparent 100%);clip-path:polygon(8% 0,92% 0,100% 50%,92% 50%,8% 50%,0 50%);z-index:-1;pointer-events:none}
+  .stack.selected .piece.top{transform:translateY(-18px)}
+
+  .c-0{--c:#1e88e5} .c-1{--c:#43a047} .c-2{--c:#ec407a} .c-3{--c:#fdd835} .c-4{--c:#fb8c00}
+  .c-5{--c:#26c6da} .c-6{--c:#7b3f1d} .c-7{--c:#9ccc65} .c-8{--c:#e53935} .c-9{--c:#8e24aa}
+
+  /* ---------- TOOLBAR INFERIOR ---------- */
+  #game .toolbar{display:flex;justify-content:space-around;align-items:flex-end;padding:6px 18px 12px;flex-shrink:0}
+  .tool{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--text-dim);position:relative}
+  .tool .circle{
+    width:50px;height:50px;border-radius:50%;
+    background:#5a4880;color:#a898d0;
+    display:flex;align-items:center;justify-content:center;font-size:22px;
+    box-shadow:0 4px 0 rgba(0,0,0,.2);transition:transform .1s;
+  }
+  .tool.active .circle{background:var(--gold);color:#5a3a00}
+  .tool.active{color:var(--gold)}
+  .tool:active .circle{transform:translateY(2px)}
+  .tool .badge-num{
+    position:absolute;top:-2px;right:-2px;background:#5a4880;color:#fff;border-radius:50%;
+    width:20px;height:20px;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700;
+  }
+  .tool.active .badge-num{background:#5a3a00;color:var(--gold)}
+
+  /* ---------- BANNER 320x50 EN MENÚ ---------- */
+  .ad-banner-bottom{
+    position:fixed;left:0;right:0;bottom:env(safe-area-inset-bottom);
+    display:flex;justify-content:center;align-items:center;
+    padding:8px 0;background:rgba(10,5,30,.6);backdrop-filter:blur(8px);
+    z-index:20;min-height:50px;
+  }
+  .ad-banner-bottom iframe{max-width:100%}
+
+  /* ---------- MODAL GENÉRICO ---------- */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
+    z-index:100;display:none;align-items:center;justify-content:center;padding:20px;
+    animation:fadeIn .2s;
+  }
+  .modal-overlay.active{display:flex}
+  .modal{
+    background:linear-gradient(180deg,#3a2470 0%,#2a1855 100%);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:24px;padding:24px 20px;
+    width:min(360px,100%);max-height:90vh;overflow-y:auto;
+    text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5);
+    animation:popIn .3s cubic-bezier(.34,1.56,.64,1);
+  }
+  .modal .emoji{font-size:64px;margin-bottom:8px;display:inline-block}
+  .modal h2{font-family:'Bagel Fat One',sans-serif;color:var(--gold);font-size:28px;line-height:1;margin-bottom:6px}
+  .modal p{color:var(--text-dim);font-size:15px;margin-bottom:14px}
+  .ad-slot{
+    margin:14px auto;display:flex;justify-content:center;align-items:center;
+    min-height:250px;background:rgba(0,0,0,.2);border-radius:12px;overflow:hidden;
+  }
+  .ad-slot iframe{max-width:100%;border:0}
+  .ad-label{font-size:10px;color:var(--text-dim);opacity:.6;letter-spacing:2px;margin-bottom:6px}
+  .modal-btns{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+  .btn-primary{
+    padding:14px 22px;border-radius:14px;
+    background:linear-gradient(180deg,var(--gold) 0%,#e0a020 100%);
+    color:#3a2400;font-weight:700;font-size:17px;
+    box-shadow:0 4px 0 #a06800;
+  }
+  .btn-secondary{
+    padding:13px 22px;border-radius:14px;
+    background:rgba(255,255,255,.1);color:#fff;font-weight:600;font-size:15px;
+    box-shadow:0 4px 0 rgba(0,0,0,.25);
+  }
+  .btn-ghost{padding:10px;color:var(--text-dim);font-size:14px;font-weight:500}
+
+  /* ---------- ANIMACIONES ---------- */
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes popIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  .bounce{animation:bounce 1.2s infinite}
+  .stack.shake{animation:shake .3s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .stack.hint{animation:pulse 1s infinite}
+  @keyframes pulse{0%,100%{filter:none}50%{filter:drop-shadow(0 0 12px var(--gold))}}
+
+  /* ajuste para que el banner no tape el menú */
+  #menu{padding-bottom:80px}
+</style>
+</head>
+<body>
+
+<!-- ====================== MENÚ ====================== -->
+<section id="menu" class="screen active">
+  <div class="logo">TUERCAS<br>LOCAS<small>SeaKingsGames</small></div>
+  <div class="diff-list" id="diff-list"></div>
+  <a href="index.html" style="color:var(--text-dim);font-size:14px;text-decoration:none">← Volver al inicio</a>
+  <div class="ad-banner-bottom" id="ad-bottom-menu"></div>
+</section>
+
+<!-- ====================== JUEGO ====================== -->
+<section id="game" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" id="btn-back">‹</button>
+    <div class="level-title">
+      <div class="badge" id="diff-badge">FÁCIL</div>
+      <h1>Nivel <span id="level-num">1</span></h1>
+    </div>
+    <button class="icon-btn small" id="btn-sound">🔊</button>
+    <button class="icon-btn" id="btn-restart">↻</button>
+  </div>
+
+  <div class="stats">
+    <span>⏱️ <span class="val" id="stat-time">0:00</span></span>
+    <span>🎯 <span class="val" id="stat-moves">0</span> mov</span>
+  </div>
+
+  <div class="board"><div class="board-inner" id="board"></div></div>
+
+  <div class="toolbar">
+    <button class="tool" id="btn-undo">
+      <div class="circle">↶</div>
+      <span>Deshacer</span>
+    </button>
+    <button class="tool active" id="btn-hint">
+      <div class="circle">💡</div>
+      <span class="badge-num" id="hint-count">3</span>
+      <span>Pista</span>
+    </button>
+    <button class="tool active" id="btn-add">
+      <div class="circle">＋</div>
+      <span>Añadir</span>
+    </button>
+  </div>
+</section>
+
+<!-- ====================== MODALES ====================== -->
+<div class="modal-overlay" id="modal-win">
+  <div class="modal">
+    <div class="emoji bounce">🏆</div>
+    <div id="new-record-tag" style="display:none"><span class="new-record">¡NUEVO RÉCORD!</span></div>
+    <h2>¡Nivel completado!</h2>
+    <p>Nivel <span id="win-level"></span> · ¡Buen trabajo, capitán!</p>
+
+    <div class="achievement-card">
+      <div class="ach-title">TU LOGRO</div>
+      <div class="ach-stats">
+        <div class="ach-stat">
+          <div class="ach-num" id="win-time">0:00</div>
+          <div class="ach-lbl">TIEMPO</div>
+        </div>
+        <div class="ach-stat">
+          <div class="ach-num" id="win-moves">0</div>
+          <div class="ach-lbl">MOVIMIENTOS</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-label">PUBLICIDAD</div>
+    <div class="ad-slot" id="ad-win"></div>
+
+    <div class="modal-btns">
+      <button class="btn-primary" id="btn-next">Siguiente nivel →</button>
+      <div class="btn-row">
+        <button class="btn-secondary" id="btn-share">📤 Compartir</button>
+        <button class="btn-secondary" id="btn-save">💾 Guardar</button>
+      </div>
+      <button class="btn-ghost" id="btn-menu-win">Cambiar dificultad</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-restart">
+  <div class="modal">
+    <div class="emoji">🔄</div>
+    <h2>¿Reiniciar nivel?</h2>
+    <p>Perderás todo tu progreso</p>
+    <div class="ad-label">PUBLICIDAD</div>
+    <div class="ad-slot" id="ad-restart"></div>
+    <div class="modal-btns">
+      <button class="btn-primary" id="btn-confirm-restart">Sí, reiniciar</button>
+      <button class="btn-secondary" id="btn-cancel-restart">Cancelar</button>
+      <button class="btn-ghost" id="btn-menu-restart">Volver al menú</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-stuck">
+  <div class="modal">
+    <div class="emoji">😵</div>
+    <h2>¡Te atascaste!</h2>
+    <p>No hay movimientos posibles</p>
+    <div class="ad-label">PUBLICIDAD</div>
+    <div class="ad-slot" id="ad-stuck"></div>
+    <div class="modal-btns">
+      <button class="btn-primary" id="btn-add-stuck">＋ Añadir barra extra</button>
+      <button class="btn-secondary" id="btn-restart-stuck">Reiniciar nivel</button>
+      <button class="btn-ghost" id="btn-menu-stuck">Cambiar dificultad</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================
+   TUERCAS LOCAS · SeaKingsGames
+   ===================================================== */
+
+/* ---------- 1. SISTEMA DE AUDIO (Web Audio API) ---------- */
+const Audio = {
+  ctx: null, enabled: true,
+  init() {
+    if (this.ctx) return;
+    try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch(e) { console.warn('No audio support'); }
+  },
+  tone(freq, dur=0.1, type='sine', vol=0.15, attack=0.005) {
+    if (!this.enabled || !this.ctx) return;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(vol, t + attack);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(gain).connect(this.ctx.destination);
+    osc.start(t); osc.stop(t + dur + 0.02);
+  },
+  sequence(notes, gap=0.06) {
+    if (!this.enabled || !this.ctx) return;
+    notes.forEach((n,i) => setTimeout(() => this.tone(n.f, n.d||0.1, n.t||'sine', n.v||0.15), i*gap*1000));
+  },
+  // efectos específicos
+  select()  { this.tone(520, 0.08, 'sine', 0.12); },
+  place()   { this.tone(660, 0.06, 'sine', 0.14); setTimeout(()=>this.tone(880,0.08,'sine',0.14),50); },
+  invalid() { this.tone(140, 0.18, 'sawtooth', 0.10); },
+  undo()    { this.tone(500, 0.05, 'triangle', 0.13); setTimeout(()=>this.tone(350,0.08,'triangle',0.13),40); },
+  hint()    { this.tone(1320,0.08,'triangle',0.12); setTimeout(()=>this.tone(1760,0.12,'triangle',0.12),80); },
+  tap()     { this.tone(800, 0.03, 'triangle', 0.08); },
+  victory() {
+    this.sequence([
+      {f:523,d:0.12}, {f:659,d:0.12}, {f:784,d:0.12}, {f:1047,d:0.25,v:0.18}
+    ], 0.1);
+  },
+  stuck()   { this.tone(330,0.15,'sawtooth',0.12); setTimeout(()=>this.tone(247,0.25,'sawtooth',0.12),140); },
+  add()     { this.tone(440,0.06,'sine',0.12); setTimeout(()=>this.tone(660,0.1,'sine',0.13),60); },
+};
+
+/* ---------- 2. CARGADOR DE ADS (iframe aislado) ---------- */
+const ADS = {
+  banner50:  { key:'787e84f3bdee3100779130afe4802abc', width:320, height:50 },
+  medium250: { key:'c2f164720365b5dc18fae25f1c594072', width:300, height:250 },
+  large90:   { key:'0e595827f5881105adfd4a408fcb9f88', width:728, height:90 },
+};
+function loadAd(containerEl, config) {
+  if (!containerEl || containerEl.dataset.loaded === '1') return;
+  containerEl.dataset.loaded = '1';
+  // cada ad en su propio iframe srcdoc para aislar la variable global atOptions
+  const html =
+`<!DOCTYPE html><html><head>
+<style>html,body{margin:0;padding:0;background:transparent;overflow:hidden}</style>
+</head><body>
+<script type="text/javascript">var atOptions=${JSON.stringify({
+  key:config.key, format:'iframe', height:config.height, width:config.width, params:{}
+})};<\/script>
+<script type="text/javascript" src="https://www.highperformanceformat.com/${config.key}/invoke.js"><\/script>
+</body></html>`;
+  const ifr = document.createElement('iframe');
+  ifr.srcdoc = html;
+  ifr.width = config.width; ifr.height = config.height;
+  ifr.scrolling = 'no'; ifr.setAttribute('frameborder','0'); ifr.setAttribute('sandbox','allow-scripts allow-same-origin allow-popups-to-escape-sandbox');
+  ifr.style.cssText = 'border:0;display:block;background:transparent;max-width:100%';
+  containerEl.appendChild(ifr);
+}
+
+/* ---------- 3. ESTADO DEL JUEGO ---------- */
+const COLORS = ['💧','♣','♛','☀','⚡','◆','☁','☕','♥','★'];
+const DIFFICULTIES = {
+  facil:        { colors: 3, empty: 2, capacity: 5, label: 'FÁCIL'         },
+  medio:        { colors: 5, empty: 2, capacity: 6, label: 'MEDIO'         },
+  dificil:      { colors: 8, empty: 2, capacity: 6, label: 'DIFÍCIL'       },
+  extraDificil: { colors: 10,empty: 3, capacity: 7, label: 'EXTRA DIFÍCIL' },
+};
+const state = {
+  difficulty: 'facil', level: 1,
+  stacks: [], capacity: 5, selected: null,
+  history: [], hints: 3,
+  startTime: 0, elapsed: 0, moves: 0,
+  ticking: false, timerId: null,
+};
+const $ = id => document.getElementById(id);
+const board = $('board');
+
+/* ---------- 4. NUEVO NIVEL ---------- */
+function newLevel() {
+  const cfg = DIFFICULTIES[state.difficulty];
+  state.capacity = cfg.capacity;
+  const pool = [];
+  for (let c = 0; c < cfg.colors; c++)
+    for (let k = 0; k < cfg.capacity; k++) pool.push(c);
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  const stacks = [];
+  for (let s = 0; s < cfg.colors; s++)
+    stacks.push(pool.slice(s * cfg.capacity, (s + 1) * cfg.capacity));
+  for (let s = 0; s < cfg.empty; s++) stacks.push([]);
+  state.stacks = stacks;
+  state.selected = null;
+  state.history = [];
+  state.hints = 3;
+  state.moves = 0;
+  state.elapsed = 0;
+  state.startTime = 0;
+  state.ticking = false;
+  stopTimer();
+  $('hint-count').textContent = state.hints;
+  $('level-num').textContent = state.level;
+  $('diff-badge').textContent = cfg.label;
+  $('stat-time').textContent = '0:00';
+  $('stat-moves').textContent = '0';
+  render();
+}
+
+/* ---------- TIMER + UTILIDADES ---------- */
+function startTimer(){
+  if (state.timerId) clearInterval(state.timerId);
+  state.timerId = setInterval(() => {
+    if (!state.ticking) return;
+    state.elapsed = (Date.now() - state.startTime) / 1000;
+    $('stat-time').textContent = fmtTime(state.elapsed);
+  }, 250);
+}
+function stopTimer(){
+  if (state.timerId) { clearInterval(state.timerId); state.timerId = null; }
+  state.ticking = false;
+}
+function fmtTime(s){
+  const m = Math.floor(s/60), sec = Math.floor(s%60);
+  return `${m}:${sec.toString().padStart(2,'0')}`;
+}
+
+/* ---------- 5. RENDER ---------- */
+function render() {
+  board.innerHTML = '';
+  const n = state.stacks.length;
+  const perRow = n <= 7 ? n : Math.ceil(n / 2);
+  board.style.gridTemplateColumns = `repeat(${perRow},1fr)`;
+  const boardEl = board.parentElement;
+  const rows = Math.ceil(n / perRow);
+  const availH = boardEl.clientHeight - 24;
+  const pieceH = Math.max(18, Math.min(34,
+    Math.floor((availH / rows - 60) / state.capacity)));
+  document.documentElement.style.setProperty('--piece-h', pieceH + 'px');
+
+  state.stacks.forEach((stk, i) => {
+    const el = document.createElement('div');
+    el.className = 'stack' + (state.selected === i ? ' selected' : '');
+    el.dataset.i = i;
+    const empty = state.capacity - stk.length;
+    const rod = document.createElement('div');
+    rod.className = 'rod';
+    const rodH = empty * pieceH + 18;
+    rod.style.top = '14px'; rod.style.height = rodH + 'px';
+    rod.innerHTML = '<div class="rod-pattern"></div>';
+    el.appendChild(rod);
+    if (stk.length > 0) {
+      const cap = document.createElement('div');
+      cap.className = 'cap'; el.appendChild(cap);
+    }
+    const piecesWrap = document.createElement('div');
+    piecesWrap.className = 'pieces';
+    stk.forEach((c, idx) => {
+      const p = document.createElement('div');
+      p.className = 'piece c-' + c + (idx === stk.length - 1 ? ' top' : '');
+      p.textContent = COLORS[c];
+      piecesWrap.appendChild(p);
+    });
+    el.appendChild(piecesWrap);
+    const base = document.createElement('div');
+    base.className = 'base'; el.appendChild(base);
+    el.addEventListener('click', () => onStackClick(i));
+    board.appendChild(el);
+  });
+  $('btn-undo').classList.toggle('disabled', state.history.length === 0);
+}
+
+/* ---------- 6. LÓGICA DE MOVIMIENTO ---------- */
+function onStackClick(i) {
+  Audio.init();
+  const s = state.stacks[i];
+  if (state.selected === null) {
+    if (s.length === 0) return;
+    state.selected = i;
+    Audio.select();
+    render(); return;
+  }
+  if (state.selected === i) {
+    state.selected = null;
+    Audio.tap();
+    render(); return;
+  }
+  const from = state.stacks[state.selected];
+  const to = state.stacks[i];
+  const piece = from[from.length - 1];
+  const canPlace = to.length < state.capacity &&
+                   (to.length === 0 || to[to.length - 1] === piece);
+  if (!canPlace) {
+    const el = board.children[i];
+    el.classList.add('shake');
+    setTimeout(() => el.classList.remove('shake'), 300);
+    Audio.invalid();
+    state.selected = null;
+    render(); return;
+  }
+  state.history.push(state.stacks.map(s => [...s]));
+  from.pop();
+  to.push(piece);
+  state.selected = null;
+  // arrancar timer al primer movimiento
+  if (!state.ticking) {
+    state.ticking = true;
+    state.startTime = Date.now();
+    startTimer();
+  }
+  state.moves++;
+  $('stat-moves').textContent = state.moves;
+  Audio.place();
+  render();
+  if (checkWin()) {
+    Audio.victory();
+    setTimeout(showWin, 500);
+  } else if (findHint() === null) {
+    // atascado
+    setTimeout(showStuck, 400);
+  }
+}
+
+function checkWin() {
+  return state.stacks.every(s =>
+    s.length === 0 || (s.length === state.capacity && s.every(c => c === s[0]))
+  );
+}
+
+function findHint() {
+  const ss = state.stacks;
+  // prioridad: movimiento útil
+  for (let i = 0; i < ss.length; i++) {
+    if (ss[i].length === 0) continue;
+    const top = ss[i][ss[i].length - 1];
+    const allSame = ss[i].every(c => c === top);
+    if (allSame && ss[i].length === state.capacity) continue;
+    for (let j = 0; j < ss.length; j++) {
+      if (i === j) continue;
+      const t = ss[j];
+      if (t.length === state.capacity) continue;
+      if (t.length === 0) { if (!allSame) return [i, j]; }
+      else if (t[t.length - 1] === top) return [i, j];
+    }
+  }
+  // fallback: cualquier movimiento legal
+  for (let i = 0; i < ss.length; i++) {
+    if (ss[i].length === 0) continue;
+    const top = ss[i][ss[i].length - 1];
+    for (let j = 0; j < ss.length; j++) {
+      if (i === j) continue;
+      const t = ss[j];
+      if (t.length === state.capacity) continue;
+      if (t.length === 0 || t[t.length - 1] === top) return [i, j];
+    }
+  }
+  return null;
+}
+
+/* ---------- 7. MODALES ---------- */
+function openModal(id, adSlotId, adConfig) {
+  $(id).classList.add('active');
+  if (adSlotId) loadAd($(adSlotId), adConfig);
+}
+function closeModal(id) { $(id).classList.remove('active'); }
+
+function showWin() {
+  stopTimer();
+  const t = state.elapsed, m = state.moves, diff = state.difficulty;
+  const key = `sk-tl-rec-${diff}`;
+  let rec = null;
+  try { rec = JSON.parse(localStorage.getItem(key) || 'null'); } catch(e) {}
+  const isNewRec = !rec || t < rec.time;
+  if (isNewRec) {
+    try { localStorage.setItem(key, JSON.stringify({time:t, moves:m, level:state.level, date:Date.now()})); } catch(e) {}
+  }
+  $('win-level').textContent = state.level;
+  $('win-time').textContent = fmtTime(t);
+  $('win-moves').textContent = m;
+  $('new-record-tag').style.display = isNewRec ? 'block' : 'none';
+  openModal('modal-win', 'ad-win', ADS.medium250);
+}
+function showStuck()  { Audio.stuck(); openModal('modal-stuck','ad-stuck',  ADS.medium250); }
+function showRestart(){ openModal('modal-restart','ad-restart',ADS.medium250); }
+
+/* ---------- COMPARTIR / GUARDAR LOGRO ---------- */
+function generateAchievementCanvas() {
+  const c = document.createElement('canvas');
+  c.width = 1080; c.height = 1080;
+  const x = c.getContext('2d');
+  // fondo morado
+  const grd = x.createLinearGradient(0,0,0,1080);
+  grd.addColorStop(0,'#3a2470'); grd.addColorStop(1,'#1a0f3a');
+  x.fillStyle = grd; x.fillRect(0,0,1080,1080);
+  // borde dorado
+  x.strokeStyle = '#ffc83a'; x.lineWidth = 18;
+  x.strokeRect(40,40,1000,1000);
+  // trofeo
+  x.font = '180px sans-serif'; x.textAlign = 'center';
+  x.fillText('🏆', 540, 240);
+  // título logro
+  x.fillStyle = '#ffc83a';
+  x.font = 'bold 56px sans-serif';
+  x.fillText('¡LOGRO DESBLOQUEADO!', 540, 330);
+  // juego
+  x.fillStyle = '#fff';
+  x.font = 'bold 90px sans-serif';
+  x.fillText('Tuercas Locas', 540, 440);
+  // dificultad
+  x.fillStyle = '#b8a8e0';
+  x.font = 'bold 42px sans-serif';
+  const lbl = DIFFICULTIES[state.difficulty].label;
+  x.fillText(`${lbl} · Nivel ${state.level}`, 540, 510);
+  // recuadro stats dorado
+  x.fillStyle = '#ffc83a';
+  roundRect(x, 90, 600, 900, 280, 30); x.fill();
+  // stats
+  x.fillStyle = '#3a2400';
+  x.font = 'bold 130px sans-serif';
+  x.fillText(fmtTime(state.elapsed), 320, 740);
+  x.fillText(state.moves, 760, 740);
+  x.fillStyle = 'rgba(58,36,0,.7)';
+  x.font = 'bold 30px sans-serif';
+  x.fillText('TIEMPO', 320, 790);
+  x.fillText('MOVIMIENTOS', 760, 790);
+  // brand
+  x.fillStyle = '#ffc83a';
+  x.font = 'bold 48px sans-serif';
+  x.fillText('SeaKingsGames', 540, 990);
+  return c;
+}
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h); ctx.arcTo(x,y+h,x,y+h-r,r);
+  ctx.lineTo(x,y+r); ctx.arcTo(x,y,x+r,y,r);
+  ctx.closePath();
+}
+async function shareAchievement() {
+  const c = generateAchievementCanvas();
+  const lbl = DIFFICULTIES[state.difficulty].label;
+  const text = `🏆 Tuercas Locas · ${lbl}\n⏱️ ${fmtTime(state.elapsed)} · 🎯 ${state.moves} movimientos\nJuega: SeaKingsGames`;
+  c.toBlob(async (blob) => {
+    const file = new File([blob], 'logro.png', {type:'image/png'});
+    try{
+      if (navigator.canShare && navigator.canShare({files:[file]})) {
+        await navigator.share({files:[file], text});
+      } else if (navigator.share) {
+        await navigator.share({text});
+      } else {
+        downloadCanvas(c);
+        if (navigator.clipboard) await navigator.clipboard.writeText(text);
+        alert('Imagen descargada y texto copiado');
+      }
+    } catch(e) { /* cancelled */ }
+  }, 'image/png');
+}
+function saveAchievement() {
+  downloadCanvas(generateAchievementCanvas());
+}
+function downloadCanvas(c) {
+  c.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `logro-tuercas-${Date.now()}.png`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  }, 'image/png');
+}
+
+/* ---------- 8. BOTONES ---------- */
+$('btn-back').onclick = () => { Audio.tap(); stopTimer(); buildDiffMenu(); showScreen('menu'); };
+$('btn-restart').onclick = () => { Audio.tap(); showRestart(); };
+$('btn-sound').onclick = () => {
+  Audio.init();
+  Audio.enabled = !Audio.enabled;
+  $('btn-sound').textContent = Audio.enabled ? '🔊' : '🔇';
+  if (Audio.enabled) Audio.tap();
+};
+
+$('btn-undo').onclick = () => {
+  if (state.history.length === 0) return;
+  state.stacks = state.history.pop();
+  state.selected = null;
+  Audio.undo();
+  render();
+};
+
+$('btn-hint').onclick = () => {
+  if (state.hints <= 0) { Audio.invalid(); return; }
+  const move = findHint();
+  if (!move) { Audio.invalid(); return; }
+  state.hints--;
+  $('hint-count').textContent = state.hints;
+  Audio.hint();
+  const [i, j] = move;
+  board.children[i].classList.add('hint');
+  board.children[j].classList.add('hint');
+  setTimeout(() => {
+    board.children[i]?.classList.remove('hint');
+    board.children[j]?.classList.remove('hint');
+  }, 2200);
+};
+
+$('btn-add').onclick = () => {
+  if (state.stacks.length >= 14) { Audio.invalid(); return; }
+  state.history.push(state.stacks.map(s => [...s]));
+  state.stacks.push([]);
+  Audio.add();
+  render();
+};
+
+/* botones de modales */
+$('btn-next').onclick = () => { closeModal('modal-win'); state.level++; newLevel(); Audio.tap(); };
+$('btn-menu-win').onclick = () => { closeModal('modal-win'); showScreen('menu'); Audio.tap(); buildDiffMenu(); };
+$('btn-share').onclick = () => { Audio.tap(); shareAchievement(); };
+$('btn-save').onclick = () => { Audio.tap(); saveAchievement(); };
+
+$('btn-confirm-restart').onclick = () => { closeModal('modal-restart'); newLevel(); Audio.tap(); };
+$('btn-cancel-restart').onclick  = () => { closeModal('modal-restart'); Audio.tap(); };
+$('btn-menu-restart').onclick    = () => { closeModal('modal-restart'); stopTimer(); buildDiffMenu(); showScreen('menu'); Audio.tap(); };
+
+$('btn-add-stuck').onclick     = () => {
+  closeModal('modal-stuck');
+  if (state.stacks.length < 14) { state.history.push(state.stacks.map(s=>[...s])); state.stacks.push([]); Audio.add(); render(); }
+};
+$('btn-restart-stuck').onclick = () => { closeModal('modal-stuck'); newLevel(); Audio.tap(); };
+$('btn-menu-stuck').onclick    = () => { closeModal('modal-stuck'); stopTimer(); buildDiffMenu(); showScreen('menu'); Audio.tap(); };
+
+/* menú dificultades - dinámico con récords */
+const DIFF_LABELS = { facil:'Fácil', medio:'Medio', dificil:'Difícil', extraDificil:'Extra Difícil' };
+const DIFF_TAGS   = { facil:'5 BARRAS', medio:'7 BARRAS', dificil:'10 BARRAS', extraDificil:'13 BARRAS' };
+function buildDiffMenu() {
+  const list = $('diff-list');
+  list.innerHTML = '';
+  Object.keys(DIFFICULTIES).forEach(k => {
+    let rec = null;
+    try { rec = JSON.parse(localStorage.getItem(`sk-tl-rec-${k}`) || 'null'); } catch(e) {}
+    const btn = document.createElement('button');
+    btn.className = 'diff-btn'; btn.dataset.d = k;
+    btn.innerHTML = `
+      <div>
+        <div>${DIFF_LABELS[k]}</div>
+        ${rec ? `<div class="record-line">🏆 ${fmtTime(rec.time)} · ${rec.moves} mov</div>` : ''}
+      </div>
+      <span class="tag">${DIFF_TAGS[k]}</span>`;
+    btn.onclick = () => {
+      Audio.init();
+      Audio.tap();
+      state.difficulty = k;
+      state.level = 1;
+      newLevel();
+      showScreen('game');
+    };
+    list.appendChild(btn);
+  });
+}
+buildDiffMenu();
+
+/* cambiar pantalla */
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(name).classList.add('active');
+  if (name === 'game') setTimeout(render, 0);
+}
+
+window.addEventListener('resize', () => {
+  if ($('game').classList.contains('active')) render();
+});
+
+/* ---------- 9. CARGAR ADS INICIALES ---------- */
+window.addEventListener('load', () => {
+  loadAd($('ad-bottom-menu'), ADS.banner50);
+});
+
+/* ---------- SERVICE WORKER ---------- */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>

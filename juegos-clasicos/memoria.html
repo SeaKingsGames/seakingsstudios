@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1e3a5f">
+<title>Memoria · SeaKingsGames</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+  :root{
+    --bg:#1e3a5f; --bg-2:#0f2340;
+    --panel:#2e4a70; --panel-2:#3e5a80;
+    --gold:#ffc83a; --gold-deep:#b88300;
+    --green:#5fc99a; --red:#e85a6b; --purple:#a070e0;
+    --text:#fff; --text-dim:#9fb0c4;
+    --line:rgba(159,176,196,.2);
+    --shadow:0 4px 0 rgba(0,0,0,.25), 0 8px 20px rgba(0,0,0,.3);
+    --card-back:linear-gradient(135deg,#a070e0 0%,#5e3ca8 100%);
+    --card-front:#fff;
+  }
+  html,body{height:100%}
+  body{
+    font-family:'Fredoka',system-ui,sans-serif;
+    background:radial-gradient(ellipse at top,#2e4a70 0%,var(--bg) 40%,var(--bg-2) 100%);
+    background-attachment:fixed;
+    color:var(--text); display:flex;flex-direction:column;min-height:100vh;
+    overscroll-behavior:none;touch-action:manipulation;
+  }
+  button{font-family:inherit;border:none;cursor:pointer;color:inherit;background:none}
+
+  .screen{display:none;flex-direction:column;min-height:100vh;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+  .screen.active{display:flex}
+
+  /* ---------- MENÚ ---------- */
+  #menu{align-items:center;justify-content:center;gap:18px;padding:30px 24px 90px;flex:1}
+  .logo{
+    font-family:'Bagel Fat One',sans-serif;
+    font-size:clamp(38px,11vw,64px);line-height:.95;text-align:center;
+    color:var(--gold);
+    text-shadow:0 4px 0 #8a6f00, 0 8px 24px rgba(255,200,58,.35);
+    letter-spacing:.5px;
+  }
+  .logo small{display:block;font-family:'Fredoka',sans-serif;font-weight:600;font-size:.28em;color:var(--text-dim);letter-spacing:3px;margin-top:8px;text-shadow:none}
+  .brain-deco{font-size:54px;margin-bottom:-8px;display:inline-block;animation:bob 3s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+
+  .section-title{font-size:13px;letter-spacing:3px;color:var(--text-dim);font-weight:600;margin-top:6px}
+
+  /* Temas */
+  .theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(380px,92vw)}
+  .theme-btn{
+    padding:12px 8px;border-radius:14px;
+    background:var(--panel);color:#fff;
+    box-shadow:var(--shadow);
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    font-size:12px;font-weight:600;transition:transform .1s;
+    border:2px solid transparent;
+  }
+  .theme-btn:active{transform:translateY(2px)}
+  .theme-btn.selected{border-color:var(--gold);background:var(--panel-2)}
+  .theme-btn .ico{font-size:24px;line-height:1}
+
+  /* Dificultades */
+  .diff-list{display:flex;flex-direction:column;gap:10px;width:min(380px,92vw);margin-top:4px}
+  .diff-btn{
+    padding:14px 20px;border-radius:16px;background:var(--panel);
+    box-shadow:var(--shadow);
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:17px;font-weight:600;transition:transform .1s;
+  }
+  .diff-btn:active{transform:translateY(2px)}
+  .diff-btn .tag{font-size:12px;font-weight:600;padding:4px 10px;border-radius:8px;background:rgba(255,255,255,.12);color:var(--text-dim);letter-spacing:.5px}
+  .diff-btn[data-d="facil"] .tag{color:#9be37d;background:rgba(155,227,125,.15)}
+  .diff-btn[data-d="medio"] .tag{color:#7ec8ff;background:rgba(126,200,255,.15)}
+  .diff-btn[data-d="dificil"] .tag{color:#ffa84a;background:rgba(255,168,74,.15)}
+  .diff-btn[data-d="extraDificil"] .tag{color:#ff5e7a;background:rgba(255,94,122,.15)}
+
+  .record-line{font-size:12px;color:var(--text-dim);font-weight:500;margin-top:3px;font-variant-numeric:tabular-nums}
+
+  /* Banner ad menú */
+  .ad-banner-bottom{
+    position:fixed;left:0;right:0;bottom:env(safe-area-inset-bottom);
+    display:flex;justify-content:center;align-items:center;padding:8px 0;
+    background:rgba(15,35,64,.85);backdrop-filter:blur(8px);
+    z-index:20;min-height:50px;border-top:1px solid var(--line);
+  }
+  .ad-banner-bottom iframe{max-width:100%}
+
+  /* ---------- JUEGO ---------- */
+  #game{flex:1}
+  #game .topbar{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 4px;flex-shrink:0;gap:8px}
+  .icon-btn{
+    width:46px;height:46px;border-radius:50%;background:#fff;color:var(--bg-2);
+    display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);
+    font-size:22px;font-weight:700;transition:transform .1s;flex-shrink:0;
+  }
+  .icon-btn:active{transform:translateY(2px)}
+  .icon-btn.small{width:38px;height:38px;font-size:16px}
+  .level-title{text-align:center;flex:1;min-width:0}
+  .level-title .badge{
+    display:inline-block;font-size:10px;font-weight:600;letter-spacing:2px;
+    padding:3px 10px;border-radius:10px;background:rgba(255,255,255,.12);color:var(--text-dim);
+  }
+  .level-title h1{font-size:18px;font-weight:700;color:#fff}
+
+  .stats{display:flex;justify-content:center;gap:20px;padding:6px 16px 2px;font-size:13px;font-weight:600;color:var(--text-dim);font-variant-numeric:tabular-nums}
+  .stats .val{color:#fff;font-weight:700;font-size:17px}
+
+  /* ---------- TABLERO ---------- */
+  .board-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:12px;overflow:hidden;position:relative;min-height:0;perspective:1200px}
+  .board{
+    display:grid;gap:8px;
+    width:100%;
+  }
+  .card{
+    width:100%;
+    position:relative;
+    cursor:pointer;
+    border-radius:12px;
+    transition:transform .15s;
+    /* la altura se setea desde JS para ser cuadrada */
+  }
+  .card:active{transform:scale(.96)}
+
+  .card-inner{
+    width:100%;height:100%;
+    position:relative;
+    transform-style:preserve-3d;
+    transition:transform .5s cubic-bezier(.4,0,.2,1);
+  }
+  .card.flipped .card-inner,
+  .card.matched .card-inner{transform:rotateY(180deg)}
+
+  .card-face{
+    position:absolute;
+    top:0;left:0;width:100%;height:100%;
+    border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+    box-shadow:0 4px 0 rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.15);
+    overflow:hidden;
+  }
+
+  .card-back{
+    background:
+      linear-gradient(135deg,#a070e0 0%,#6845c0 50%,#4a2d8a 100%);
+    border:2px solid rgba(255,200,58,.5);
+    color:#fff;
+    z-index:1;
+  }
+  /* patrón rombos detrás */
+  .card-back-pattern{
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(45deg, rgba(255,200,58,.18) 25%, transparent 25%, transparent 75%, rgba(255,200,58,.18) 75%),
+      linear-gradient(45deg, rgba(255,200,58,.18) 25%, transparent 25%, transparent 75%, rgba(255,200,58,.18) 75%);
+    background-size: 18px 18px;
+    background-position: 0 0, 9px 9px;
+    pointer-events:none;
+  }
+  /* signo de interrogación grande, centrado */
+  .card-back-mark{
+    position:relative;z-index:2;
+    font-family:'Bagel Fat One',sans-serif;
+    color:#ffc83a;
+    font-size:55%;
+    text-shadow:
+      0 0 16px rgba(255,200,58,.6),
+      0 3px 0 #8a6f00,
+      0 5px 8px rgba(0,0,0,.4);
+    line-height:1;
+  }
+
+  .card-front{
+    background:linear-gradient(180deg,#ffffff 0%,#f0e8d8 100%);
+    color:#3a2400;
+    border:2px solid #ffc83a;
+    transform:rotateY(180deg);
+    font-size:200%;
+    box-shadow:0 4px 0 rgba(0,0,0,.35), inset 0 -2px 6px rgba(184,131,0,.15);
+  }
+  .card.matched .card-front{
+    background:linear-gradient(135deg,#5fc99a 0%,#3a9a70 100%);
+    box-shadow:0 4px 0 #2a7050, inset 0 1px 0 rgba(255,255,255,.2);
+    animation:matchPulse .5s ease-out;
+  }
+  @keyframes matchPulse{
+    0%{transform:rotateY(180deg) scale(1)}
+    50%{transform:rotateY(180deg) scale(1.1)}
+    100%{transform:rotateY(180deg) scale(1)}
+  }
+  .card.wrong .card-front{
+    background:linear-gradient(135deg,#e85a6b 0%,#a83040 100%);
+    color:#fff;
+    animation:wrongShake .4s;
+  }
+  @keyframes wrongShake{
+    0%,100%{transform:rotateY(180deg) translateX(0)}
+    25%{transform:rotateY(180deg) translateX(-4px)}
+    75%{transform:rotateY(180deg) translateX(4px)}
+  }
+
+  /* ---------- MODALES ---------- */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
+    z-index:100;display:none;align-items:center;justify-content:center;padding:20px;
+    animation:fadeIn .2s;
+  }
+  .modal-overlay.active{display:flex}
+  .modal{
+    background:linear-gradient(180deg,var(--panel) 0%,var(--bg-2) 100%);
+    border:1px solid var(--line);
+    border-radius:24px;padding:24px 20px;width:min(380px,100%);max-height:90vh;overflow-y:auto;
+    text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5);
+    animation:popIn .3s cubic-bezier(.34,1.56,.64,1);
+  }
+  .modal .emoji{font-size:60px;margin-bottom:4px;display:inline-block}
+  .modal h2{font-family:'Bagel Fat One',sans-serif;color:var(--gold);font-size:28px;line-height:1;margin-bottom:6px}
+  .modal p{color:var(--text-dim);font-size:15px;margin-bottom:14px}
+
+  .achievement-card{
+    background:linear-gradient(135deg,var(--gold) 0%,#e0a020 100%);
+    border-radius:18px;padding:18px;margin:12px 0;color:#3a2400;
+    box-shadow:0 8px 0 var(--gold-deep), inset 0 -2px 0 rgba(255,255,255,.3);
+  }
+  .ach-title{font-size:11px;letter-spacing:3px;font-weight:700;opacity:.7;margin-bottom:8px}
+  .ach-stats{display:flex;justify-content:space-around;gap:8px}
+  .ach-stat{flex:1}
+  .ach-num{font-family:'Bagel Fat One',sans-serif;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+  .ach-lbl{font-size:10px;font-weight:600;opacity:.7;letter-spacing:1px;margin-top:4px}
+  .new-record{display:inline-block;background:#e91e63;color:#fff;padding:4px 12px;border-radius:8px;font-size:11px;font-weight:700;letter-spacing:1.5px;margin-bottom:6px;animation:wobble .6s ease-in-out infinite}
+  @keyframes wobble{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+
+  .ad-label{font-size:10px;color:var(--text-dim);opacity:.6;letter-spacing:2px;margin:8px 0 4px}
+  .ad-slot{display:flex;justify-content:center;align-items:center;min-height:250px;background:rgba(0,0,0,.2);border-radius:12px;overflow:hidden}
+  .ad-slot iframe{max-width:100%;border:0}
+
+  .modal-btns{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+  .btn-row{display:flex;gap:8px}
+  .btn-row .btn-secondary{flex:1}
+  .btn-primary{padding:14px 22px;border-radius:14px;background:linear-gradient(180deg,var(--gold) 0%,#e0a020 100%);color:#3a2400;font-weight:700;font-size:17px;box-shadow:0 4px 0 var(--gold-deep)}
+  .btn-secondary{padding:13px 18px;border-radius:14px;background:rgba(255,255,255,.1);color:#fff;font-weight:600;font-size:15px;box-shadow:0 4px 0 rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;gap:6px}
+  .btn-ghost{padding:10px;color:var(--text-dim);font-size:14px;font-weight:500}
+
+  /* PWA install prompt */
+  .install-prompt{
+    position:fixed;bottom:80px;left:16px;right:16px;
+    background:linear-gradient(180deg,var(--panel) 0%,var(--bg-2) 100%);
+    border:1px solid var(--gold);
+    border-radius:16px;padding:14px 16px;
+    box-shadow:0 8px 20px rgba(0,0,0,.4);
+    display:none;align-items:center;gap:12px;
+    z-index:30;animation:slideUp .4s cubic-bezier(.34,1.56,.64,1);
+  }
+  .install-prompt.show{display:flex}
+  .install-prompt .ico{font-size:28px}
+  .install-prompt .txt{flex:1;font-size:13px;color:var(--text-dim);line-height:1.3}
+  .install-prompt .txt b{color:#fff;font-size:14px}
+  .install-prompt button{padding:8px 14px;border-radius:10px;background:var(--gold);color:#3a2400;font-weight:700;font-size:13px;flex-shrink:0}
+  .install-prompt .close{background:transparent;color:var(--text-dim);padding:4px 8px;font-size:18px}
+  @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes popIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+  .bounce{animation:bounce 1.2s infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+  /* confeti victoria */
+  .confetti{position:fixed;width:8px;height:14px;top:-20px;pointer-events:none;z-index:99}
+</style>
+</head>
+<body>
+
+<!-- ====================== MENÚ ====================== -->
+<section id="menu" class="screen active">
+  <div class="brain-deco">🧠</div>
+  <div class="logo">MEMORIA<small>SeaKingsGames</small></div>
+
+  <div class="section-title">TEMA</div>
+  <div class="theme-grid" id="theme-grid"></div>
+
+  <div class="section-title">DIFICULTAD</div>
+  <div class="diff-list" id="diff-list"></div>
+
+  <a href="index.html" style="color:var(--text-dim);font-size:14px;text-decoration:none;margin-top:8px">← Volver al inicio</a>
+  <div class="ad-banner-bottom" id="ad-bottom-menu"></div>
+</section>
+
+<!-- ====================== JUEGO ====================== -->
+<section id="game" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" id="btn-back">‹</button>
+    <div class="level-title">
+      <div class="badge" id="diff-badge">FÁCIL · ANIMALES</div>
+      <h1>Partida <span id="level-num">1</span></h1>
+    </div>
+    <button class="icon-btn small" id="btn-sound">🔊</button>
+    <button class="icon-btn" id="btn-restart">↻</button>
+  </div>
+  <div class="stats">
+    <span>⏱️ <span class="val" id="stat-time">0:00</span></span>
+    <span>🎯 <span class="val" id="stat-moves">0</span> mov</span>
+    <span>✨ <span class="val" id="stat-matches">0/0</span></span>
+  </div>
+
+  <div class="board-wrap"><div class="board" id="board"></div></div>
+</section>
+
+<!-- ====================== MODAL: VICTORIA ====================== -->
+<div class="modal-overlay" id="modal-win">
+  <div class="modal">
+    <div class="emoji bounce">🏆</div>
+    <div id="new-record-tag" style="display:none"><span class="new-record">¡NUEVO RÉCORD!</span></div>
+    <h2>¡Todas encontradas!</h2>
+    <p>Partida <span id="win-level"></span> completada</p>
+    <div class="achievement-card">
+      <div class="ach-title">TU LOGRO</div>
+      <div class="ach-stats">
+        <div class="ach-stat"><div class="ach-num" id="win-time">0:00</div><div class="ach-lbl">TIEMPO</div></div>
+        <div class="ach-stat"><div class="ach-num" id="win-moves">0</div><div class="ach-lbl">MOVIMIENTOS</div></div>
+        <div class="ach-stat"><div class="ach-num" id="win-score">0</div><div class="ach-lbl">PUNTOS</div></div>
+      </div>
+    </div>
+    <div class="ad-label">PUBLICIDAD</div>
+    <div class="ad-slot" id="ad-win"></div>
+    <div class="modal-btns">
+      <button class="btn-primary" id="btn-next">Otra partida →</button>
+      <div class="btn-row">
+        <button class="btn-secondary" id="btn-share">📤 Compartir</button>
+        <button class="btn-secondary" id="btn-save">💾 Guardar</button>
+      </div>
+      <button class="btn-ghost" id="btn-menu-win">Cambiar dificultad</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== MODAL: REINICIAR ====================== -->
+<div class="modal-overlay" id="modal-restart">
+  <div class="modal">
+    <div class="emoji">🔄</div>
+    <h2>¿Reiniciar partida?</h2>
+    <p>Perderás tu tiempo y movimientos</p>
+    <div class="ad-label">PUBLICIDAD</div>
+    <div class="ad-slot" id="ad-restart"></div>
+    <div class="modal-btns">
+      <button class="btn-primary" id="btn-confirm-restart">Sí, reiniciar</button>
+      <button class="btn-secondary" id="btn-cancel-restart">Cancelar</button>
+      <button class="btn-ghost" id="btn-menu-restart">Volver al menú</button>
+    </div>
+  </div>
+</div>
+
+<!-- PWA install -->
+<div class="install-prompt" id="install-prompt">
+  <div class="ico">📲</div>
+  <div class="txt"><b>Instala Memoria</b><br>Juega sin internet</div>
+  <button id="btn-install">Instalar</button>
+  <button class="close" id="btn-install-close">✕</button>
+</div>
+
+<script>
+/* =====================================================
+   MEMORIA · SeaKingsGames
+   ===================================================== */
+
+/* ---------- AUDIO ---------- */
+const SFX = {
+  ctx:null, enabled: localStorage.getItem('sk-sound') !== '0',
+  init(){ if(this.ctx) return; try{ this.ctx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} },
+  tone(f,d=.1,t='sine',v=.15,attack=.005){
+    if(!this.enabled||!this.ctx) return;
+    const now=this.ctx.currentTime, o=this.ctx.createOscillator(), g=this.ctx.createGain();
+    o.type=t; o.frequency.value=f;
+    g.gain.setValueAtTime(0,now);
+    g.gain.linearRampToValueAtTime(v,now+attack);
+    g.gain.exponentialRampToValueAtTime(.0001,now+d);
+    o.connect(g).connect(this.ctx.destination);
+    o.start(now); o.stop(now+d+.02);
+  },
+  flip()   { this.tone(500,.04,'triangle',.10); },
+  match()  { [659,880,1175].forEach((f,i)=>setTimeout(()=>this.tone(f,.1,'sine',.14),i*60)); },
+  wrong()  { this.tone(220,.12,'sawtooth',.10); setTimeout(()=>this.tone(180,.1,'sawtooth',.10),100); },
+  tap()    { this.tone(800,.03,'triangle',.08); },
+  victory(){ [523,659,784,1047,1319].forEach((f,i)=>setTimeout(()=>this.tone(f,i===4?.35:.12,'sine',.16),i*90)); },
+  newRec() { [659,784,1047,1319].forEach((f,i)=>setTimeout(()=>this.tone(f,.14,'triangle',.15),i*70)); },
+};
+
+/* ---------- ADS ---------- */
+const ADS = {
+  banner50:  { key:'787e84f3bdee3100779130afe4802abc', width:320, height:50 },
+  medium250: { key:'c2f164720365b5dc18fae25f1c594072', width:300, height:250 },
+};
+function loadAd(el, cfg){
+  if(!el || el.dataset.loaded === '1') return;
+  el.dataset.loaded = '1';
+  const html =
+`<!DOCTYPE html><html><head><style>html,body{margin:0;padding:0;background:transparent;overflow:hidden}</style></head><body>
+<script type="text/javascript">var atOptions=${JSON.stringify({key:cfg.key,format:'iframe',height:cfg.height,width:cfg.width,params:{}})};<\/script>
+<script type="text/javascript" src="https://www.highperformanceformat.com/${cfg.key}/invoke.js"><\/script>
+</body></html>`;
+  const ifr = document.createElement('iframe');
+  ifr.srcdoc = html; ifr.width = cfg.width; ifr.height = cfg.height;
+  ifr.scrolling = 'no'; ifr.setAttribute('frameborder','0'); ifr.setAttribute('sandbox','allow-scripts allow-same-origin allow-popups-to-escape-sandbox');
+  ifr.style.cssText = 'border:0;display:block;background:transparent;max-width:100%';
+  el.appendChild(ifr);
+}
+
+/* ---------- TEMAS (emojis pareables) ---------- */
+const THEMES = {
+  animales: {
+    ico:'🐾', label:'Animales',
+    items:['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐔','🐧','🦆','🦉','🦅','🐺','🐗','🐴','🦄','🐝','🦋','🐌','🐞','🐢','🐍','🦎','🦖','🐙','🦀','🐠','🐟','🐡','🦈','🐳','🐬']
+  },
+  frutas: {
+    ico:'🍓', label:'Frutas',
+    items:['🍎','🍏','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🫒','🌶️','🥕','🌽']
+  },
+  comida: {
+    ico:'🌮', label:'Comida',
+    items:['🌮','🌯','🫔','🥙','🍔','🍕','🌭','🥪','🍟','🥨','🍳','🥞','🧇','🥯','🍖','🍗','🥩','🍣','🍱','🍜','🍝','🍲','🍛','🍤','🥟','🍙','🍚','🍰','🧁','🍪','🍩','🎂','🍫','🍿','🍦','🍨','🍮']
+  },
+  caras: {
+    ico:'😀', label:'Caras',
+    items:['😀','😂','🤣','😍','😎','🤩','🥳','😜','🤪','😇','🤔','🤨','😴','🤤','😱','🥶','🥵','🤯','🤓','😈','👻','🤖','👽','🎃','💀','👹','👺','🤡','💩','🙈','🙉','🙊','🦸','🧙','🧛','🧟','🧚']
+  },
+  emojis: {
+    ico:'🎨', label:'Símbolos',
+    items:['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💖','💕','💞','💓','💗','💘','💝','💟','☮️','✝️','☪️','🕉️','☸️','✡️','🔯','🕎','☯️','☦️','🛐','⛎','♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓']
+  },
+  deportes: {
+    ico:'⚽', label:'Deportes',
+    items:['⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🎱','🪀','🏓','🏸','🏒','🏑','🥍','🏏','🪃','🥅','⛳','🪁','🏹','🎣','🤿','🥊','🥋','🎽','🛹','🛼','🛷','⛸️','🥌','🎿','⛷️','🏂','🪂','🏋️','🤸','🤺','⛹️','🤾']
+  },
+  vehiculos: {
+    ico:'🚗', label:'Vehículos',
+    items:['🚗','🚕','🚙','🚌','🚎','🏎️','🚓','🚑','🚒','🚐','🛻','🚚','🚛','🚜','🏍️','🛵','🛺','🚲','🛴','🚝','🚄','🚅','🚇','🚊','🚉','🛫','✈️','🛩️','🚀','🛸','🚁','🛶','⛵','🚤','🛥️','🛳️','⚓','🚢']
+  },
+  flores: {
+    ico:'🌸', label:'Flores',
+    items:['🌸','💮','🏵️','🌹','🥀','🌺','🌻','🌼','🌷','🌱','🌲','🌳','🌴','🌵','🌾','🌿','☘️','🍀','🍁','🍂','🍃','🪴','🌍','🌎','🌏','🌚','🌝','🌞','⭐','🌟','✨','⚡','☄️','🔥','🌈','☀️','🌤️','⛅','☁️','🌧️']
+  },
+  musica: {
+    ico:'🎵', label:'Música',
+    items:['🎵','🎶','🎼','🎤','🎧','🎷','🎺','🎸','🪕','🎻','🪗','🥁','🪘','🎹','🪈','📯','🪇','🔔','🔊','📻','💿','📀','🎬','🎞️','📺','📷','📸','🎮','🕹️','🎯','🎲','🧩','♟️','🎰','🎳','🎨','🪅','🎭']
+  },
+};
+
+const DIFFICULTIES = {
+  facil:        { cols:3, rows:4, label:'FÁCIL'         },  // 6 pares
+  medio:        { cols:4, rows:4, label:'MEDIO'         },  // 8 pares
+  dificil:      { cols:4, rows:5, label:'DIFÍCIL'       },  // 10 pares
+  extraDificil: { cols:5, rows:6, label:'EXTRA DIFÍCIL' },  // 15 pares
+};
+
+/* ---------- ESTADO ---------- */
+const state = {
+  theme:'animales',
+  difficulty:'facil',
+  level:1,
+  cards:[],            // [{id, emoji, flipped, matched}]
+  pairsTotal:0, pairsFound:0,
+  selected:[],         // índices con flipped pero no matched aún
+  moves:0,
+  startTime:0, elapsed:0, ticking:false, timerId:null,
+  finished:false,
+  busy:false,          // bloquea inputs durante animaciones
+};
+const $ = id => document.getElementById(id);
+
+/* ---------- UTILIDADES ---------- */
+function fmtTime(s){ const m=Math.floor(s/60), sec=Math.floor(s%60); return `${m}:${sec.toString().padStart(2,'0')}`; }
+function shuffle(arr){
+  for (let i=arr.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+function startTimer(){
+  if(state.timerId) clearInterval(state.timerId);
+  state.timerId = setInterval(() => {
+    if(!state.ticking) return;
+    state.elapsed = (Date.now() - state.startTime)/1000;
+    $('stat-time').textContent = fmtTime(state.elapsed);
+  }, 250);
+}
+function stopTimer(){ if(state.timerId){clearInterval(state.timerId);state.timerId=null;} state.ticking=false; }
+
+/* ---------- CALCULAR PUNTUACIÓN ---------- */
+function calcScore(){
+  // base: pares*100, penaliza movimientos extra y tiempo
+  const cfg = DIFFICULTIES[state.difficulty];
+  const optimum = state.pairsTotal; // mínimo teórico de movimientos
+  const extraMoves = Math.max(0, state.moves - optimum);
+  const movePenalty = extraMoves * 10;
+  const timePenalty = Math.floor(state.elapsed) * 2;
+  const diffBonus = {facil:1, medio:1.5, dificil:2, extraDificil:3}[state.difficulty];
+  const base = state.pairsTotal * 100 * diffBonus;
+  return Math.max(0, Math.floor(base - movePenalty - timePenalty));
+}
+
+/* ---------- NUEVA PARTIDA ---------- */
+function newGame(){
+  const cfg = DIFFICULTIES[state.difficulty];
+  const pairs = (cfg.cols * cfg.rows) / 2;
+  const pool = THEMES[state.theme].items.slice();
+  shuffle(pool);
+  const chosen = pool.slice(0, pairs);
+  // duplicar y mezclar
+  const deck = shuffle([...chosen, ...chosen]);
+  state.cards = deck.map((emoji, i) => ({ id:i, emoji, flipped:false, matched:false }));
+  state.pairsTotal = pairs;
+  state.pairsFound = 0;
+  state.selected = [];
+  state.moves = 0;
+  state.elapsed = 0;
+  state.startTime = 0;
+  state.ticking = false;
+  state.finished = false;
+  state.busy = false;
+  stopTimer();
+
+  $('level-num').textContent = state.level;
+  $('diff-badge').textContent = `${cfg.label} · ${THEMES[state.theme].label.toUpperCase()}`;
+  $('stat-time').textContent = '0:00';
+  $('stat-moves').textContent = '0';
+  $('stat-matches').textContent = `0/${pairs}`;
+
+  renderBoard();
+}
+
+/* ---------- RENDER ---------- */
+function renderBoard(){
+  const cfg = DIFFICULTIES[state.difficulty];
+  const board = $('board');
+  board.style.gridTemplateColumns = `repeat(${cfg.cols},1fr)`;
+  const gap = cfg.cols >= 5 ? 5 : (cfg.cols >= 4 ? 6 : 8);
+  board.style.gap = gap + 'px';
+
+  // calcular tamaño según pantalla disponible
+  const wrap = board.parentElement;
+  const availW = wrap.clientWidth - 24;
+  const availH = wrap.clientHeight - 24;
+  const cardByW = Math.floor((availW - gap*(cfg.cols-1)) / cfg.cols);
+  const cardByH = Math.floor((availH - gap*(cfg.rows-1)) / cfg.rows);
+  const cardSize = Math.max(56, Math.min(cardByW, cardByH, 120));
+  const totalW = cardSize * cfg.cols + gap * (cfg.cols-1);
+  board.style.maxWidth = totalW + 'px';
+  board.style.width = totalW + 'px';
+
+  board.innerHTML = '';
+  state.cards.forEach((c, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    // tamaño cuadrado explícito (más fiable que aspect-ratio)
+    card.style.height = cardSize + 'px';
+    if (c.flipped) card.classList.add('flipped');
+    if (c.matched) card.classList.add('matched');
+    card.dataset.i = i;
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-face card-back">
+          <div class="card-back-pattern"></div>
+          <div class="card-back-mark">?</div>
+        </div>
+        <div class="card-face card-front">${c.emoji}</div>
+      </div>`;
+    card.addEventListener('click', () => onCardClick(i));
+    board.appendChild(card);
+  });
+}
+
+/* ---------- LÓGICA DE JUEGO ---------- */
+function onCardClick(i){
+  if (state.busy || state.finished) return;
+  const c = state.cards[i];
+  if (c.flipped || c.matched) return;
+  SFX.init();
+  if (!state.ticking) {
+    state.ticking = true;
+    state.startTime = Date.now();
+    startTimer();
+  }
+  c.flipped = true;
+  state.selected.push(i);
+  SFX.flip();
+  // actualizar UI de esta carta
+  const el = $('board').children[i];
+  el.classList.add('flipped');
+
+  if (state.selected.length === 2) {
+    state.moves++;
+    $('stat-moves').textContent = state.moves;
+    state.busy = true;
+    const [a,b] = state.selected;
+    const cardA = state.cards[a], cardB = state.cards[b];
+    if (cardA.emoji === cardB.emoji) {
+      // match
+      setTimeout(() => {
+        cardA.matched = true; cardB.matched = true;
+        $('board').children[a].classList.add('matched');
+        $('board').children[b].classList.add('matched');
+        state.pairsFound++;
+        $('stat-matches').textContent = `${state.pairsFound}/${state.pairsTotal}`;
+        SFX.match();
+        state.selected = [];
+        state.busy = false;
+        if (state.pairsFound >= state.pairsTotal) {
+          setTimeout(onWin, 700);
+        }
+      }, 350);
+    } else {
+      // no match
+      setTimeout(() => {
+        $('board').children[a].classList.add('wrong');
+        $('board').children[b].classList.add('wrong');
+        SFX.wrong();
+      }, 350);
+      setTimeout(() => {
+        cardA.flipped = false; cardB.flipped = false;
+        $('board').children[a].classList.remove('flipped','wrong');
+        $('board').children[b].classList.remove('flipped','wrong');
+        state.selected = [];
+        state.busy = false;
+      }, 1100);
+    }
+  }
+}
+
+/* ---------- VICTORIA ---------- */
+function onWin(){
+  state.finished = true;
+  stopTimer();
+  SFX.victory();
+  spawnConfetti();
+  const score = calcScore();
+  const recKey = `sk-mm-rec-${state.difficulty}-${state.theme}`;
+  let rec = null;
+  try{ rec = JSON.parse(localStorage.getItem(recKey) || 'null'); }catch(e){}
+  // récord por puntuación más alta
+  const isNewRec = !rec || score > rec.score;
+  if (isNewRec) {
+    try{ localStorage.setItem(recKey, JSON.stringify({score, time:state.elapsed, moves:state.moves, date:Date.now()})); }catch(e){}
+    setTimeout(()=>SFX.newRec(), 700);
+  }
+  $('win-level').textContent = state.level;
+  $('win-time').textContent = fmtTime(state.elapsed);
+  $('win-moves').textContent = state.moves;
+  $('win-score').textContent = score;
+  $('new-record-tag').style.display = isNewRec ? 'block' : 'none';
+  setTimeout(() => openModal('modal-win','ad-win',ADS.medium250), 600);
+}
+
+/* ---------- CONFETI ---------- */
+function spawnConfetti(){
+  const colors = ['#ffc83a','#5fc99a','#e85a6b','#a070e0','#5fa8e8','#fff'];
+  for (let i=0; i<40; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.background = colors[i % colors.length];
+    c.style.left = Math.random()*100 + 'vw';
+    c.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(c);
+    const dur = 2000 + Math.random()*1500;
+    const drift = (Math.random()-.5) * 100;
+    c.animate([
+      { transform:`translate(0,0) rotate(0deg)`, opacity:1 },
+      { transform:`translate(${drift}px, 110vh) rotate(${720+Math.random()*720}deg)`, opacity:0 },
+    ], { duration:dur, easing:'cubic-bezier(.4,0,.6,1)' });
+    setTimeout(()=>c.remove(), dur);
+  }
+}
+
+/* ---------- COMPARTIR / GUARDAR ---------- */
+function genAchievementCanvas(){
+  const c = document.createElement('canvas');
+  c.width = 1080; c.height = 1080;
+  const x = c.getContext('2d');
+  const g = x.createLinearGradient(0,0,0,1080);
+  g.addColorStop(0,'#2e4a70'); g.addColorStop(1,'#0f2340');
+  x.fillStyle = g; x.fillRect(0,0,1080,1080);
+  x.strokeStyle = '#ffc83a'; x.lineWidth = 18; x.strokeRect(40,40,1000,1000);
+  x.font = '180px sans-serif'; x.textAlign = 'center';
+  x.fillText('🧠', 540, 240);
+  x.fillStyle = '#ffc83a'; x.font = 'bold 56px sans-serif';
+  x.fillText('¡MEMORIA AL 100%!', 540, 330);
+  x.fillStyle = '#fff'; x.font = 'bold 90px sans-serif';
+  x.fillText('Memoria', 540, 440);
+  x.fillStyle = '#9fb0c4'; x.font = 'bold 38px sans-serif';
+  x.fillText(`${DIFFICULTIES[state.difficulty].label} · ${THEMES[state.theme].label}`, 540, 510);
+  const score = calcScore();
+  x.fillStyle = '#ffc83a';
+  roundRect(x, 90, 600, 900, 280, 30); x.fill();
+  x.fillStyle = '#3a2400'; x.font = 'bold 90px sans-serif';
+  x.fillText(fmtTime(state.elapsed), 260, 760);
+  x.fillText(state.moves, 540, 760);
+  x.fillText(score, 820, 760);
+  x.fillStyle = 'rgba(58,36,0,.7)'; x.font = 'bold 26px sans-serif';
+  x.fillText('TIEMPO', 260, 815);
+  x.fillText('MOVIMIENTOS', 540, 815);
+  x.fillText('PUNTOS', 820, 815);
+  x.fillStyle = '#ffc83a'; x.font = 'bold 48px sans-serif';
+  x.fillText('SeaKingsGames', 540, 990);
+  return c;
+}
+function roundRect(c, x, y, w, h, r){
+  c.beginPath();
+  c.moveTo(x+r,y); c.lineTo(x+w-r,y); c.arcTo(x+w,y,x+w,y+r,r);
+  c.lineTo(x+w,y+h-r); c.arcTo(x+w,y+h,x+w-r,y+h,r);
+  c.lineTo(x+r,y+h); c.arcTo(x,y+h,x,y+h-r,r);
+  c.lineTo(x,y+r); c.arcTo(x,y,x+r,y,r);
+  c.closePath();
+}
+async function shareAchievement(){
+  const c = genAchievementCanvas();
+  const score = calcScore();
+  const text = `🧠 Memoria · ${DIFFICULTIES[state.difficulty].label}\n⏱️ ${fmtTime(state.elapsed)} · 🎯 ${state.moves} mov · ✨ ${score} pts\nJuega: SeaKingsGames`;
+  c.toBlob(async (blob) => {
+    const file = new File([blob], 'logro.png', {type:'image/png'});
+    try{
+      if(navigator.canShare && navigator.canShare({files:[file]})) await navigator.share({files:[file], text});
+      else if(navigator.share) await navigator.share({text});
+      else {
+        downloadCanvas(c);
+        if(navigator.clipboard) await navigator.clipboard.writeText(text);
+        alert('Imagen descargada y texto copiado');
+      }
+    }catch(e){}
+  }, 'image/png');
+}
+function saveAchievement(){ downloadCanvas(genAchievementCanvas()); }
+function downloadCanvas(c){
+  c.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `logro-memoria-${Date.now()}.png`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  }, 'image/png');
+}
+
+/* ---------- MODALES ---------- */
+function openModal(id, adId, adCfg){ $(id).classList.add('active'); if(adId) loadAd($(adId), adCfg); }
+function closeModal(id){ $(id).classList.remove('active'); }
+
+/* ---------- MENÚ ---------- */
+function buildThemeGrid(){
+  const grid = $('theme-grid');
+  grid.innerHTML = '';
+  Object.entries(THEMES).forEach(([k,t]) => {
+    const btn = document.createElement('button');
+    btn.className = 'theme-btn' + (k === state.theme ? ' selected' : '');
+    btn.dataset.theme = k;
+    btn.innerHTML = `<span class="ico">${t.ico}</span><span>${t.label}</span>`;
+    btn.onclick = () => {
+      SFX.init(); SFX.tap();
+      state.theme = k;
+      grid.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('selected', b.dataset.theme === k));
+      try{ localStorage.setItem('sk-mm-theme', k); }catch(e){}
+      buildDiffMenu(); // récords cambian según tema
+    };
+    grid.appendChild(btn);
+  });
+}
+function buildDiffMenu(){
+  const list = $('diff-list');
+  list.innerHTML = '';
+  Object.entries(DIFFICULTIES).forEach(([k,cfg]) => {
+    let rec=null;
+    try{ rec = JSON.parse(localStorage.getItem(`sk-mm-rec-${k}-${state.theme}`) || 'null'); }catch(e){}
+    const btn = document.createElement('button');
+    btn.className = 'diff-btn'; btn.dataset.d = k;
+    const label = cfg.label.charAt(0)+cfg.label.slice(1).toLowerCase().replace('difícil','Difícil').replace('extra ','Extra ');
+    const pairs = (cfg.cols*cfg.rows)/2;
+    const recLine = rec ? `<div class="record-line">🏆 ${rec.score} pts · ${fmtTime(rec.time)}</div>` : '';
+    btn.innerHTML = `<div><div>${label}</div>${recLine}</div><span class="tag">${pairs} pares</span>`;
+    btn.onclick = () => {
+      SFX.init(); SFX.tap();
+      state.difficulty = k; state.level = 1;
+      newGame();
+      showScreen('game');
+    };
+    list.appendChild(btn);
+  });
+}
+
+/* ---------- BOTONES ---------- */
+$('btn-back').onclick = () => { SFX.tap(); stopTimer(); buildDiffMenu(); showScreen('menu'); };
+$('btn-restart').onclick = () => { SFX.tap(); openModal('modal-restart','ad-restart',ADS.medium250); };
+$('btn-sound').onclick = () => {
+  SFX.init();
+  SFX.enabled = !SFX.enabled;
+  localStorage.setItem('sk-sound', SFX.enabled ? '1' : '0');
+  $('btn-sound').textContent = SFX.enabled ? '🔊' : '🔇';
+  if(SFX.enabled) SFX.tap();
+};
+$('btn-sound').textContent = SFX.enabled ? '🔊' : '🔇';
+
+$('btn-next').onclick = () => { closeModal('modal-win'); state.level++; newGame(); SFX.tap(); };
+$('btn-share').onclick = () => { SFX.tap(); shareAchievement(); };
+$('btn-save').onclick = () => { SFX.tap(); saveAchievement(); };
+$('btn-menu-win').onclick = () => { closeModal('modal-win'); buildDiffMenu(); showScreen('menu'); SFX.tap(); };
+
+$('btn-confirm-restart').onclick = () => { closeModal('modal-restart'); newGame(); SFX.tap(); };
+$('btn-cancel-restart').onclick  = () => { closeModal('modal-restart'); SFX.tap(); };
+$('btn-menu-restart').onclick    = () => { closeModal('modal-restart'); stopTimer(); buildDiffMenu(); showScreen('menu'); SFX.tap(); };
+
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $(name).classList.add('active');
+  if (name === 'game') {
+    // re-render después de que el layout se aplique
+    requestAnimationFrame(() => requestAnimationFrame(renderBoard));
+  }
+}
+
+// re-render al rotar/redimensionar
+window.addEventListener('resize', () => {
+  if ($('game').classList.contains('active') && state.cards.length) renderBoard();
+});
+
+/* ---------- PWA INSTALL ---------- */
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!localStorage.getItem('sk-install-dismissed')) {
+    $('install-prompt').classList.add('show');
+  }
+});
+$('btn-install').onclick = async () => {
+  if (!deferredPrompt) return;
+  $('install-prompt').classList.remove('show');
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+};
+$('btn-install-close').onclick = () => {
+  $('install-prompt').classList.remove('show');
+  try{ localStorage.setItem('sk-install-dismissed','1'); }catch(e){}
+};
+window.addEventListener('appinstalled', () => {
+  $('install-prompt').classList.remove('show');
+});
+
+/* ---------- SERVICE WORKER ---------- */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+
+/* ---------- INIT ---------- */
+try {
+  const t = localStorage.getItem('sk-mm-theme');
+  if (t && THEMES[t]) state.theme = t;
+} catch(e) {}
+
+buildThemeGrid();
+buildDiffMenu();
+window.addEventListener('load', () => { loadAd($('ad-bottom-menu'), ADS.banner50); });
+</script>
+</body>
+</html>
