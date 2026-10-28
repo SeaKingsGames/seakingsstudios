@@ -12,6 +12,9 @@ export default {
   correo: 'seakingsgames@gmail.com',
   lineaDeJuegos: 'SeaKingsGames',
 
+  // Google Search Console → Etiqueta HTML: pega aquí solo el código de content="…"
+  verificacionGoogle: '',
+
   // Texto de la portada
   portada: {
     ceja: 'Estudio independiente · Estado de México',

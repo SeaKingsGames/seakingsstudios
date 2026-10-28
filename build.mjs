@@ -234,7 +234,7 @@ function layout({ titulo, descripcion, ruta, imagen, cuerpo, jsonld = [], anunci
 <title>${esc(tituloCompleto)}</title>
 <meta name="description" content="${esc(descripcion)}">
 ${indexar ? `<link rel="canonical" href="${urlAbs(ruta)}">` : '<meta name="robots" content="noindex">'}
-<meta name="theme-color" content="#0a2129">
+${SITIO.verificacionGoogle ? `<meta name="google-site-verification" content="${esc(SITIO.verificacionGoogle)}">\n` : ''}<meta name="theme-color" content="#0a2129">
 <meta property="og:type" content="${tipoOg}">
 <meta property="og:site_name" content="${esc(SITIO.nombre)}">
 <meta property="og:locale" content="es_MX">
