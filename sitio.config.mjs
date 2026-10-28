@@ -13,7 +13,7 @@ export default {
   lineaDeJuegos: 'SeaKingsGames',
 
   // Google Search Console → Etiqueta HTML: pega aquí solo el código de content="…"
-  verificacionGoogle: '',
+  verificacionGoogle: 'dkazhYElwZubpvLf82z67UTvtWyqV4E77ui7lidiMJk',
 
   // Texto de la portada
   portada: {
