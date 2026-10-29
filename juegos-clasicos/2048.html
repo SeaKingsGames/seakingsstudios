@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#221a3a">
+<title>2048 · SeaKingsGames</title>
+<meta name="description" content="2048 gratis en español: une números iguales deslizando. Tableros de 3×3 a 6×6, deshacer y récords. Funciona sin internet.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="comun.css">
+<style>
+  :root{
+    --bg:#221a3a; --bg-2:#110c20; --panel:#3a2d5e; --panel-2:#4a3b74;
+    --accent:#ffb84d; --accent-deep:#c47a00; --accent-ink:#3a1f00;
+  }
+  #game{flex:1}
+  .scores{display:flex;justify-content:center;gap:10px;padding:8px 16px 4px}
+  .sbox{min-width:96px;padding:6px 14px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow);text-align:center;position:relative}
+  .sbox small{display:block;font-size:10px;letter-spacing:2px;color:var(--text-dim);font-weight:700}
+  .sbox b{font-size:22px;font-variant-numeric:tabular-nums}
+  .plus{position:absolute;left:50%;top:0;transform:translateX(-50%);color:var(--accent);font-weight:700;font-size:18px;pointer-events:none;animation:floatUp .8s ease-out forwards}
+  @keyframes floatUp{to{transform:translate(-50%,-40px);opacity:0}}
+  .board-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:10px}
+  .board{position:relative;width:var(--bw);height:var(--bw);border-radius:16px;background:#160f2a;padding:var(--gap);box-shadow:0 12px 30px rgba(0,0,0,.45),inset 0 0 0 2px rgba(255,255,255,.05);touch-action:none}
+  .bg-cell{position:absolute;width:var(--cell);height:var(--cell);border-radius:10px;background:rgba(255,255,255,.06)}
+  .tile{position:absolute;left:0;top:0;width:var(--cell);height:var(--cell);border-radius:10px;display:flex;align-items:center;justify-content:center;
+    font-family:'Bagel Fat One','Fredoka',system-ui,sans-serif;font-size:var(--fs);color:#2a1b3d;
+    transform:translate(var(--x),var(--y));transition:transform .11s ease-in-out;z-index:2}
+  .tile .in{width:100%;height:100%;border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
+  .tile.new .in{animation:appear .18s ease-out .08s backwards}
+  .tile.merged .in{animation:bump .2s ease-out}
+  .tile.gone{z-index:1}
+  @keyframes appear{from{transform:scale(0)}to{transform:scale(1)}}
+  @keyframes bump{50%{transform:scale(1.18)}}
+  .v2 .in{background:#f2eefb}.v4 .in{background:#e4dbff}.v8 .in{background:#ffc38a;color:#4a2300}.v16 .in{background:#ff9f6b;color:#fff}
+  .v32 .in{background:#ff7a6b;color:#fff}.v64 .in{background:#ff5470;color:#fff}.v128 .in{background:#ffd34d;color:#4a3000;box-shadow:0 0 18px rgba(255,211,77,.45)}
+  .v256 .in{background:#ffc233;color:#4a3000;box-shadow:0 0 22px rgba(255,194,51,.5)}.v512 .in{background:#ffaa00;color:#fff;box-shadow:0 0 26px rgba(255,170,0,.55)}
+  .v1024 .in{background:#3ddcb8;color:#fff;box-shadow:0 0 28px rgba(61,220,184,.55)}.v2048 .in{background:#38b6ff;color:#fff;box-shadow:0 0 34px rgba(56,182,255,.75)}
+  .vbig .in{background:#a77bff;color:#fff;box-shadow:0 0 34px rgba(167,123,255,.7)}
+  .hint{font-size:12px;color:var(--text-dim);text-align:center;padding:0 16px 10px}
+</style>
+</head>
+<body>
+
+<section id="menu" class="screen active">
+  <div class="logo-ico">🔢</div>
+  <div class="logo">2048<small>SeaKingsGames</small></div>
+  <div class="section-title">TABLERO</div>
+  <div class="diff-list" id="diff-list"></div>
+  <p class="how">Desliza para mover todas las fichas. Cuando dos iguales chocan se suman. ¡Llega a la ficha 2048! Tienes 3 deshacer por partida.</p>
+  <a class="back-link" href="index.html">← Volver al inicio</a>
+  <div class="ad-banner-bottom" id="ad-bottom"></div>
+</section>
+
+<section id="game" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" id="btn-back">‹</button>
+    <div class="level-title"><div class="badge" id="badge">CLÁSICO</div><h1 id="title">4 × 4</h1></div>
+    <button class="icon-btn small" id="btn-sound">🔊</button>
+    <button class="icon-btn" id="btn-restart">↻</button>
+  </div>
+  <div class="scores">
+    <div class="sbox" id="score-box"><small>PUNTOS</small><b id="score">0</b></div>
+    <div class="sbox"><small>MEJOR</small><b id="best">0</b></div>
+  </div>
+  <div class="board-wrap"><div class="board" id="board"></div></div>
+  <div class="tool-row"><button class="tool-btn" id="btn-undo">↶ Deshacer (3)</button></div>
+  <div class="hint">Desliza con el dedo o usa las flechas del teclado</div>
+</section>
+
+<script src="comun.js"></script>
+<script>
+/* =====================================================
+   2048 · SeaKingsGames
+   ===================================================== */
+const { $, sfx } = SK;
+const SIZES = {
+  4: { label:'CLÁSICO',  name:'4 × 4', cls:'d1', note:'El original' },
+  5: { label:'FÁCIL',    name:'5 × 5', cls:'d0', note:'Más espacio' },
+  6: { label:'RELAX',    name:'6 × 6', cls:'d0', note:'Para jugar largo' },
+  3: { label:'DIFÍCIL',  name:'3 × 3', cls:'d3', note:'¿Llegas a 256?' },
+};
+const st = { n:4, grid:[], tiles:new Map(), score:0, best:0, won:false, over:false, undo:[], undoLeft:3, nextId:1, busy:false };
+
+/* ---------- MENÚ ---------- */
+function buildMenu(){
+  const list = $('diff-list'); list.innerHTML = '';
+  // (las claves numéricas de un objeto se ordenan solas, por eso el orden va aparte)
+  [4, 5, 6, 3].map(n => [n, SIZES[n]]).forEach(([n, d]) => {
+    const best = SK.store.get(`sk-2048-best-${n}`, 0), tile = SK.store.get(`sk-2048-tile-${n}`, 0);
+    const parts = []; if (best) parts.push(`🏆 ${best.toLocaleString('es-MX')}`); if (tile) parts.push(`🔢 ${tile}`);
+    const b = document.createElement('button'); b.className = 'diff-btn';
+    b.innerHTML = `<div><div>${d.label} · ${d.name}</div>${parts.length ? `<div class="record-line">${parts.join(' · ')}</div>` : `<div class="record-line">${d.note}</div>`}</div><span class="tag ${d.cls}">${d.name}</span>`;
+    b.onclick = () => { sfx.init(); sfx.tap(); st.n = +n; SK.showScreen('game'); newGame(); };
+    list.appendChild(b);
+  });
+}
+
+/* ---------- MEDIDAS ---------- */
+function layout(){
+  const n = st.n, maxW = Math.min(innerWidth - 24, 460, innerHeight - 330);
+  const bw = Math.max(240, maxW), gap = Math.round(bw * (n > 4 ? .022 : .03));
+  const cell = (bw - gap * (n + 1)) / n;
+  const b = $('board');
+  b.style.setProperty('--bw', bw + 'px'); b.style.setProperty('--gap', gap + 'px'); b.style.setProperty('--cell', cell + 'px');
+  st.cell = cell; st.gap = gap;
+  b.querySelectorAll('.bg-cell').forEach(e => { const r = +e.dataset.r, c = +e.dataset.c; e.style.left = (gap + c * (cell + gap)) + 'px'; e.style.top = (gap + r * (cell + gap)) + 'px'; });
+  st.tiles.forEach(t => place(t));
+}
+addEventListener('resize', () => { if ($('game').classList.contains('active')) layout(); });
+
+/* ---------- PARTIDA ---------- */
+function newGame(){
+  const n = st.n;
+  Object.assign(st, { grid: Array.from({ length:n }, () => Array(n).fill(null)), score:0, won:false, over:false, undo:[], undoLeft:3, busy:false, gid:(st.gid || 0) + 1 });
+  st.tiles.forEach(t => t.el.remove()); st.tiles = new Map();
+  st.best = SK.store.get(`sk-2048-best-${n}`, 0);
+  $('badge').textContent = SIZES[n].label; $('title').textContent = SIZES[n].name;
+  const b = $('board'); b.innerHTML = '';
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) { const e = document.createElement('div'); e.className = 'bg-cell'; e.dataset.r = r; e.dataset.c = c; b.appendChild(e); }
+  layout();
+  addRandom(); addRandom();
+  paintScores(); paintUndo();
+}
+function addRandom(){
+  const empty = [];
+  st.grid.forEach((row, r) => row.forEach((t, c) => { if (!t) empty.push([r, c]); }));
+  if (!empty.length) return;
+  const [r, c] = empty[(Math.random() * empty.length) | 0];
+  makeTile(r, c, Math.random() < .9 ? 2 : 4, true);
+}
+function makeTile(r, c, v, isNew){
+  const t = { id: st.nextId++, r, c, v, el: document.createElement('div') };
+  t.el.innerHTML = '<div class="in"></div>';
+  st.grid[r][c] = t; st.tiles.set(t.id, t);
+  $('board').appendChild(t.el);
+  paintTile(t); place(t);
+  if (isNew) t.el.classList.add('new');
+  return t;
+}
+function place(t){
+  t.el.style.setProperty('--x', (st.gap + t.c * (st.cell + st.gap)) + 'px');
+  t.el.style.setProperty('--y', (st.gap + t.r * (st.cell + st.gap)) + 'px');
+}
+function paintTile(t){
+  const digits = String(t.v).length;
+  t.el.className = 'tile ' + (t.v > 2048 ? 'vbig' : 'v' + t.v) + (t.el.classList.contains('new') ? ' new' : '');
+  t.el.firstChild.textContent = t.v;
+  const k = digits <= 2 ? .5 : digits === 3 ? .4 : digits === 4 ? .31 : .25;
+  t.el.style.setProperty('--fs', Math.round(st.cell * k) + 'px');
+}
+
+/* ---------- MOVER ---------- */
+const DIRS = { left:[0,-1], right:[0,1], up:[-1,0], down:[1,0] };
+function move(dir){
+  if (st.busy || st.over) return;
+  const [dr, dc] = DIRS[dir], n = st.n;
+  const before = snapshot();
+  const rows = [...Array(n).keys()], cols = [...Array(n).keys()];
+  if (dr === 1) rows.reverse(); if (dc === 1) cols.reverse();
+  const merged = new Set(), dying = [];
+  let moved = false, gained = 0;
+  st.tiles.forEach(t => t.el.classList.remove('new', 'merged'));
+  for (const r of rows) for (const c of cols) {
+    const t = st.grid[r][c]; if (!t) continue;
+    let cr = r, cc = c;
+    for (;;) {
+      const nr = cr + dr, nc = cc + dc;
+      if (nr < 0 || nc < 0 || nr >= n || nc >= n) break;
+      const o = st.grid[nr][nc];
+      if (!o) { cr = nr; cc = nc; continue; }
+      if (o.v === t.v && !merged.has(o.id)) {
+        // se une con la ficha de adelante
+        st.grid[r][c] = null; t.r = nr; t.c = nc; place(t); t.el.classList.add('gone');
+        o.v *= 2; merged.add(o.id); gained += o.v; dying.push([t, o]); moved = true;
+        cr = null;
+      }
+      break;
+    }
+    if (cr !== null && (cr !== r || cc !== c)) { st.grid[r][c] = null; st.grid[cr][cc] = t; t.r = cr; t.c = cc; place(t); moved = true; }
+  }
+  if (!moved) return;
+  st.undo.push(before); if (st.undo.length > 10) st.undo.shift();
+  st.busy = true;
+  st.score += gained;
+  if (gained) { sfx.tone(300 + Math.min(900, gained * 2), .08, 'triangle', .1); floatPlus(gained); } else sfx.tone(240, .03, 'sine', .05);
+  setTimeout(() => {
+    dying.forEach(([t, o]) => { t.el.remove(); st.tiles.delete(t.id); paintTile(o); o.el.classList.add('merged'); });
+    addRandom();
+    paintScores(); paintUndo();
+    st.busy = false;
+    const top = Math.max(...[...st.tiles.values()].map(t => t.v));
+    if (!st.won && top >= 2048) { st.won = true; saveRecords(); win(); return; }
+    if (!canMove()) gameOver();
+  }, 115);
+}
+function canMove(){
+  const n = st.n, g = st.grid;
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+    if (!g[r][c]) return true;
+    if (c + 1 < n && g[r][c + 1] && g[r][c + 1].v === g[r][c].v) return true;
+    if (r + 1 < n && g[r + 1][c] && g[r + 1][c].v === g[r][c].v) return true;
+  }
+  return false;
+}
+function snapshot(){ return { score: st.score, cells: st.grid.map(row => row.map(t => t ? t.v : 0)) }; }
+function undo(){
+  if (!st.undo.length || !st.undoLeft || st.busy) return;
+  const s = st.undo.pop(); st.undoLeft--;
+  st.tiles.forEach(t => t.el.remove()); st.tiles = new Map();
+  st.grid = st.grid.map(row => row.map(() => null));
+  s.cells.forEach((row, r) => row.forEach((v, c) => { if (v) makeTile(r, c, v, false); }));
+  st.score = s.score; st.over = false;
+  sfx.tone(500, .06); sfx.tone(380, .08, 'sine', .12, .05);
+  paintScores(); paintUndo();
+}
+function paintUndo(){ const b = $('btn-undo'); b.textContent = `↶ Deshacer (${st.undoLeft})`; b.disabled = !st.undoLeft || !st.undo.length; }
+function paintScores(){
+  $('score').textContent = st.score.toLocaleString('es-MX');
+  if (st.score > st.best) { st.best = st.score; SK.store.set(`sk-2048-best-${st.n}`, st.best); }
+  $('best').textContent = st.best.toLocaleString('es-MX');
+}
+function floatPlus(v){ const s = document.createElement('span'); s.className = 'plus'; s.textContent = '+' + v; $('score-box').appendChild(s); setTimeout(() => s.remove(), 800); }
+function topTile(){ return Math.max(0, ...[...st.tiles.values()].map(t => t.v)); }
+function saveRecords(){
+  const k = `sk-2048-tile-${st.n}`, top = topTile();
+  if (top > SK.store.get(k, 0)) SK.store.set(k, top);
+}
+
+/* ---------- FIN ---------- */
+function shareData(title){
+  return { emoji:'🔢', title, game:'2048', sub:`Tablero ${SIZES[st.n].name}`, big:st.score.toLocaleString('es-MX') + ' pts', stats:[[topTile(), 'MEJOR FICHA'], [st.score.toLocaleString('es-MX'), 'PUNTOS']], text:`🔢 2048 (${SIZES[st.n].name}): ${st.score.toLocaleString('es-MX')} puntos y ficha ${topTile()}\nJuega: SeaKingsGames`, file:'logro-2048' };
+}
+function win(){
+  sfx.win();
+  SK.result({ emoji:'🏆', title:'¡Llegaste a 2048!', text:'Puedes seguir jugando para hacer más puntos', stats:[[st.score.toLocaleString('es-MX'), 'PUNTOS'], [topTile(), 'FICHA']], share: shareData('¡LLEGUÉ A 2048!'),
+    buttons:[{ label:'Seguir jugando →' }, { label:'Nueva partida', kind:'ghost', onClick: newGame }] });
+}
+function gameOver(){
+  st.over = true; saveRecords();
+  const isRec = st.score >= st.best && st.score > 0;
+  if (isRec) sfx.newRec(); else sfx.lose();
+  const gid = st.gid;
+  setTimeout(() => gid === st.gid && st.over && SK.result({
+    emoji: isRec ? '🎉' : '😵', lose: !isRec, title: isRec ? '¡Nuevo récord!' : 'Ya no hay movimientos', newRecord: false,
+    stats:[[st.score.toLocaleString('es-MX'), 'PUNTOS'], [topTile(), 'MEJOR FICHA'], [st.best.toLocaleString('es-MX'), 'RÉCORD']],
+    share: shareData(isRec ? '¡NUEVO RÉCORD!' : 'MI PARTIDA'),
+    buttons:[{ label:'Jugar otra vez →', onClick: newGame },
+             ...(st.undoLeft && st.undo.length ? [{ label:`↶ Deshacer (${st.undoLeft})`, kind:'secondary', onClick: undo }] : []),
+             { label:'Cambiar tablero', kind:'ghost', onClick: toMenu }],
+  }), 500);
+}
+
+/* ---------- CONTROLES ---------- */
+addEventListener('keydown', e => {
+  if (!$('game').classList.contains('active')) return;
+  const k = { ArrowLeft:'left', ArrowRight:'right', ArrowUp:'up', ArrowDown:'down', a:'left', d:'right', w:'up', s:'down' }[e.key];
+  if (k) { e.preventDefault(); sfx.init(); move(k); }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z') undo();
+});
+let touch = null;
+const board = $('board');
+board.addEventListener('pointerdown', e => { touch = { x:e.clientX, y:e.clientY }; sfx.init(); });
+board.addEventListener('pointerup', e => {
+  if (!touch) return;
+  const dx = e.clientX - touch.x, dy = e.clientY - touch.y; touch = null;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+  move(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+});
+board.addEventListener('pointercancel', () => touch = null);
+
+function toMenu(){ buildMenu(); SK.showScreen('menu'); }
+$('btn-back').onclick = () => { sfx.tap(); toMenu(); };
+$('btn-undo').onclick = () => undo();
+$('btn-restart').onclick = () => {
+  sfx.tap();
+  if (st.score === 0 || st.over) { newGame(); return; }
+  SK.result({ emoji:'🔄', title:'¿Nueva partida?', text:'Se perderá la partida actual', buttons:[{ label:'Sí, empezar de nuevo', onClick: newGame }, { label:'Cancelar', kind:'secondary' }] });
+};
+SK.soundButton($('btn-sound'));
+
+buildMenu();
+SK.bannerAd($('ad-bottom'));
+SK.initPWA('2048');
+</script>
+</body>
+</html>

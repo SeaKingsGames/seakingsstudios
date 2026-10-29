@@ -1,6 +1,6 @@
 ---
 nombre: Memoria
-orden: 3
+orden: 8
 archivo: memoria
 genero: Juego de memoria
 lema: Encuentra todos los pares con los menos movimientos.

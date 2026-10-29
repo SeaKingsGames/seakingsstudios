@@ -15,7 +15,7 @@ SeaKingsStudios es un estudio independiente fundado y dirigido por {{responsable
 
 Hacemos dos tipos de proyectos:
 
-- **Juegos para compartir.** [Arte o Cringe](/proyectos/arte-o-cringe) es un juego de dibujo para jugar con amigos en una reunión o en una transmisión. [Cartas del Quinto Sol](/proyectos/cartas-del-quinto-sol) es un juego de duelos de cartas con mitología mexica. En la [arcada](/arcada) tenemos siete clásicos para jugar en ratos cortos.
+- **Juegos para compartir.** [Arte o Cringe](/proyectos/arte-o-cringe) es un juego de dibujo para jugar con amigos en una reunión o en una transmisión. [Cartas del Quinto Sol](/proyectos/cartas-del-quinto-sol) es un juego de duelos de cartas con mitología mexica. En la [arcada](/arcada) tenemos doce clásicos para jugar en ratos cortos, del Buscaminas al Gato.
 - **Herramientas creativas.** [Bocón Estudio](/proyectos/bocon-estudio) es nuestro programa para animar personajes que hablan, con la boca sincronizada a la voz y varios personajes en la misma escena.
 
 ## Cómo trabajamos

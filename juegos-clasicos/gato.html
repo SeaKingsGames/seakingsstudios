@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#271a40">
+<title>Gato · SeaKingsGames</title>
+<meta name="description" content="El juego del gato (tres en raya) gratis en español: contra la compu en 3 niveles o con un amigo. Funciona sin internet.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="comun.css">
+<style>
+  :root{
+    --bg:#271a40; --bg-2:#130b22; --panel:#3c2a60; --panel-2:#4c3878;
+    --accent:#ff7a8a; --accent-deep:#c43d55; --accent-ink:#3a0812;
+    --x:#ff7a8a; --o:#38e2d0;
+  }
+  #game{flex:1}
+  .score{display:flex;justify-content:center;gap:10px;padding:8px 16px}
+  .sc{min-width:92px;padding:8px 10px;border-radius:16px;background:var(--panel);box-shadow:var(--shadow);text-align:center;border:3px solid transparent;transition:border-color .2s,transform .2s}
+  .sc.turn{border-color:#fff;transform:scale(1.05)}
+  .sc .who{font-family:'Bagel Fat One','Fredoka',system-ui,sans-serif;font-size:22px;line-height:1}
+  .sc.x .who{color:var(--x)} .sc.o .who{color:var(--o)} .sc.d .who{color:var(--text-dim)}
+  .sc small{display:block;font-size:11px;color:var(--text-dim);font-weight:600;margin-top:2px}
+  .sc b{font-size:22px;font-variant-numeric:tabular-nums}
+  .status{text-align:center;font-weight:600;color:var(--text-dim);min-height:24px;padding:4px 16px}
+  .board-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:10px 10px 30px}
+  .board{position:relative;width:var(--bw);height:var(--bw);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr)}
+  .board::before,.board::after{content:'';position:absolute;inset:0;pointer-events:none;
+    background:
+      linear-gradient(var(--line-c),var(--line-c)) 33.33% 0/8px 100% no-repeat,
+      linear-gradient(var(--line-c),var(--line-c)) 66.66% 0/8px 100% no-repeat}
+  .board::after{transform:rotate(90deg)}
+  .board{--line-c:rgba(255,255,255,.18)}
+  .sq{display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;z-index:1}
+  .sq svg{width:72%;height:72%;overflow:visible}
+  .sq .mk{fill:none;stroke-width:13;stroke-linecap:round}
+  .sq .mk.x{stroke:var(--x);filter:drop-shadow(0 0 10px rgba(255,122,138,.55))}
+  .sq .mk.o{stroke:var(--o);filter:drop-shadow(0 0 10px rgba(56,226,208,.55))}
+  .sq .draw{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:ink .28s ease-out forwards}
+  .sq .draw.d2{animation-delay:.14s}
+  @keyframes ink{to{stroke-dashoffset:0}}
+  .sq.ghost:hover svg{opacity:.25}
+  .sq.dim{opacity:.35;transition:opacity .4s}
+  .winline{position:absolute;inset:0;pointer-events:none;z-index:3;overflow:visible}
+  .winline line{stroke:#fff;stroke-width:10;stroke-linecap:round;filter:drop-shadow(0 0 12px #fff);stroke-dasharray:1000;stroke-dashoffset:1000;animation:ink .45s ease-out forwards}
+</style>
+</head>
+<body>
+
+<section id="menu" class="screen active">
+  <div class="logo-ico">❌⭕</div>
+  <div class="logo">GATO<small>SeaKingsGames</small></div>
+  <div class="section-title">CONTRA LA COMPU</div>
+  <div class="diff-list" id="diff-list"></div>
+  <div class="section-title">CON UN AMIGO</div>
+  <div class="diff-list"><button class="diff-btn" id="btn-2p"><div><div>👥 2 jugadores</div><div class="record-line">X contra O en el mismo celular</div></div><span class="tag">Mismo celular</span></button></div>
+  <p class="how">Pon tres iguales en línea: horizontal, vertical o diagonal. Quien empieza se va turnando cada ronda.</p>
+  <a class="back-link" href="index.html">← Volver al inicio</a>
+  <div class="ad-banner-bottom" id="ad-bottom"></div>
+</section>
+
+<section id="game" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" id="btn-back">‹</button>
+    <div class="level-title"><div class="badge" id="badge">VS COMPU</div><h1 id="title">Fácil</h1></div>
+    <button class="icon-btn small" id="btn-sound">🔊</button>
+    <button class="icon-btn" id="btn-restart">↻</button>
+  </div>
+  <div class="score">
+    <div class="sc x" id="sc-x"><div class="who">X</div><small id="nm-x">Tú</small><b id="n-x">0</b></div>
+    <div class="sc d"><div class="who">=</div><small>Empates</small><b id="n-d">0</b></div>
+    <div class="sc o" id="sc-o"><div class="who">O</div><small id="nm-o">Compu</small><b id="n-o">0</b></div>
+  </div>
+  <div class="status" id="status">Tu turno</div>
+  <div class="board-wrap"><div class="board" id="board"></div></div>
+</section>
+
+<script src="comun.js"></script>
+<script>
+/* =====================================================
+   GATO · SeaKingsGames
+   ===================================================== */
+const { $, sfx } = SK;
+const LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+const LEVELS = {
+  facil:     { label:'FÁCIL',     smart:.25, cls:'d0', note:'Se distrae seguido' },
+  medio:     { label:'MEDIO',     smart:.75, cls:'d1', note:'Casi no se equivoca' },
+  imposible: { label:'IMPOSIBLE', smart:1,   cls:'d3', note:'Nunca pierde. ¿Le sacas un empate?' },
+};
+const st = { mode:'cpu', level:'facil', b:Array(9).fill(''), turn:'X', starter:'X', over:false, busy:false, score:{ X:0, O:0, D:0 } };
+
+function buildMenu(){
+  const list = $('diff-list'); list.innerHTML = '';
+  Object.entries(LEVELS).forEach(([k, d]) => {
+    const w = SK.store.get(`sk-gato-wins-${k}`, 0), dr = SK.store.get(`sk-gato-draws-${k}`, 0);
+    const parts = []; if (w) parts.push(`✅ ${w} ganadas`); if (k === 'imposible' && dr) parts.push(`🤝 ${dr} empates`);
+    const b = document.createElement('button'); b.className = 'diff-btn';
+    b.innerHTML = `<div><div>🤖 ${d.label}</div><div class="record-line">${parts.length ? parts.join(' · ') : d.note}</div></div><span class="tag ${d.cls}">VS COMPU</span>`;
+    b.onclick = () => start('cpu', k);
+    list.appendChild(b);
+  });
+}
+function start(mode, level){
+  sfx.init(); sfx.tap();
+  Object.assign(st, { mode, level, score:{ X:0, O:0, D:0 }, starter:'X' });
+  $('badge').textContent = mode === 'cpu' ? 'VS COMPU' : '2 JUGADORES';
+  $('title').textContent = mode === 'cpu' ? LEVELS[level].label.charAt(0) + LEVELS[level].label.slice(1).toLowerCase() : 'X contra O';
+  $('nm-x').textContent = mode === 'cpu' ? 'Tú' : 'Jugador X';
+  $('nm-o').textContent = mode === 'cpu' ? 'Compu' : 'Jugador O';
+  SK.showScreen('game'); layout(); newRound();
+}
+$('btn-2p').onclick = () => start('2p');
+
+function layout(){ $('board').style.setProperty('--bw', Math.min(innerWidth - 40, innerHeight - 300, 420) + 'px'); }
+addEventListener('resize', () => { if ($('game').classList.contains('active')) layout(); });
+
+function newRound(){
+  st.b = Array(9).fill(''); st.turn = st.starter; st.over = false; st.busy = false;
+  const el = $('board'); el.innerHTML = '';
+  for (let i = 0; i < 9; i++) { const d = document.createElement('div'); d.className = 'sq ghost'; d.dataset.i = i; d.onclick = () => humanPlay(i); el.appendChild(d); }
+  paint();
+  if (st.mode === 'cpu' && st.turn === 'O') cpuTurn();
+}
+function paint(){
+  $('n-x').textContent = st.score.X; $('n-o').textContent = st.score.O; $('n-d').textContent = st.score.D;
+  $('sc-x').classList.toggle('turn', !st.over && st.turn === 'X');
+  $('sc-o').classList.toggle('turn', !st.over && st.turn === 'O');
+  if (!st.over) $('status').textContent = st.mode === 'cpu' ? (st.turn === 'X' ? 'Tu turno' : 'La compu está pensando…') : `Turno de ${st.turn}`;
+}
+function mark(i, who){
+  st.b[i] = who;
+  const sq = $('board').children[i]; sq.classList.remove('ghost');
+  sq.innerHTML = who === 'X'
+    ? '<svg viewBox="0 0 100 100"><line class="mk x draw" style="--len:120" x1="15" y1="15" x2="85" y2="85"/><line class="mk x draw d2" style="--len:120" x1="85" y1="15" x2="15" y2="85"/></svg>'
+    : '<svg viewBox="0 0 100 100"><circle class="mk o draw" style="--len:230" cx="50" cy="50" r="36"/></svg>';
+  who === 'X' ? sfx.tone(520, .08, 'triangle', .12) : sfx.tone(380, .1, 'sine', .14);
+}
+function winner(b){
+  for (const l of LINES) if (b[l[0]] && b[l[0]] === b[l[1]] && b[l[1]] === b[l[2]]) return { who:b[l[0]], line:l };
+  return b.every(Boolean) ? { who:'D' } : null;
+}
+function humanPlay(i){
+  if (st.over || st.busy || st.b[i]) return;
+  if (st.mode === 'cpu' && st.turn !== 'X') return;
+  sfx.init(); mark(i, st.turn); after();
+}
+function after(){
+  const w = winner(st.b);
+  if (w) { finish(w); return; }
+  st.turn = st.turn === 'X' ? 'O' : 'X'; paint();
+  if (st.mode === 'cpu' && st.turn === 'O') cpuTurn();
+}
+function cpuTurn(){
+  st.busy = true; paint();
+  setTimeout(() => { mark(cpuMove(), 'O'); st.busy = false; after(); }, 380 + Math.random() * 300);
+}
+
+/* ---------- IA ---------- */
+function minimax(b, me, turn, depth){
+  const w = winner(b);
+  if (w) return w.who === 'D' ? 0 : (w.who === me ? 10 - depth : depth - 10);
+  let best = turn === me ? -Infinity : Infinity;
+  for (let i = 0; i < 9; i++) if (!b[i]) {
+    b[i] = turn; const v = minimax(b, me, turn === 'X' ? 'O' : 'X', depth + 1); b[i] = '';
+    best = turn === me ? Math.max(best, v) : Math.min(best, v);
+  }
+  return best;
+}
+function cpuMove(){
+  const free = st.b.map((v, i) => v ? -1 : i).filter(i => i >= 0);
+  if (Math.random() > LEVELS[st.level].smart) return free[(Math.random() * free.length) | 0];
+  let best = -Infinity, picks = [];
+  for (const i of free) {
+    st.b[i] = 'O'; const v = minimax(st.b, 'O', 'X', 1); st.b[i] = '';
+    if (v > best) { best = v; picks = [i]; } else if (v === best) picks.push(i);
+  }
+  return picks[(Math.random() * picks.length) | 0];
+}
+
+/* ---------- FIN ---------- */
+function finish(w){
+  st.over = true; st.starter = st.starter === 'X' ? 'O' : 'X';
+  st.score[w.who]++; paint();
+  const board = $('board');
+  if (w.line) {
+    [...board.children].forEach((sq, i) => { if (!w.line.includes(i)) sq.classList.add('dim'); });
+    const pos = i => [(i % 3) * 33.33 + 16.67, ((i / 3) | 0) * 33.33 + 16.67];
+    const [x1, y1] = pos(w.line[0]), [x2, y2] = pos(w.line[2]);
+    const dx = (x2 - x1) * .12, dy = (y2 - y1) * .12;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'winline'); svg.setAttribute('viewBox', '0 0 100 100'); svg.setAttribute('preserveAspectRatio', 'none');
+    svg.innerHTML = `<line x1="${x1 - dx}" y1="${y1 - dy}" x2="${x2 + dx}" y2="${y2 + dy}" vector-effect="non-scaling-stroke"/>`;
+    board.appendChild(svg);
+  }
+  const cpu = st.mode === 'cpu';
+  let emoji, title, lose = false;
+  if (w.who === 'D') {
+    emoji = '🤝'; title = '¡Empate!'; sfx.tone(440, .2);
+    if (cpu) SK.store.set(`sk-gato-draws-${st.level}`, SK.store.get(`sk-gato-draws-${st.level}`, 0) + 1);
+  } else if (cpu && w.who === 'X') {
+    emoji = '🏆'; title = '¡Le ganaste a la compu!'; sfx.win();
+    SK.store.set(`sk-gato-wins-${st.level}`, SK.store.get(`sk-gato-wins-${st.level}`, 0) + 1);
+  } else if (cpu) { emoji = '🤖'; title = 'Ganó la compu'; lose = true; sfx.lose(); }
+  else { emoji = w.who === 'X' ? '❌' : '⭕'; title = `¡Ganó ${w.who}!`; sfx.win(); }
+  $('status').textContent = title;
+  setTimeout(() => SK.result({
+    emoji, title, lose, text: `Marcador: X ${st.score.X} · O ${st.score.O} · Empates ${st.score.D}`,
+    stats: [[st.score.X, cpu ? 'TÚ' : 'X'], [st.score.D, 'EMPATES'], [st.score.O, cpu ? 'COMPU' : 'O']],
+    share: cpu && w.who === 'X' ? { emoji:'❌', title:'¡LE GANÉ A LA COMPU!', game:'Gato', sub:`Nivel ${LEVELS[st.level].label}`, big:`${st.score.X} - ${st.score.O}`, stats:[[st.score.X, 'GANADAS'], [st.score.D, 'EMPATES']], text:`❌⭕ Le gané a la compu en el Gato (${LEVELS[st.level].label})\nJuega: SeaKingsGames`, file:'logro-gato' } : null,
+    buttons: [{ label:'Otra ronda →', onClick: newRound }, { label:'Volver al menú', kind:'ghost', onClick: toMenu }],
+  }), w.line ? 900 : 500);
+}
+
+function toMenu(){ buildMenu(); SK.showScreen('menu'); }
+$('btn-back').onclick = () => { sfx.tap(); toMenu(); };
+$('btn-restart').onclick = () => { sfx.tap(); newRound(); };
+addEventListener('keydown', e => { if ($('game').classList.contains('active') && e.key >= '1' && e.key <= '9') humanPlay(+e.key - 1); });
+SK.soundButton($('btn-sound'));
+
+buildMenu();
+SK.bannerAd($('ad-bottom'));
+SK.initPWA('Gato');
+</script>
+</body>
+</html>

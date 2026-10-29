@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#123247">
+<title>Sopa de letras · SeaKingsGames</title>
+<meta name="description" content="Sopa de letras gratis en español con 25 temas y modo pistas. 4 dificultades y récords. Funciona sin internet.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="comun.css">
+<style>
+  :root{
+    --bg:#123247; --bg-2:#08192a; --panel:#1d4a66; --panel-2:#2a5f80;
+    --accent:#38e2d0; --accent-deep:#16998b; --accent-ink:#04302b;
+  }
+  .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(420px,94vw)}
+  @media(min-width:480px){.cat-grid{grid-template-columns:repeat(4,1fr)}}
+  .cat-btn{padding:10px 6px;border-radius:12px;background:var(--panel);box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:600;border:2px solid transparent}
+  .cat-btn .ico{font-size:22px;line-height:1}
+  .cat-btn.selected{border-color:var(--accent);background:var(--panel-2)}
+  #game{flex:1}
+  .board-wrap{display:flex;justify-content:center;padding:8px 10px 4px}
+  .grid{position:relative;display:grid;border-radius:14px;background:#f4fbff;box-shadow:0 10px 30px rgba(0,0,0,.4);padding:6px;touch-action:none}
+  .ch{width:var(--cs);height:var(--cs);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:calc(var(--cs) * .56);color:#16324a;position:relative;z-index:2}
+  .ch.flash{animation:flash .5s 3}
+  @keyframes flash{50%{color:#fff;background:#ff9f43;border-radius:50%}}
+  .lines{position:absolute;inset:6px;pointer-events:none;z-index:1}
+  .cap{position:absolute;height:calc(var(--cs) * .82);border-radius:999px;transform-origin:calc(var(--cs) * .41) 50%;opacity:.55}
+  .cap.sel{background:#ffb84d;opacity:.6}
+  .cap.pop{animation:capIn .3s ease-out}
+  @keyframes capIn{from{transform:var(--rot) scaleX(.2)}}
+  .words{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 8px;padding:10px 14px 14px;max-width:560px;margin:0 auto}
+  .w{padding:6px 11px;border-radius:12px;background:var(--panel);font-weight:600;font-size:14px;transition:opacity .3s}
+  .w.done{text-decoration:line-through;opacity:.55;background:var(--c)}
+  .words.hints .w{font-size:12.5px;font-weight:500;max-width:100%}
+  .words.hints .w.done{font-weight:700}
+</style>
+</head>
+<body>
+
+<section id="menu" class="screen active">
+  <div class="logo-ico">🔍</div>
+  <div class="logo">SOPA DE LETRAS<small>SeaKingsGames</small></div>
+  <div class="section-title">VER</div>
+  <div class="seg" id="seg-mode"><button data-m="palabras" class="on">📝 Palabras</button><button data-m="pistas">💡 Solo pistas</button></div>
+  <div class="section-title">CATEGORÍA</div>
+  <div class="cat-grid" id="cat-grid"></div>
+  <div class="section-title">DIFICULTAD</div>
+  <div class="diff-list" id="diff-list"></div>
+  <p class="how">Arrastra el dedo sobre las letras para marcar una palabra. En "Solo pistas" ves la pista y tú adivinas qué palabra buscar.</p>
+  <a class="back-link" href="index.html">← Volver al inicio</a>
+  <div class="ad-banner-bottom" id="ad-bottom"></div>
+</section>
+
+<section id="game" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" id="btn-back">‹</button>
+    <div class="level-title"><div class="badge" id="badge">FÁCIL</div><h1 id="title">Animales</h1></div>
+    <button class="icon-btn small" id="btn-sound">🔊</button>
+    <button class="icon-btn" id="btn-restart">↻</button>
+  </div>
+  <div class="stats">
+    <span>⏱️ <span class="val" id="st-time">0:00</span></span>
+    <span>✅ <span class="val" id="st-found">0/6</span></span>
+    <span>🏆 <span class="val" id="st-best">—</span></span>
+  </div>
+  <div class="board-wrap"><div class="grid" id="grid"><div class="lines" id="lines"></div></div></div>
+  <div class="tool-row"><button class="tool-btn" id="btn-hint">💡 Ayuda (3)</button></div>
+  <div class="words" id="words"></div>
+</section>
+
+<script src="palabras.js"></script>
+<script src="comun.js"></script>
+<script>
+/* =====================================================
+   SOPA DE LETRAS · SeaKingsGames
+   ===================================================== */
+const { $, sfx } = SK;
+const D8 = [[0,1],[1,0],[1,1],[-1,1],[0,-1],[-1,0],[-1,-1],[1,-1]]; // [dx,dy]
+const DIFFS = {
+  facil:   { label:'FÁCIL',         size:8,  words:6,  dirs:[[1,0],[0,1]], cls:'d0', note:'→ ↓' },
+  medio:   { label:'MEDIO',         size:10, words:8,  dirs:[[1,0],[0,1],[1,1],[1,-1]], cls:'d1', note:'→ ↓ ↘ ↗' },
+  dificil: { label:'DIFÍCIL',       size:11, words:10, dirs:[[1,0],[0,1],[1,1],[1,-1],[-1,0],[0,-1]], cls:'d2', note:'también al revés' },
+  extra:   { label:'EXTRA DIFÍCIL', size:12, words:12, dirs:D8, cls:'d3', note:'8 direcciones' },
+};
+const COLORS = ['#ff6b6b','#ffa94d','#ffd43b','#69db7c','#38d9a9','#4dabf7','#748ffc','#da77f2','#f783ac','#a9e34b','#3bc9db','#ff922b'];
+const FILL = 'AAAAAEEEEEOOOOIIIUUSSSRRRNNNLLLDDTTCCMMPPBGVYQHFJZXÑK';
+const CATS = { aleatorio:{ ico:'🎲', label:'Aleatorio', list:[] }, ...SK_PALABRAS };
+CATS.aleatorio.list = Object.values(SK_PALABRAS).flatMap(c => c.list);
+
+const st = { cat: SK.store.get('sk-sopa-cat', 'animales'), diff:'facil', mode: SK.store.get('sk-sopa-mode', 'palabras'),
+  n:0, grid:[], words:[], found:0, t0:0, elapsed:0, timer:null, hints:3, over:false };
+if (!CATS[st.cat]) st.cat = 'animales';
+
+/* ---------- MENÚ ---------- */
+function buildMenu(){
+  const g = $('cat-grid'); g.innerHTML = '';
+  Object.entries(CATS).forEach(([k, c]) => {
+    const b = document.createElement('button'); b.className = 'cat-btn' + (k === st.cat ? ' selected' : ''); b.dataset.k = k;
+    b.innerHTML = `<span class="ico">${c.ico}</span><span></span>`; b.lastChild.textContent = c.label;
+    b.onclick = () => { sfx.init(); sfx.tap(); st.cat = k; SK.store.set('sk-sopa-cat', k); g.querySelectorAll('.cat-btn').forEach(x => x.classList.toggle('selected', x.dataset.k === k)); };
+    g.appendChild(b);
+  });
+  const list = $('diff-list'); list.innerHTML = '';
+  Object.entries(DIFFS).forEach(([k, d]) => {
+    const rec = SK.store.get(`sk-sopa-rec-${k}`);
+    const b = document.createElement('button'); b.className = 'diff-btn';
+    b.innerHTML = `<div><div>${d.label}</div><div class="record-line">${rec ? `🏆 ${SK.fmtTime(rec)}` : d.note}</div></div><span class="tag ${d.cls}">${d.size}×${d.size} · ${d.words} palabras</span>`;
+    b.onclick = () => { sfx.init(); sfx.tap(); st.diff = k; SK.showScreen('game'); newGame(); };
+    list.appendChild(b);
+  });
+  document.querySelectorAll('#seg-mode button').forEach(b => {
+    b.classList.toggle('on', b.dataset.m === st.mode);
+    b.onclick = () => { sfx.tap(); st.mode = b.dataset.m; SK.store.set('sk-sopa-mode', st.mode); document.querySelectorAll('#seg-mode button').forEach(x => x.classList.toggle('on', x === b)); };
+  });
+}
+
+/* ---------- GENERAR SOPA ---------- */
+function candidates(){
+  const n = DIFFS[st.diff].size;
+  return CATS[st.cat].list
+    .filter(w => !/\s/.test(w.word))
+    .map(w => ({ ...w, key: SK_normalizar(w.word).replace(/[^A-ZÑ]/g, '') }))
+    .filter(w => w.key.length >= 3 && w.key.length <= n);
+}
+function generate(){
+  const d = DIFFS[st.diff], n = d.size;
+  for (let tries = 0; tries < 40; tries++) {
+    const grid = Array.from({ length:n }, () => Array(n).fill(''));
+    const pool = candidates().sort(() => Math.random() - .5);
+    // prefiere palabras largas primero para que quepan
+    const pick = pool.slice(0, d.words * 3).sort((a, b) => b.key.length - a.key.length);
+    const placed = [], used = new Set();
+    for (const w of pick) {
+      if (placed.length >= d.words) break;
+      if (used.has(w.key) || placed.some(p => p.key.includes(w.key) || w.key.includes(p.key))) continue;
+      const spot = place(grid, w.key, d.dirs);
+      if (spot) { placed.push({ ...w, ...spot }); used.add(w.key); }
+    }
+    if (placed.length >= Math.min(d.words, 4)) {
+      for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (!grid[y][x]) grid[y][x] = FILL[(Math.random() * FILL.length) | 0];
+      return { grid, words: placed.sort((a, b) => a.word.localeCompare(b.word, 'es')) };
+    }
+  }
+  return null;
+}
+function place(grid, key, dirs){
+  const n = grid.length;
+  for (let k = 0; k < 200; k++) {
+    const [dx, dy] = dirs[(Math.random() * dirs.length) | 0];
+    const x0 = (Math.random() * n) | 0, y0 = (Math.random() * n) | 0;
+    const x1 = x0 + dx * (key.length - 1), y1 = y0 + dy * (key.length - 1);
+    if (x1 < 0 || y1 < 0 || x1 >= n || y1 >= n) continue;
+    let ok = true;
+    for (let i = 0; i < key.length && ok; i++) { const c = grid[y0 + dy * i][x0 + dx * i]; if (c && c !== key[i]) ok = false; }
+    if (!ok) continue;
+    for (let i = 0; i < key.length; i++) grid[y0 + dy * i][x0 + dx * i] = key[i];
+    return { x0, y0, dx, dy };
+  }
+  return null;
+}
+
+/* ---------- PARTIDA ---------- */
+function newGame(){
+  clearInterval(st.timer);
+  const g = generate();
+  if (!g) { alert('No hay suficientes palabras en esta categoría para este tamaño. Prueba otra.'); toMenu(); return; }
+  Object.assign(st, { n: g.grid.length, grid: g.grid, words: g.words.map((w, i) => ({ ...w, done:false, color: COLORS[i % COLORS.length] })), found:0, elapsed:0, t0:Date.now(), hints:3, over:false });
+  st.timer = setInterval(() => { st.elapsed = (Date.now() - st.t0) / 1000; $('st-time').textContent = SK.fmtTime(st.elapsed); }, 250);
+  $('badge').textContent = DIFFS[st.diff].label;
+  $('title').textContent = `${CATS[st.cat].ico} ${CATS[st.cat].label}`;
+  $('st-time').textContent = '0:00';
+  const rec = SK.store.get(`sk-sopa-rec-${st.diff}`); $('st-best').textContent = rec ? SK.fmtTime(rec) : '—';
+  renderGrid(); renderWords(); paintHint();
+}
+function renderGrid(){
+  const el = $('grid'), lines = $('lines');
+  el.querySelectorAll('.ch').forEach(e => e.remove()); lines.innerHTML = '';
+  const cs = Math.max(22, Math.min(44, Math.floor((Math.min(innerWidth, 560) - 32) / st.n), Math.floor((innerHeight - 330) / st.n)));
+  el.style.setProperty('--cs', cs + 'px'); st.cs = cs;
+  el.style.gridTemplateColumns = `repeat(${st.n}, var(--cs))`;
+  st.cells = [];
+  for (let y = 0; y < st.n; y++) for (let x = 0; x < st.n; x++) {
+    const d = document.createElement('div'); d.className = 'ch'; d.textContent = st.grid[y][x]; d.dataset.x = x; d.dataset.y = y;
+    el.appendChild(d); st.cells.push(d);
+  }
+  st.words.filter(w => w.done).forEach(w => drawCap(w.x0, w.y0, w.x0 + w.dx * (w.key.length - 1), w.y0 + w.dy * (w.key.length - 1), w.color, false));
+}
+function renderWords(){
+  const el = $('words'); el.innerHTML = '';
+  el.classList.toggle('hints', st.mode === 'pistas');
+  st.words.forEach(w => {
+    const d = document.createElement('div'); d.className = 'w' + (w.done ? ' done' : '');
+    d.style.setProperty('--c', w.color);
+    d.textContent = st.mode === 'pistas' && !w.done ? `💡 ${w.hint} (${w.key.length})` : w.word.toUpperCase();
+    el.appendChild(d);
+  });
+  $('st-found').textContent = `${st.found}/${st.words.length}`;
+}
+
+/* cápsula de color sobre una palabra */
+function drawCap(x0, y0, x1, y1, color, sel){
+  const cs = st.cs, len = Math.hypot(x1 - x0, y1 - y0) * cs;
+  const ang = Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
+  const d = document.createElement('div'); d.className = 'cap' + (sel ? ' sel' : ' pop');
+  d.style.left = (x0 * cs + cs * .09) + 'px'; d.style.top = (y0 * cs + cs * .09) + 'px';
+  d.style.width = (len + cs * .82) + 'px';
+  d.style.setProperty('--rot', `rotate(${ang}deg)`);
+  d.style.transform = `rotate(${ang}deg)`;
+  if (!sel) d.style.background = color;
+  $('lines').appendChild(d);
+  return d;
+}
+
+/* ---------- SELECCIÓN CON EL DEDO ---------- */
+let sel = null;
+function cellAt(e){
+  const r = $('grid').getBoundingClientRect(), cs = st.cs;
+  const x = Math.floor((e.clientX - r.left - 6) / cs), y = Math.floor((e.clientY - r.top - 6) / cs);
+  return { x: Math.max(0, Math.min(st.n - 1, x)), y: Math.max(0, Math.min(st.n - 1, y)) };
+}
+function snap(a, b){
+  let dx = b.x - a.x, dy = b.y - a.y;
+  if (!dx && !dy) return b;
+  // ajusta a una de las 8 direcciones
+  const ang = Math.atan2(dy, dx), step = Math.round(ang / (Math.PI / 4)) * (Math.PI / 4);
+  const len = Math.max(Math.abs(dx), Math.abs(dy));
+  let ux = Math.round(Math.cos(step)), uy = Math.round(Math.sin(step));
+  let k = len;
+  while (k > 0 && (a.x + ux * k < 0 || a.y + uy * k < 0 || a.x + ux * k >= st.n || a.y + uy * k >= st.n)) k--;
+  return { x: a.x + ux * k, y: a.y + uy * k };
+}
+const gridEl = $('grid');
+gridEl.addEventListener('pointerdown', e => {
+  if (st.over) return;
+  sfx.init();
+  gridEl.setPointerCapture(e.pointerId);
+  const c = cellAt(e);
+  sel = { a: c, b: c, el: drawCap(c.x, c.y, c.x, c.y, null, true) };
+  sfx.tone(600, .03, 'triangle', .06);
+});
+gridEl.addEventListener('pointermove', e => {
+  if (!sel) return;
+  const b = snap(sel.a, cellAt(e));
+  if (b.x === sel.b.x && b.y === sel.b.y) return;
+  sel.b = b; sel.el.remove(); sel.el = drawCap(sel.a.x, sel.a.y, b.x, b.y, null, true);
+  sfx.tone(700 + 30 * Math.max(Math.abs(b.x - sel.a.x), Math.abs(b.y - sel.a.y)), .025, 'triangle', .05);
+});
+const finish = () => {
+  if (!sel) return;
+  const { a, b } = sel; sel.el.remove(); sel = null;
+  const dx = Math.sign(b.x - a.x), dy = Math.sign(b.y - a.y), len = Math.max(Math.abs(b.x - a.x), Math.abs(b.y - a.y)) + 1;
+  let txt = ''; for (let i = 0; i < len; i++) txt += st.grid[a.y + dy * i][a.x + dx * i];
+  const rev = [...txt].reverse().join('');
+  const w = st.words.find(w => !w.done && (w.key === txt || w.key === rev));
+  if (!w) { if (len > 1) sfx.bad(); return; }
+  w.done = true; st.found++;
+  // guarda la posición real (por si la marcó al revés)
+  w.x0 = a.x; w.y0 = a.y; w.dx = dx; w.dy = dy;
+  drawCap(a.x, a.y, b.x, b.y, w.color, false);
+  sfx.good(); if (navigator.vibrate) navigator.vibrate(20);
+  renderWords();
+  if (st.found === st.words.length) win();
+};
+gridEl.addEventListener('pointerup', finish);
+gridEl.addEventListener('pointercancel', finish);
+addEventListener('resize', () => { if ($('game').classList.contains('active') && st.grid.length) renderGrid(); });
+
+/* ---------- AYUDA ---------- */
+function paintHint(){ const b = $('btn-hint'); b.textContent = `💡 Ayuda (${st.hints})`; b.disabled = !st.hints || st.over; }
+$('btn-hint').onclick = () => {
+  const pend = st.words.filter(w => !w.done);
+  if (!st.hints || !pend.length) return;
+  st.hints--; paintHint(); sfx.tap();
+  const w = pend[(Math.random() * pend.length) | 0];
+  const cell = st.cells[w.y0 * st.n + w.x0];
+  cell.classList.remove('flash'); void cell.offsetWidth; cell.classList.add('flash');
+};
+
+/* ---------- FIN ---------- */
+function win(){
+  st.over = true; clearInterval(st.timer); paintHint();
+  st.elapsed = (Date.now() - st.t0) / 1000;
+  const key = `sk-sopa-rec-${st.diff}`, rec = SK.store.get(key), isRec = !rec || st.elapsed < rec;
+  if (isRec) { SK.store.set(key, st.elapsed); sfx.newRec(); }
+  sfx.win();
+  const d = DIFFS[st.diff], c = CATS[st.cat];
+  setTimeout(() => SK.result({
+    emoji:'🎉', title:'¡Las encontraste todas!', text:`${c.ico} ${c.label}${st.mode === 'pistas' ? ' · modo pistas' : ''}`, newRecord:isRec,
+    stats:[[SK.fmtTime(st.elapsed), 'TIEMPO'], [st.words.length, 'PALABRAS'], [3 - st.hints, 'AYUDAS']],
+    share:{ emoji:'🔍', title:'¡SOPA COMPLETADA!', game:'Sopa de letras', sub:`${d.label} · ${c.label}`, big:SK.fmtTime(st.elapsed), stats:[[st.words.length, 'PALABRAS'], [SK.fmtTime(st.elapsed), 'TIEMPO']], text:`🔍 Sopa de letras ${d.label} (${c.label}): ${st.words.length} palabras en ${SK.fmtTime(st.elapsed)}\nJuega: SeaKingsGames`, file:'logro-sopa' },
+    buttons:[{ label:'Otra sopa →', onClick: newGame }, { label:'Cambiar categoría', kind:'ghost', onClick: toMenu }],
+  }), 600);
+}
+
+function toMenu(){ clearInterval(st.timer); buildMenu(); SK.showScreen('menu'); }
+$('btn-back').onclick = () => { sfx.tap(); toMenu(); };
+$('btn-restart').onclick = () => { sfx.tap(); if (st.over || !st.found) { newGame(); return; } SK.result({ emoji:'🔄', title:'¿Otra sopa?', text:'Se perderá esta partida', buttons:[{ label:'Sí, otra', onClick: newGame }, { label:'Cancelar', kind:'secondary' }] }); };
+SK.soundButton($('btn-sound'));
+
+buildMenu();
+SK.bannerAd($('ad-bottom'));
+SK.initPWA('Sopa de letras');
+</script>
+</body>
+</html>

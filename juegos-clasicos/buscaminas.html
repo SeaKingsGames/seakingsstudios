@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1d3b2a">
+<title>Buscaminas · SeaKingsGames</title>
+<meta name="description" content="Buscaminas clásico gratis en español: 4 dificultades, banderas con toque largo y récords. Funciona sin internet.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="comun.css">
+<style>
+  :root{
+    --bg:#1d3b2a; --bg-2:#0f2218; --panel:#2f5a40; --panel-2:#3d6d50;
+    --accent:#ffd34d; --accent-deep:#b88a00; --accent-ink:#3a2a00;
+    --grass-a:#a8d652; --grass-b:#9dcc48; --dirt-a:#ead2ad; --dirt-b:#dfc69f;
+  }
+  #game{flex:1}
+  .board-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:6px 10px 10px}
+  .board{display:grid;gap:0;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.45),0 0 0 4px rgba(0,0,0,.25);touch-action:none}
+  .cell{
+    width:var(--cs);height:var(--cs);display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:calc(var(--cs) * .58);line-height:1;position:relative;
+    background:var(--grass-a);transition:background .15s;
+  }
+  .cell.alt{background:var(--grass-b)}
+  .cell:not(.open):hover{filter:brightness(1.08)}
+  .cell.open{background:var(--dirt-a);animation:dig .28s ease-out backwards}
+  .cell.open.alt{background:var(--dirt-b)}
+  .cell.flag::after{content:'🚩';font-size:calc(var(--cs) * .62);animation:plant .25s cubic-bezier(.34,1.56,.64,1)}
+  .cell.mine::after{content:'💣';font-size:calc(var(--cs) * .62)}
+  .cell.boom{background:#ff5e6c!important}
+  .cell.wrong::after{content:'❌';font-size:calc(var(--cs) * .55)}
+  .cell.pressed{filter:brightness(.88)}
+  .n1{color:#1976d2}.n2{color:#388e3c}.n3{color:#d32f2f}.n4{color:#7b1fa2}.n5{color:#ff8f00}.n6{color:#0097a7}.n7{color:#424242}.n8{color:#9e9e9e}
+  @keyframes dig{from{transform:scale(.6);opacity:.4}to{transform:none;opacity:1}}
+  @keyframes plant{from{transform:translateY(-8px) scale(.4)}to{transform:none}}
+  .mode-seg{display:flex;gap:6px;padding:5px;border-radius:16px;background:rgba(0,0,0,.25)}
+  .mode-seg button{padding:10px 18px;border-radius:12px;font-weight:700;font-size:16px;color:var(--text-dim)}
+  .mode-seg button.on{background:var(--accent);color:var(--accent-ink);box-shadow:0 3px 0 var(--accent-deep)}
+  .tip{font-size:12px;color:var(--text-dim);text-align:center;padding:0 16px 8px}
+</style>
+</head>
+<body>
+
+<section id="menu" class="screen active">
+  <div class="logo-ico">💣</div>
+  <div class="logo">BUSCAMINAS<small>SeaKingsGames</small></div>
+  <div class="section-title">DIFICULTAD</div>
+  <div class="diff-list" id="diff-list"></div>
+  <p class="how">Toca para destapar. Los números dicen cuántas minas hay alrededor. Mantén presionado (o usa 🚩) para poner bandera. Toca un número con sus banderas completas para abrir todo a su alrededor.</p>
+  <a class="back-link" href="index.html">← Volver al inicio</a>
+  <div class="ad-banner-bottom" id="ad-bottom"></div>
+</section>
+
+<section id="game" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" id="btn-back">‹</button>
+    <div class="level-title"><div class="badge" id="badge">FÁCIL</div><h1 id="title">8 × 10</h1></div>
+    <button class="icon-btn small" id="btn-sound">🔊</button>
+    <button class="icon-btn" id="btn-restart">↻</button>
+  </div>
+  <div class="stats">
+    <span>⏱️ <span class="val" id="st-time">0:00</span></span>
+    <span>💣 <span class="val" id="st-mines">10</span></span>
+    <span>🏆 <span class="val" id="st-best">—</span></span>
+  </div>
+  <div class="board-wrap" id="board-wrap"><div class="board" id="board"></div></div>
+  <div class="tool-row">
+    <div class="mode-seg"><button class="on" id="mode-dig">⛏️ Destapar</button><button id="mode-flag">🚩 Bandera</button></div>
+  </div>
+  <div class="tip">Consejo: el primer toque nunca es mina.</div>
+</section>
+
+<script src="comun.js"></script>
+<script>
+/* =====================================================
+   BUSCAMINAS · SeaKingsGames
+   ===================================================== */
+const { $, sfx } = SK;
+const DIFFS = {
+  facil:   { label:'FÁCIL',         cols:8,  rows:10, mines:10, cls:'d0' },
+  medio:   { label:'MEDIO',         cols:9,  rows:13, mines:20, cls:'d1' },
+  dificil: { label:'DIFÍCIL',       cols:10, rows:16, mines:32, cls:'d2' },
+  extra:   { label:'EXTRA DIFÍCIL', cols:12, rows:20, mines:50, cls:'d3' },
+};
+const st = { diff:'facil', cells:[], cols:0, rows:0, mines:0, started:false, over:false, flags:0, opened:0, t0:0, elapsed:0, timer:null, flagMode:false };
+
+/* ---------- MENÚ ---------- */
+function buildMenu(){
+  const list = $('diff-list'); list.innerHTML = '';
+  Object.entries(DIFFS).forEach(([k, d]) => {
+    const rec = SK.store.get(`sk-bm-rec-${k}`), wins = SK.store.get(`sk-bm-wins-${k}`, 0);
+    const b = document.createElement('button'); b.className = 'diff-btn';
+    const parts = []; if (rec) parts.push(`🏆 ${SK.fmtTime(rec)}`); if (wins) parts.push(`✅ ${wins} ganadas`);
+    b.innerHTML = `<div><div>${d.label}</div>${parts.length ? `<div class="record-line">${parts.join(' · ')}</div>` : ''}</div><span class="tag ${d.cls}">${d.cols}×${d.rows} · ${d.mines} 💣</span>`;
+    b.onclick = () => { sfx.init(); sfx.tap(); st.diff = k; newGame(); SK.showScreen('game'); sizeBoard(); };
+    list.appendChild(b);
+  });
+}
+
+/* ---------- PARTIDA ---------- */
+function newGame(){
+  const d = DIFFS[st.diff];
+  clearInterval(st.timer);
+  Object.assign(st, { cols:d.cols, rows:d.rows, mines:d.mines, started:false, over:false, flags:0, opened:0, elapsed:0, t0:0, timer:null });
+  st.cells = Array.from({ length: d.cols * d.rows }, (_, i) => ({ i, mine:false, n:0, open:false, flag:false }));
+  $('badge').textContent = d.label; $('title').textContent = `${d.cols} × ${d.rows}`;
+  $('st-time').textContent = '0:00';
+  const rec = SK.store.get(`sk-bm-rec-${st.diff}`); $('st-best').textContent = rec ? SK.fmtTime(rec) : '—';
+  setFlagMode(false);
+  buildBoard(); updateMines();
+}
+function neighbors(i){
+  const x = i % st.cols, y = (i / st.cols) | 0, out = [];
+  for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+    if (!dx && !dy) continue;
+    const nx = x + dx, ny = y + dy;
+    if (nx >= 0 && ny >= 0 && nx < st.cols && ny < st.rows) out.push(ny * st.cols + nx);
+  }
+  return out;
+}
+function placeMines(safe){
+  const banned = new Set([safe, ...neighbors(safe)]);
+  const pool = st.cells.map(c => c.i).filter(i => !banned.has(i));
+  for (let k = 0; k < st.mines; k++) {
+    const j = k + ((Math.random() * (pool.length - k)) | 0);
+    [pool[k], pool[j]] = [pool[j], pool[k]];
+    st.cells[pool[k]].mine = true;
+  }
+  st.cells.forEach(c => { c.n = neighbors(c.i).filter(j => st.cells[j].mine).length; });
+}
+
+/* ---------- TABLERO ---------- */
+let els = [];
+function buildBoard(){
+  const b = $('board'); b.innerHTML = '';
+  b.style.gridTemplateColumns = `repeat(${st.cols}, var(--cs))`;
+  els = st.cells.map(c => {
+    const e = document.createElement('div');
+    const x = c.i % st.cols, y = (c.i / st.cols) | 0;
+    e.className = 'cell' + ((x + y) % 2 ? ' alt' : '');
+    e.dataset.i = c.i;
+    b.appendChild(e);
+    return e;
+  });
+}
+function sizeBoard(){
+  const wrap = $('board-wrap');
+  const w = Math.min(innerWidth, 720) - 24;
+  const h = Math.max(200, innerHeight - wrap.getBoundingClientRect().top - 110);
+  const cs = Math.max(18, Math.min(46, Math.floor(Math.min(w / st.cols, h / st.rows))));
+  $('board').style.setProperty('--cs', cs + 'px');
+}
+addEventListener('resize', () => { if ($('game').classList.contains('active')) sizeBoard(); });
+function paint(c, delay = 0){
+  const e = els[c.i];
+  const x = c.i % st.cols, y = (c.i / st.cols) | 0;
+  let cls = 'cell' + ((x + y) % 2 ? ' alt' : '');
+  if (c.open) { cls += ' open'; if (c.n && !c.mine) cls += ' n' + c.n; }
+  if (c.flag && !c.open) cls += ' flag';
+  e.className = cls;
+  e.textContent = c.open && !c.mine && c.n ? c.n : '';
+  e.style.animationDelay = delay ? delay + 'ms' : '';
+}
+function updateMines(){ $('st-mines').textContent = st.mines - st.flags; }
+
+/* ---------- ACCIONES ---------- */
+function startTimer(){
+  st.started = true; st.t0 = Date.now();
+  st.timer = setInterval(() => { st.elapsed = (Date.now() - st.t0) / 1000; $('st-time').textContent = SK.fmtTime(st.elapsed); }, 250);
+}
+function open(i){
+  const c = st.cells[i];
+  if (st.over || c.open || c.flag) return;
+  if (!st.started) { placeMines(i); startTimer(); }
+  if (c.mine) { explode(i); return; }
+  // abre en cascada (las celdas se van destapando en onda)
+  const q = [[i, 0]], seen = new Set([i]);
+  let count = 0;
+  while (q.length) {
+    const [j, dist] = q.shift(), cj = st.cells[j];
+    if (cj.open || cj.flag) continue;
+    cj.open = true; st.opened++; count++;
+    paint(cj, Math.min(dist * 28, 600));
+    if (cj.n === 0) neighbors(j).forEach(k => { if (!seen.has(k) && !st.cells[k].mine) { seen.add(k); q.push([k, dist + 1]); } });
+  }
+  count > 1 ? sfx.tone(440, .12, 'triangle', .1) : sfx.pop();
+  checkWin();
+}
+function chord(i){
+  const c = st.cells[i];
+  if (!c.open || !c.n) return;
+  const nb = neighbors(i), flags = nb.filter(j => st.cells[j].flag).length;
+  if (flags !== c.n) { nb.forEach(j => { if (!st.cells[j].open && !st.cells[j].flag) { els[j].classList.add('pressed'); setTimeout(() => els[j].classList.remove('pressed'), 150); } }); return; }
+  nb.forEach(j => { if (!st.over) open(j); });
+}
+function toggleFlag(i){
+  const c = st.cells[i];
+  if (st.over || c.open) return;
+  c.flag = !c.flag; st.flags += c.flag ? 1 : -1;
+  paint(c); updateMines();
+  sfx.tone(c.flag ? 700 : 400, .06, 'square', .06);
+  if (navigator.vibrate) navigator.vibrate(25);
+}
+// gesto: 'tap' (toque normal) o 'alt' (toque largo / clic derecho = lo contrario del modo actual)
+function act(i, gesture){
+  sfx.init();
+  const c = st.cells[i];
+  if (c.open) { if (gesture === 'tap') chord(i); return; }
+  const flag = gesture === 'alt' ? !st.flagMode : st.flagMode;
+  flag ? toggleFlag(i) : open(i);
+}
+
+function explode(i){
+  st.over = true; clearInterval(st.timer);
+  sfx.noise(.5, .35); sfx.lose();
+  if (navigator.vibrate) navigator.vibrate([60, 40, 120]);
+  const c = st.cells[i]; c.open = true; paint(c); els[i].classList.add('boom', 'mine');
+  $('board').classList.add('shake');
+  setTimeout(() => $('board').classList.remove('shake'), 450);
+  // revela las demás minas una por una
+  const rest = st.cells.filter(x => x.mine && x.i !== i && !x.flag).sort(() => Math.random() - .5);
+  rest.forEach((m, k) => setTimeout(() => { m.open = true; paint(m); els[m.i].classList.add('mine'); if (k % 3 === 0) sfx.pop(); }, 120 + k * Math.max(15, 900 / rest.length)));
+  st.cells.filter(x => x.flag && !x.mine).forEach(x => els[x.i].classList.add('wrong'));
+  setTimeout(() => {
+    SK.result({
+      emoji:'💥', lose:true, title:'¡BOOM!', text:'Pisaste una mina. ¡A la próxima!',
+      stats:[[SK.fmtTime(st.elapsed), 'TIEMPO'], [`${Math.round(100 * st.opened / (st.cells.length - st.mines))}%`, 'DESPEJADO']],
+      buttons:[{ label:'Intentar otra vez', onClick: () => { newGame(); sizeBoard(); } }, { label:'Cambiar dificultad', kind:'ghost', onClick: toMenu }],
+    });
+  }, 1300 + rest.length * 10);
+}
+function checkWin(){
+  if (st.opened !== st.cells.length - st.mines || st.over) return;
+  st.over = true; clearInterval(st.timer);
+  st.elapsed = (Date.now() - st.t0) / 1000;
+  st.cells.filter(c => c.mine && !c.flag).forEach(c => { c.flag = true; paint(c); });
+  st.flags = st.mines; updateMines();
+  sfx.win();
+  const key = `sk-bm-rec-${st.diff}`, rec = SK.store.get(key);
+  const isRec = !rec || st.elapsed < rec;
+  if (isRec) { SK.store.set(key, st.elapsed); sfx.newRec(); }
+  SK.store.set(`sk-bm-wins-${st.diff}`, SK.store.get(`sk-bm-wins-${st.diff}`, 0) + 1);
+  const d = DIFFS[st.diff];
+  setTimeout(() => SK.result({
+    emoji:'🎉', title:'¡Campo despejado!', text:'Encontraste todas las minas', newRecord:isRec,
+    stats:[[SK.fmtTime(st.elapsed), 'TIEMPO'], [d.mines, 'MINAS'], [SK.fmtTime(isRec ? st.elapsed : rec), 'RÉCORD']],
+    share:{ emoji:'💣', title:'¡CAMPO DESPEJADO!', game:'Buscaminas', sub:`${d.label} · ${d.cols}×${d.rows}`, big:SK.fmtTime(st.elapsed), stats:[[d.mines, 'MINAS'], [SK.fmtTime(st.elapsed), 'TIEMPO']], text:`💣 Buscaminas ${d.label}: despejé el campo en ${SK.fmtTime(st.elapsed)}\nJuega: SeaKingsGames`, file:'logro-buscaminas' },
+    buttons:[{ label:'Jugar otra vez →', onClick: () => { newGame(); sizeBoard(); } }, { label:'Cambiar dificultad', kind:'ghost', onClick: toMenu }],
+  }), 700);
+}
+
+/* ---------- TOQUES ---------- */
+let press = null;
+const board = $('board');
+board.addEventListener('pointerdown', e => {
+  const t = e.target.closest('.cell'); if (!t) return;
+  if (e.button === 2) return;
+  const i = +t.dataset.i;
+  press = { i, x:e.clientX, y:e.clientY, long:false, timer:setTimeout(() => { press.long = true; act(i, 'alt'); }, 420) };
+  t.classList.add('pressed');
+});
+board.addEventListener('pointermove', e => { if (press && Math.hypot(e.clientX - press.x, e.clientY - press.y) > 12) { clearTimeout(press.timer); els[press.i].classList.remove('pressed'); press = null; } });
+const release = (e) => {
+  if (!press) return;
+  clearTimeout(press.timer); els[press.i].classList.remove('pressed');
+  if (!press.long && e.type === 'pointerup') act(press.i, 'tap');
+  press = null;
+};
+board.addEventListener('pointerup', release);
+board.addEventListener('pointercancel', release);
+board.addEventListener('contextmenu', e => { e.preventDefault(); const t = e.target.closest('.cell'); if (t) act(+t.dataset.i, 'alt'); });
+
+function setFlagMode(on){ st.flagMode = on; $('mode-dig').classList.toggle('on', !on); $('mode-flag').classList.toggle('on', on); }
+$('mode-dig').onclick = () => { sfx.tap(); setFlagMode(false); };
+$('mode-flag').onclick = () => { sfx.tap(); setFlagMode(true); };
+addEventListener('keydown', e => { if (e.key === 'f' || e.key === 'F') setFlagMode(!st.flagMode); });
+
+function toMenu(){ clearInterval(st.timer); buildMenu(); SK.showScreen('menu'); }
+$('btn-back').onclick = () => { sfx.tap(); toMenu(); };
+$('btn-restart').onclick = () => {
+  sfx.tap();
+  if (!st.started || st.over) { newGame(); sizeBoard(); return; }
+  SK.result({ emoji:'🔄', title:'¿Reiniciar?', text:'Se perderá esta partida', buttons:[{ label:'Sí, reiniciar', onClick: () => { newGame(); sizeBoard(); } }, { label:'Cancelar', kind:'secondary' }] });
+};
+SK.soundButton($('btn-sound'));
+
+buildMenu();
+SK.bannerAd($('ad-bottom'));
+SK.initPWA('Buscaminas');
+</script>
+</body>
+</html>

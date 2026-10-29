@@ -4,9 +4,9 @@ orden: 2
 archivo: ahorcado
 genero: Juego de palabras
 lema: Adivina la palabra antes de quedarte sin vidas.
-descripcion: El clásico juego del ahorcado en español, con 15 categorías, más de 800 palabras y cuatro dificultades.
+descripcion: El clásico juego del ahorcado en español, con 25 categorías, casi 1,500 palabras con pista y cuatro dificultades.
 imagen: /img/arcada/ahorcado.webp
-datos: [15 categorías, Más de 800 palabras, 4 dificultades, Gratis]
+datos: [25 categorías, Casi 1500 palabras, Pistas, 4 dificultades, Gratis]
 ---
 
 ## Cómo se juega
@@ -19,11 +19,20 @@ El juego elige una palabra secreta de la categoría que tú escojas y te muestra
 
 Ganas si completas la palabra antes de quedarte sin vidas. Cada palabra que adivinas seguida suma a tu **racha**, y el juego guarda tu récord y tu mejor racha en cada dificultad.
 
-El teclado incluye la Ñ, y las palabras se escriben sin acentos, así que no tienes que preocuparte por ellos.
+Las palabras llevan sus acentos, pero no tienes que preocuparte por ellos: con tocar la A se llenan también las Á. La Ñ sí cuenta como letra aparte.
+
+## Pistas
+
+Cada palabra tiene su pista. «Le aúlla a la luna» es lobo; «El mejor amigo del ser humano», perro.
+
+- En **Fácil** la pista se ve desde el principio.
+- En las demás dificultades puedes abrirla con el botón de pista, pero **cuesta una vida** y se dibuja como un error.
 
 ## Categorías
 
-Animales, Comida, Naturaleza, Tecnología, Deportes, Países, Profesiones, Hogar, Colores, Ciencia, Historia, Música, Cuerpo, Espacio y Global, que mezcla palabras de todas. En total son más de 800 palabras, y el juego evita repetir las que acabas de jugar.
+Hay 25 temas y casi 1,500 palabras: Animales, Comida, Comida del mundo, Frutas y verduras, Naturaleza, Países, México, Mexicanismos, Profesiones, Hogar, Ropa, Transporte, Deportes, Música, Tecnología, Videojuegos, Ciencia, Espacio, Cuerpo humano, Historia, Mitos y leyendas, Colores, Escuela, Emociones y Cosas de TikTok.
+
+Si no te decides, el modo **Aleatorio** mezcla palabras de todas las categorías. El juego evita repetir las que acabas de jugar.
 
 ## Dificultades
 
@@ -41,5 +50,9 @@ Animales, Comida, Naturaleza, Tecnología, Deportes, Países, Profesiones, Hogar
 - **Empieza por las vocales.** En español casi todas las palabras llevan A, E u O. La I y la U salen menos.
 - **Luego las consonantes más comunes.** S, R, N, L y T aparecen en muchísimas palabras. La K, la W y la X casi nunca.
 - **Usa la categoría.** Si la categoría es Países y la palabra tiene seis letras, ya tienes pocas opciones.
-- **Fíjate en los finales.** Terminaciones como -CION, -ERO o -ITO son frecuentes y te dan varias letras de golpe.
-- **En Extra Difícil, piensa antes de tocar.** Con palabras largas y solo cinco vidas, cada error cuenta.
+- **Guarda la pista para el final.** Fuera de Fácil cuesta una vida, así que conviene abrirla cuando ya tengas algunas letras y te falte la idea.
+- **Fíjate en los finales.** Terminaciones como -CIÓN, -ERO o -ITO son frecuentes y te dan varias letras de golpe.
+
+## El Ahorcado en vivo
+
+En nuestras transmisiones de TikTok jugamos una versión especial del Ahorcado donde el chat juega por nosotros. Los espectadores comentan letras y cada pocos segundos se juega la más votada. También pueden escribir la palabra completa, unirse al equipo que quiere salvar al personaje o al que quiere ahorcarlo, y los regalos dan vidas, revelan letras o le quitan vidas al otro equipo. Búscanos como [@litoelajolote](https://www.tiktok.com/@litoelajolote) para jugar en el próximo live.

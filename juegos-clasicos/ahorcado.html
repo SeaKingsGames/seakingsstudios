@@ -113,7 +113,11 @@
   .stats .val.danger{color:var(--red)}
 
   /* Pista */
-  .hint-bar{text-align:center;padding:4px 16px;font-size:13px;color:var(--text-dim);min-height:22px;font-style:italic}
+  .hint-bar{text-align:center;padding:4px 16px;font-size:13px;color:var(--text-dim);min-height:22px;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .hint-text{font-size:15px;color:#fff;font-weight:600;background:rgba(244,207,58,.12);border:1px solid rgba(244,207,58,.35);padding:6px 12px;border-radius:12px;max-width:440px;line-height:1.3}
+  .hint-btn{font-size:13px;font-weight:600;color:var(--gold);padding:6px 12px;border-radius:12px;border:1px dashed rgba(244,207,58,.5)}
+  .hint-btn:disabled{opacity:.4}
+  .modal-hint{font-size:14px!important;color:#fff!important;opacity:.85;margin:-6px 0 10px!important}
 
   /* ---------- CANVAS ---------- */
   .gallows-wrap{display:flex;justify-content:center;align-items:center;padding:10px;flex-shrink:0}
@@ -121,19 +125,21 @@
 
   /* ---------- PALABRA ---------- */
   .word{
-    display:flex;justify-content:center;gap:6px;flex-wrap:wrap;
+    display:flex;justify-content:center;column-gap:22px;row-gap:10px;flex-wrap:wrap;
     padding:14px 16px;font-family:'Bagel Fat One',sans-serif;
     font-variant-numeric:tabular-nums;
   }
   .letter-slot{
-    min-width:28px;height:40px;
+    min-width:var(--slot,28px);height:calc(var(--slot,28px) * 1.45);
     border-bottom:3px solid var(--gold);
     display:flex;align-items:center;justify-content:center;
-    font-size:28px;color:#fff;
+    font-size:var(--slot,28px);color:#fff;
     transition:transform .3s, color .3s;
   }
   .letter-slot.revealed{animation:revealLetter .35s cubic-bezier(.34,1.56,.64,1)}
-  .letter-slot.space{border-bottom:none;min-width:14px}
+  .word-group{display:flex;gap:var(--gap,6px)}
+  .letter-slot.symbol{border-bottom:none;min-width:12px}
+  .letter-slot.missed{color:var(--red)}
   @keyframes revealLetter{0%{transform:translateY(20px) scale(.8);opacity:0}100%{transform:translateY(0) scale(1);opacity:1}}
 
   /* letras erróneas */
@@ -237,7 +243,7 @@
 <!-- ====================== MENÚ ====================== -->
 <section id="menu" class="screen active">
   <div class="rope-deco">🪢</div>
-  <div class="logo">AHORCADO<small>SeaKingsGames · v2</small></div>
+  <div class="logo">AHORCADO<small>SeaKingsGames · v3</small></div>
 
   <div class="section-title">CATEGORÍA</div>
   <div class="cat-grid" id="cat-grid"></div>
@@ -281,6 +287,7 @@
     <h2>¡Lo adivinaste!</h2>
     <p>La palabra era</p>
     <div class="answer" id="win-answer"></div>
+    <p class="modal-hint" id="win-hint"></p>
     <div class="achievement-card">
       <div class="ach-title">TU LOGRO</div>
       <div class="ach-stats">
@@ -309,6 +316,7 @@
     <h2 class="lose">¡Game Over!</h2>
     <p>La palabra era</p>
     <div class="answer" id="lose-answer"></div>
+    <p class="modal-hint" id="lose-hint"></p>
     <p style="margin-top:6px;font-size:14px">Racha final: <b id="lose-streak" style="color:#fff">0</b></p>
     <div class="ad-label">PUBLICIDAD</div>
     <div class="ad-slot" id="ad-lose"></div>
@@ -343,10 +351,11 @@
   <button class="close" id="btn-install-close">✕</button>
 </div>
 
+<script src="palabras.js"></script>
 <script>
 /* =====================================================
-   AHORCADO v2 · SeaKingsGames
-   15 temas · 600+ palabras · 4 dificultades
+   AHORCADO v3 · SeaKingsGames
+   25 temas · ~1,500 palabras con pista · 4 dificultades
    ===================================================== */
 
 /* ---------- AUDIO ---------- */
@@ -393,70 +402,12 @@ function loadAd(el, cfg){
   el.appendChild(ifr);
 }
 
-/* ---------- DICCIONARIO COMPLETO (15 temas) ---------- */
+/* ---------- DICCIONARIO (viene de palabras.js) ---------- */
 const WORDS = {
-  animales: {
-    ico:'🐾', label:'Animales',
-    list:['perro','gato','elefante','jirafa','tortuga','tigre','leon','aguila','ballena','tiburon','delfin','caballo','conejo','venado','zorro','panda','koala','canguro','rinoceronte','hipopotamo','pinguino','flamingo','mariposa','oso','lobo','ardilla','murcielago','cocodrilo','iguana','pulpo','cangrejo','camaleon','salamandra','tucan','colibri','jaguar','puma','llama','vicuna','ajolote','quetzal','axolote','gorrion','coyote','bisonte','carpincho','nutria','tapir','perezoso','capibara','anaconda','piranha','tucutu','guacamayo','ocelote','tejon','marmota','alce','ciervo','foca','morsas','narval','ornitorrinco','numbat','quokka','wombat','suricata','mangosta','hiena','chacal','pantera','leopardo','guepardo','gorila','chimpance','orangutan','gibbon','lince','puercoespin','mapache','tlacuache','comadreja','erizo','topo','castor']
-  },
-  comida: {
-    ico:'🌮', label:'Comida',
-    list:['taco','pizza','hamburguesa','enchilada','quesadilla','tamale','pozole','mole','chilaquiles','guacamole','tortilla','frijoles','arroz','sopa','ensalada','pan','queso','pollo','carne','pescado','sushi','pasta','espagueti','lasagna','helado','pastel','chocolate','galleta','dona','flan','gelatina','churro','elote','esquite','torta','huarache','sope','gordita','tlacoyo','tlayuda','barbacoa','birria','menudo','carnitas','cochinita','pambazo','tostada','flautas','chiles','rellenos','caldo','caldillo','chilorio','machaca','discada','camarones','ceviche','tostadas','mixiotes','escamoles','chapulines']
-  },
-  naturaleza: {
-    ico:'🌿', label:'Naturaleza',
-    list:['montaña','volcan','selva','desierto','oceano','rio','lago','cascada','bosque','pradera','pantano','cueva','acantilado','glaciar','tundra','manantial','arrecife','manglares','savana','llanura','cordillera','meseta','peninsula','bahia','estrecho','delta','estuario','laguna','cenote','barranca','sierra','cerro','colina','lomas','arroyo','torrente','manantial','geyser','fumarola','terremoto','erupcion','tsunami','ciclone','tornado','huracane','neviza','granizo','aguanieve','relampago','trueno','aurora','eclipse']
-  },
-  tecnologia: {
-    ico:'💻', label:'Tecnología',
-    list:['computadora','telefono','internet','software','hardware','pantalla','teclado','raton','impresora','escaner','camara','microfono','altavoz','auricular','bateria','cargador','cable','router','antena','servidor','nube','codigo','programa','aplicacion','algoritmo','datos','archivo','carpeta','correo','mensaje','video','imagen','musica','podcast','streaming','blockchain','inteligencia','robotica','nanotecnologia','realidad','virtual','aumentada','satelite','cohete','dron','automovil','electrico','solar','panel','turbina','reactor','acelerador']
-  },
-  deportes: {
-    ico:'⚽', label:'Deportes',
-    list:['futbol','basquetbol','beisbol','tenis','golf','natacion','atletismo','boxeo','karate','judo','esgrima','ciclismo','patinaje','esqui','surf','voleibol','rugby','hockey','polo','arqueria','remo','vela','gimnasia','equitacion','escalada','ajedrez','billar','dardos','bolos','lucha','triatlon','maraton','baloncesto','handball','waterpolo','clavados','maratones','ultramaraton','parkour','eskalera','lacrosse','criquet','kabaddi','sumo','taekwondo','aikido','capoeira','kendo','fencing','biathlon','pentatlon','heptatlon','decatlon']
-  },
-  paises: {
-    ico:'🌎', label:'Países',
-    list:['mexico','argentina','brasil','chile','colombia','peru','espana','francia','italia','alemania','japon','china','india','rusia','canada','australia','egipto','grecia','portugal','holanda','belgica','suiza','suecia','noruega','finlandia','irlanda','islandia','jamaica','cuba','panama','honduras','uruguay','paraguay','bolivia','ecuador','venezuela','nicaragua','marruecos','tailandia','vietnam','filipinas','sudafrica','turquia','indonesia','nigeria','kenia','ghana','tanzania','senegal','marruecos','tunez','argelia','libia','mozambique','angola','zambia','malawi','rwanda','burundi']
-  },
-  profesiones: {
-    ico:'👔', label:'Profesiones',
-    list:['doctor','enfermero','maestro','ingeniero','arquitecto','abogado','contador','panadero','carpintero','plomero','electricista','mecanico','chofer','piloto','marinero','soldado','policia','bombero','periodista','escritor','pintor','musico','actor','bailarin','cantante','fotografo','disenador','programador','cocinero','mesero','vendedor','cajero','sastre','barbero','jardinero','agricultor','pescador','minero','dentista','veterinario','farmaceutico','astronomo','biologo','quimico','geologo','psicologo','terapeuta','fisioterapeuta','nutriologo','estilista','maquillista','esteticista','tatuador','diseño','industrial']
-  },
-  hogar: {
-    ico:'🏠', label:'Hogar',
-    list:['mesa','silla','cama','sofa','sillon','escritorio','armario','ropero','espejo','lampara','cortina','alfombra','almohada','sabana','cobija','toalla','plato','vaso','cuchara','tenedor','cuchillo','sarten','olla','refrigerador','licuadora','tostador','microondas','horno','lavadora','aspiradora','ventilador','television','reloj','telefono','llave','puerta','ventana','escalera','jardin','cochera','recamara','cocina','bano','sala','comedor','bodega','terraza','balcon','azotea','sotano']
-  },
-  colores: {
-    ico:'🎨', label:'Colores',
-    list:['rojo','azul','verde','amarillo','naranja','morado','rosa','negro','blanco','gris','marron','dorado','plateado','turquesa','violeta','magenta','cian','beige','coral','indigo','carmesi','escarlata','lavanda','salmon','oliva','lima','perla','crema','ocre','sepia','fucsia','ambar','malva','aguamarina','celeste','azulmarino','verde oscuro','purpura','lila','castaño','terracota','siena','pizarra','marfil','cobrizo','bronce','esmeralda','zafiro','rubí']
-  },
-  ciencia: {
-    ico:'🔬', label:'Ciencia',
-    list:['atomo','molecula','celula','proteina','acido','oxigeno','hidrogeno','electron','neutron','proton','foton','quark','graviton','plasma','estado','materia','energia','fuerza','velocidad','aceleracion','momentum','gravedad','magnetismo','electricidad','luz','sonido','calor','temperatura','presion','volumen','densidad','viscosidad','entropia','entalpía','fisica','quimica','biologia','geologia','astronomia','cosmologia','genetica','evolucion','ecosistema','biodiversidad','fotosintesis','mitosis','meiosis','transcripcion','traduccion','replicacion','mutacion']
-  },
-  historia: {
-    ico:'📜', label:'Historia',
-    list:['azteca','maya','inca','olmeca','tolteca','zapoteca','mixteca','teotihuacan','tenochtitlan','chichen','palenque','uxmal','monte','alban','conquista','colonia','independencia','revolucion','reforma','republica','porfiriato','cristiada','guerrilla','movimiento','democracia','dictadura','monarquia','feudalismo','esclavitud','abolicion','sufragio','feminismo','socialismo','capitalismo','comunismo','liberalismo','conservadurismo','faraon','piramide','gladiador','legionario','caballero','samurai','vikingo','guerrero','sacerdote','chamán']
-  },
-  musica: {
-    ico:'🎵', label:'Música',
-    list:['guitarra','piano','violin','trompeta','bateria','bajo','flauta','saxofon','clarinete','oboe','cello','arpa','acordeon','mandolina','banjo','ukulele','tuba','trombon','xilofono','marimba','tambor','congas','bongo','cajón','guiro','maracas','claves','quijada','vihuela','guitarron','requinto','sitar','gaita','cornamusa','balalaica','koto','shamisen','didgeridoo','mbira','kalimba','balafon','djembe','ritmo','melodia','armonia','contrapunto','acorde','escala','tonalidad','compas','tempo']
-  },
-  /* TEMA GLOBAL: palabras del mundo entero */
-  global: {
-    ico:'🌍', label:'Global',
-    list:['pizza','sushi','tacos','ramen','paella','kimchi','pho','hummus','falafel','gyros','kebab','curry','samosa','spring roll','baklava','crepe','croissant','baguette','pretzel','lasagna','moussaka','souvlaki','pierogi','stroganoff','goulash','schnitzel','bratwurst','wurst','haggis','scones','muffin','bagel','burrito','empanada','ceviche','brigadeiro','dulce','leche','churros','tiramisu','cannoli','gelato','waffles','pancake','cheesecake','brownie','donut','macaron','profiterol','creme brulee','fondue','raclette','poutine','smorrebrod','lutefisk','ikura','mochi','gyoza','pelmeni','mantu','borsch','strudel','injera','tagine','couscous','jollof','bobotie','peri peri']
-  },
-  cuerpo: {
-    ico:'🫀', label:'Cuerpo',
-    list:['cabeza','cuello','hombro','brazo','codo','muneca','mano','dedo','torso','pecho','espalda','cintura','cadera','pierna','rodilla','tobillo','pie','talon','cerebro','corazon','pulmon','higado','rinon','estomago','intestino','pancreas','bazo','vesicula','trachea','esofago','laringe','faringe','lengua','dientes','muela','encia','labio','mejilla','nariz','oreja','ojo','ceja','pestana','frente','menton','nuca','columna','vertebra','costilla','perone','femur','tibia','rotula','escapula','clavicula','pelvis','tendon','ligamento','nervio','vena','arteria']
-  },
-  espacio: {
-    ico:'🚀', label:'Espacio',
-    list:['planeta','estrella','galaxia','nebulosa','cometa','asteroide','meteoro','satelite','luna','sol','mercurio','venus','marte','jupiter','saturno','urano','neptuno','pluton','cosmos','universo','agujero','negro','supernova','pulsar','cuasar','magnetar','enana','blanca','gigante','roja','sistema','solar','milkyway','andromeda','orion','casiopea','telescopio','observatorio','cohete','capsula','orbita','apogeo','perigeo','gravedad','masa','luz','anos','parsec','nebula','cluster','constelacion','zodíaco','equinoccio','solsticio','eclipse','transito','ocultacion','aurora','magnetosfera']
-  },
+  aleatorio: { ico:'🎲', label:'Aleatorio', list:[] },
+  ...SK_PALABRAS,
 };
+WORDS.aleatorio.list = Object.entries(SK_PALABRAS).flatMap(([k,c]) => c.list.map(w => ({...w, cat:k})));
 
 const DIFFICULTIES = {
   facil:        { minLen:3,  maxLen:5,  lives:7, label:'FÁCIL'         },
@@ -473,7 +424,7 @@ const state = {
   difficulty: 'facil',
   level: 1,
   streak: 0,
-  word: '', hint:'', display: [],
+  word: '', entry: null, chars: [], catText: '', hintShown: false,
   wrongLetters: [], rightLetters: [],
   livesMax: 6, livesLeft: 6,
   startTime:0, elapsed:0, ticking:false, timerId:null,
@@ -487,9 +438,7 @@ const ctx = canvas.getContext('2d');
 
 /* ---------- UTILIDADES ---------- */
 function fmtTime(s){ const m=Math.floor(s/60), sec=Math.floor(s%60); return `${m}:${sec.toString().padStart(2,'0')}`; }
-function normalize(s){
-  return s.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/Ñ/g,'Ñ');
-}
+const normalize = SK_normalizar; // quita acentos pero respeta la Ñ
 function startTimer(){
   if(state.timerId) clearInterval(state.timerId);
   state.timerId = setInterval(() => {
@@ -500,19 +449,23 @@ function startTimer(){
 }
 function stopTimer(){ if(state.timerId){clearInterval(state.timerId);state.timerId=null;} state.ticking=false; }
 
-/* ---------- ELEGIR PALABRA ---------- */
+/* ---------- ELEGIR PALABRA ----------
+   Si la categoría no tiene palabras de ese largo, toma las más cercanas
+   (antes el juego se congelaba, p. ej. Cuerpo + Extra difícil). */
 function pickWord(){
   const cfg = DIFFICULTIES[state.difficulty];
-  const pool = WORDS[state.category].list
-    .filter(w => w.length >= cfg.minLen && w.length <= cfg.maxLen)
-    .filter(w => !state.recentWords.includes(w));
-  if (pool.length === 0) {
-    state.recentWords = [];
-    return pickWord();
-  }
-  const w = pool[(Math.random()*pool.length)|0];
-  state.recentWords.push(w);
-  if (state.recentWords.length > 20) state.recentWords.shift();
+  const all = WORDS[state.category].list;
+  const dist = w => w.len < cfg.minLen ? cfg.minLen - w.len : (w.len > cfg.maxLen ? w.len - cfg.maxLen : 0);
+  let best = Infinity;
+  all.forEach(w => { best = Math.min(best, dist(w)); });
+  // si hay pocas palabras exactas, deja entrar las que están a 1 letra
+  let pool = all.filter(w => dist(w) <= best);
+  if (pool.length < 4) pool = all.filter(w => dist(w) <= best + 1);
+  let fresh = pool.filter(w => !state.recentWords.includes(w.word));
+  if (fresh.length === 0) { state.recentWords = []; fresh = pool; }
+  const w = fresh[(Math.random()*fresh.length)|0];
+  state.recentWords.push(w.word);
+  if (state.recentWords.length > Math.min(30, Math.floor(pool.length*0.7))) state.recentWords.shift();
   return w;
 }
 
@@ -520,11 +473,13 @@ function pickWord(){
 function newGame(keepStreak=false){
   const cfg = DIFFICULTIES[state.difficulty];
   if (!keepStreak) state.streak = 0;
-  state.word = pickWord();
-  // pista: categoría + longitud
-  const cat = WORDS[state.category];
-  state.hint = `${cat.ico} ${cat.label} · ${state.word.length} letras`;
-  state.display = normalize(state.word).split('').map(ch => ch === ' ' ? ' ' : '_');
+  const entry = pickWord();
+  state.entry = entry;
+  state.word = entry.word;
+  state.chars = [...entry.word].map(ch => {
+    const base = normalize(ch);
+    return { orig: ch.toUpperCase(), base, isLetter: /^[A-ZÑ]$/.test(base) };
+  });
   state.wrongLetters = [];
   state.rightLetters = [];
   state.livesMax = cfg.lives;
@@ -532,8 +487,12 @@ function newGame(keepStreak=false){
   state.elapsed = 0; state.startTime = 0; state.ticking = false;
   state.finished = false;
   state.shake = 0;
+  // En Fácil la pista se ve desde el inicio; en las demás cuesta 1 vida
+  state.hintShown = state.difficulty === 'facil';
   stopTimer();
 
+  const catKey = entry.cat || state.category;
+  const cat = WORDS[catKey];
   $('level-num').textContent = state.level;
   $('diff-badge').textContent = `${cfg.label} · ${WORDS[state.category].label.toUpperCase()}`;
   $('stat-time').textContent = '0:00';
@@ -541,29 +500,80 @@ function newGame(keepStreak=false){
   $('stat-lives').classList.remove('danger');
   $('stat-streak').textContent = state.streak;
   $('wrong-letters').innerHTML = '';
-  $('hint-bar').textContent = state.hint;
+  state.catText = `${cat.ico} ${cat.label} · ${entry.len} letras`;
+  renderHint();
 
   renderWord();
   renderKeyboard();
   requestAnimationFrame(() => { resizeCanvas(); drawGallows(); });
 }
 
+/* ---------- PISTA ---------- */
+function renderHint(){
+  const el = $('hint-bar');
+  el.innerHTML = '';
+  const cat = document.createElement('div');
+  cat.textContent = state.catText;
+  el.appendChild(cat);
+  if (!state.entry.hint) return;
+  if (state.hintShown) {
+    const h = document.createElement('div');
+    h.className = 'hint-text';
+    h.textContent = '💡 ' + state.entry.hint;
+    el.appendChild(h);
+  } else {
+    const b = document.createElement('button');
+    b.className = 'hint-btn';
+    b.textContent = '💡 Ver pista (cuesta 1 ❤️)';
+    b.disabled = state.livesLeft <= 1 || state.finished;
+    b.onclick = useHint;
+    el.appendChild(b);
+  }
+}
+function useHint(){
+  if (state.hintShown || state.finished || state.livesLeft <= 1) return;
+  SFX.init(); SFX.tap();
+  state.hintShown = true;
+  state.livesLeft--;
+  $('stat-lives').textContent = state.livesLeft;
+  if (state.livesLeft <= 2) $('stat-lives').classList.add('danger');
+  // la pista cuenta como un error para el dibujo
+  state.wrongLetters.push('💡');
+  renderWrong();
+  drawGallows();
+  renderHint();
+}
+function renderWrong(){
+  $('wrong-letters').innerHTML = state.wrongLetters.map(l => `<span>${l}</span>`).join(' ');
+}
+
 /* ---------- RENDER PALABRA ---------- */
-function renderWord(){
+function renderWord(revealAll=false){
   const el = $('word');
   el.innerHTML = '';
-  const norm = normalize(state.word);
-  for (let i=0; i<state.word.length; i++) {
+  // agrupa por palabra para que no se corten a la mitad
+  let group = null;
+  const newGroup = () => { group = document.createElement('div'); group.className = 'word-group'; el.appendChild(group); };
+  newGroup();
+  state.chars.forEach(c => {
+    if (c.orig === ' ') { newGroup(); return; }
     const slot = document.createElement('div');
-    const ch = norm[i];
-    if (ch === ' ') {
-      slot.className = 'letter-slot space';
+    if (!c.isLetter) {
+      slot.className = 'letter-slot symbol';
+      slot.textContent = c.orig;
     } else {
-      slot.className = 'letter-slot';
-      slot.textContent = state.display[i] === '_' ? '' : state.display[i];
+      const shown = revealAll || state.rightLetters.includes(c.base);
+      slot.className = 'letter-slot' + (shown ? '' : ' empty') + (revealAll && !state.rightLetters.includes(c.base) ? ' missed' : '');
+      slot.textContent = shown ? c.orig : '';
     }
-    el.appendChild(slot);
-  }
+    group.appendChild(slot);
+  });
+  // ajusta el tamaño para que la palabra más larga quepa en pantalla
+  const longest = Math.max(...el.querySelectorAll('.word-group').length ? [...el.querySelectorAll('.word-group')].map(g => g.children.length) : [1]);
+  const avail = Math.min(el.clientWidth || window.innerWidth, 640) - 32;
+  const slot = Math.max(16, Math.min(28, Math.floor(avail / longest) - 6));
+  el.style.setProperty('--slot', slot + 'px');
+  el.style.setProperty('--gap', (slot < 22 ? 3 : 6) + 'px');
 }
 
 /* ---------- RENDER TECLADO ---------- */
@@ -602,11 +612,7 @@ function onLetter(letter){
     state.startTime = Date.now();
     startTimer();
   }
-  const norm = normalize(state.word);
-  let found = false;
-  for (let i=0; i<norm.length; i++) {
-    if (norm[i] === letter) { state.display[i] = letter; found = true; }
-  }
+  const found = state.chars.some(c => c.isLetter && c.base === letter);
   if (found) {
     state.rightLetters.push(letter);
     SFX.correct();
@@ -619,16 +625,16 @@ function onLetter(letter){
     SFX.wrong();
     $('stat-lives').textContent = state.livesLeft;
     if (state.livesLeft <= 2) $('stat-lives').classList.add('danger');
-    const wl = $('wrong-letters');
-    wl.innerHTML = state.wrongLetters.map(l => `<span>${l}</span>`).join(' ');
+    renderWrong();
     state.shake = 10;
     animateGallowsShake();
     renderKeyboard();
-    if (state.livesLeft <= 0) setTimeout(onLose, 700);
+    renderHint();
+    if (state.livesLeft <= 0) { state.finished = true; setTimeout(onLose, 700); }
   }
 }
 
-function checkWin(){ return !state.display.includes('_'); }
+function checkWin(){ return state.chars.every(c => !c.isLetter || state.rightLetters.includes(c.base)); }
 
 /* ---------- CANVAS GALLOWS ---------- */
 function resizeCanvas(){
@@ -721,6 +727,7 @@ function onWin(){
   let best=parseInt(localStorage.getItem(streakKey)||'0',10);
   if(state.streak>best){try{localStorage.setItem(streakKey,String(state.streak));}catch(e){}}
   $('win-answer').textContent=state.word.toUpperCase();
+  $('win-hint').textContent=state.entry.hint ? '💡 '+state.entry.hint : '';
   $('win-time').textContent=fmtTime(state.elapsed);
   $('win-lives').textContent=state.livesLeft;
   $('win-streak').textContent=state.streak;
@@ -729,8 +736,8 @@ function onWin(){
 }
 function onLose(){
   state.finished=true; stopTimer(); SFX.defeat();
-  state.display=normalize(state.word).split('');
-  renderWord(); drawGallows();
+  $('lose-hint').textContent = state.entry.hint ? '💡 ' + state.entry.hint : '';
+  renderWord(true); drawGallows(); renderHint();
   $('lose-answer').textContent=state.word.toUpperCase();
   $('lose-streak').textContent=state.streak;
   setTimeout(()=>openModal('modal-lose','ad-lose',ADS.medium250),500);
@@ -748,7 +755,7 @@ function genAchievementCanvas(){
   x.fillStyle='#f4cf3a'; x.font='bold 56px sans-serif'; x.fillText('¡PALABRA ADIVINADA!',540,330);
   x.fillStyle='#fff'; x.font='bold 90px sans-serif'; x.fillText('Ahorcado',540,430);
   x.fillStyle='#9fb0c4'; x.font='bold 38px sans-serif';
-  x.fillText(`${DIFFICULTIES[state.difficulty].label} · ${WORDS[state.category].label}`,540,490);
+  x.fillText(`${DIFFICULTIES[state.difficulty].label} · ${WORDS[state.entry.cat||state.category].label}`,540,490);
   x.fillStyle='#fff'; x.font='bold 70px monospace'; x.fillText(state.word.toUpperCase(),540,580);
   x.fillStyle='#f4cf3a'; roundRect(x,90,640,900,240,30); x.fill();
   x.fillStyle='#3a2400'; x.font='bold 90px sans-serif';
@@ -829,8 +836,9 @@ $('btn-menu-restart').onclick=()=>{closeModal('modal-restart');stopTimer();build
 /* teclado físico */
 document.addEventListener('keydown',e=>{
   if(!$('game').classList.contains('active')) return;
-  const ch=e.key.toUpperCase();
-  if(ch.length===1&&ALPHABET.includes(ch)) onLetter(ch);
+  if(e.key.length!==1) return;
+  const ch=normalize(e.key);
+  if(ALPHABET.includes(ch)) onLetter(ch);
 });
 
 function showScreen(name){

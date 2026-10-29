@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0e1f45">
+<title>Conecta 4 · SeaKingsGames</title>
+<meta name="description" content="Conecta 4 gratis en español: juega contra la compu en 3 niveles o con un amigo en el mismo celular. Funciona sin internet.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="comun.css">
+<style>
+  :root{
+    --bg:#0e1f45; --bg-2:#060e24; --panel:#1b3470; --panel-2:#26448a;
+    --accent:#ffd43b; --accent-deep:#c79a00; --accent-ink:#3a2a00;
+    --p1:#ff5b5b; --p1d:#c22d3a; --p2:#ffd43b; --p2d:#c79a00; --board:#2563eb; --board-d:#173f9e;
+  }
+  #game{flex:1}
+  .score{display:flex;justify-content:center;align-items:center;gap:14px;padding:8px 16px}
+  .pl{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:16px;background:var(--panel);box-shadow:var(--shadow);font-weight:700;min-width:120px;justify-content:center;border:3px solid transparent;transition:border-color .2s,transform .2s}
+  .pl.turn{border-color:#fff;transform:scale(1.05)}
+  .pl .dot{width:22px;height:22px;border-radius:50%}
+  .pl.a .dot{background:radial-gradient(circle at 35% 30%,#ff9a9a,var(--p1) 55%,var(--p1d))}
+  .pl.b .dot{background:radial-gradient(circle at 35% 30%,#fff1a8,var(--p2) 55%,var(--p2d))}
+  .pl .num{font-size:22px;font-variant-numeric:tabular-nums}
+  .pl .nm{font-size:13px;color:var(--text-dim)}
+  .vs{color:var(--text-dim);font-weight:700}
+  .status{text-align:center;font-weight:600;color:var(--text-dim);min-height:24px;padding:2px 16px}
+  .board-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:6px 10px 16px}
+  .board{position:relative;display:grid;grid-template-columns:repeat(7,var(--cs));gap:var(--g);padding:var(--g);border-radius:18px;
+    background:linear-gradient(180deg,var(--board),var(--board-d));box-shadow:0 14px 30px rgba(0,0,0,.45),inset 0 -6px 0 rgba(0,0,0,.2)}
+  .hole{width:var(--cs);height:var(--cs);border-radius:50%;background:var(--bg-2);box-shadow:inset 0 4px 6px rgba(0,0,0,.6);position:relative;overflow:visible;cursor:pointer}
+  .col-hl{position:absolute;top:0;bottom:0;width:calc(var(--cs) + var(--g));border-radius:12px;background:rgba(255,255,255,.08);pointer-events:none;transition:left .1s;display:none}
+  .disc{position:absolute;inset:0;border-radius:50%;z-index:2}
+  .disc.a{background:radial-gradient(circle at 35% 30%,#ff9a9a,var(--p1) 55%,var(--p1d));box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+  .disc.b{background:radial-gradient(circle at 35% 30%,#fff1a8,var(--p2) 55%,var(--p2d));box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+  .disc.drop{animation:drop var(--dt) cubic-bezier(.5,0,.75,0) forwards}
+  @keyframes drop{from{transform:translateY(var(--from))}to{transform:translateY(0)}}
+  .disc.win{animation:winPulse .6s ease-in-out infinite alternate;box-shadow:0 0 0 4px #fff,0 0 22px #fff}
+  @keyframes winPulse{to{transform:scale(.86)}}
+</style>
+</head>
+<body>
+
+<section id="menu" class="screen active">
+  <div class="logo-ico">🔴</div>
+  <div class="logo">CONECTA 4<small>SeaKingsGames</small></div>
+  <div class="section-title">CONTRA LA COMPU</div>
+  <div class="diff-list" id="diff-list"></div>
+  <div class="section-title">CON UN AMIGO</div>
+  <div class="diff-list"><button class="diff-btn" id="btn-2p"><div><div>👥 2 jugadores</div><div class="record-line">Pásense el celular por turnos</div></div><span class="tag">Mismo celular</span></button></div>
+  <p class="how">Toca una columna para soltar tu ficha. Gana quien junte 4 en línea: horizontal, vertical o diagonal.</p>
+  <a class="back-link" href="index.html">← Volver al inicio</a>
+  <div class="ad-banner-bottom" id="ad-bottom"></div>
+</section>
+
+<section id="game" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" id="btn-back">‹</button>
+    <div class="level-title"><div class="badge" id="badge">VS COMPU</div><h1 id="title">Fácil</h1></div>
+    <button class="icon-btn small" id="btn-sound">🔊</button>
+    <button class="icon-btn" id="btn-restart">↻</button>
+  </div>
+  <div class="score">
+    <div class="pl a" id="pl-a"><span class="dot"></span><div><div class="nm" id="nm-a">Tú</div><div class="num" id="sc-a">0</div></div></div>
+    <span class="vs">VS</span>
+    <div class="pl b" id="pl-b"><span class="dot"></span><div><div class="nm" id="nm-b">Compu</div><div class="num" id="sc-b">0</div></div></div>
+  </div>
+  <div class="status" id="status">Tu turno</div>
+  <div class="board-wrap"><div class="board" id="board"><div class="col-hl" id="col-hl"></div></div></div>
+</section>
+
+<script src="comun.js"></script>
+<script>
+/* =====================================================
+   CONECTA 4 · SeaKingsGames
+   ===================================================== */
+const { $, sfx } = SK;
+const R = 6, C = 7;
+const LEVELS = {
+  facil:   { label:'FÁCIL',   depth:2, mistake:.35, cls:'d0', note:'Para calentar' },
+  medio:   { label:'MEDIO',   depth:4, mistake:.08, cls:'d1', note:'Ya piensa un poco' },
+  dificil: { label:'DIFÍCIL', depth:7, mistake:0,   cls:'d3', note:'¿Le puedes ganar?' },
+};
+const st = { mode:'cpu', level:'facil', b:[], turn:1, starter:1, over:false, busy:false, score:[0,0], moves:0 };
+
+/* ---------- MENÚ ---------- */
+function buildMenu(){
+  const list = $('diff-list'); list.innerHTML = '';
+  Object.entries(LEVELS).forEach(([k, d]) => {
+    const w = SK.store.get(`sk-c4-wins-${k}`, 0), best = SK.store.get(`sk-c4-streak-${k}`, 0);
+    const b = document.createElement('button'); b.className = 'diff-btn';
+    b.innerHTML = `<div><div>🤖 ${d.label}</div><div class="record-line">${w ? `✅ ${w} ganadas${best > 1 ? ` · 🔥 racha ${best}` : ''}` : d.note}</div></div><span class="tag ${d.cls}">VS COMPU</span>`;
+    b.onclick = () => start('cpu', k);
+    list.appendChild(b);
+  });
+}
+function start(mode, level){
+  sfx.init(); sfx.tap();
+  st.mode = mode; st.level = level; st.score = [0, 0]; st.starter = 1; st.streak = 0;
+  $('badge').textContent = mode === 'cpu' ? 'VS COMPU' : '2 JUGADORES';
+  $('title').textContent = mode === 'cpu' ? LEVELS[level].label.charAt(0) + LEVELS[level].label.slice(1).toLowerCase() : 'Rojo vs Amarillo';
+  $('nm-a').textContent = mode === 'cpu' ? 'Tú' : 'Rojo';
+  $('nm-b').textContent = mode === 'cpu' ? 'Compu' : 'Amarillo';
+  SK.showScreen('game');
+  newRound();
+}
+$('btn-2p').onclick = () => start('2p');
+
+/* ---------- TABLERO ---------- */
+let holes = [];
+function layout(){
+  const w = Math.min(innerWidth - 24, 520), h = innerHeight - 260;
+  const g = Math.round(Math.min(w / C, h / R) * .12);
+  const cs = Math.floor(Math.min((w - g * (C + 1)) / C, (h - g * (R + 1)) / R, 70));
+  const el = $('board'); el.style.setProperty('--cs', cs + 'px'); el.style.setProperty('--g', g + 'px');
+  st.cs = cs; st.g = g;
+}
+addEventListener('resize', () => { if ($('game').classList.contains('active')) layout(); });
+function newRound(){
+  st.b = Array.from({ length:R }, () => Array(C).fill(0));
+  st.turn = st.starter; st.over = false; st.busy = false; st.moves = 0;
+  const el = $('board'); el.querySelectorAll('.hole').forEach(h => h.remove());
+  holes = [];
+  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
+    const h = document.createElement('div'); h.className = 'hole'; h.dataset.c = c; el.appendChild(h); holes.push(h);
+  }
+  layout(); paintScore();
+  if (st.mode === 'cpu' && st.turn === 2) cpuTurn();
+}
+function paintScore(){
+  $('sc-a').textContent = st.score[0]; $('sc-b').textContent = st.score[1];
+  $('pl-a').classList.toggle('turn', !st.over && st.turn === 1);
+  $('pl-b').classList.toggle('turn', !st.over && st.turn === 2);
+  if (!st.over) $('status').textContent = st.mode === 'cpu' ? (st.turn === 1 ? 'Tu turno' : 'La compu está pensando…') : (st.turn === 1 ? 'Turno de Rojo' : 'Turno de Amarillo');
+}
+const freeRow = (b, c) => { for (let r = R - 1; r >= 0; r--) if (!b[r][c]) return r; return -1; };
+
+/* ---------- JUGADAS ---------- */
+function drop(c, who){
+  const r = freeRow(st.b, c);
+  if (r < 0) return false;
+  st.b[r][c] = who; st.moves++;
+  const disc = document.createElement('div');
+  disc.className = 'disc drop ' + (who === 1 ? 'a' : 'b');
+  const fall = (r + 1) * (st.cs + st.g);
+  disc.style.setProperty('--from', `-${fall}px`);
+  disc.style.setProperty('--dt', `${Math.round(180 + r * 45)}ms`);
+  holes[r * C + c].appendChild(disc);
+  setTimeout(() => sfx.tone(180 + r * 25, .07, 'triangle', .14), 160 + r * 45);
+  return r;
+}
+function play(c){
+  if (st.over || st.busy) return;
+  if (st.mode === 'cpu' && st.turn !== 1) return;
+  const r = drop(c, st.turn);
+  if (r === false) { sfx.bad(); return; }
+  st.busy = true;
+  setTimeout(() => { st.busy = false; afterMove(r, c); }, 200 + r * 45);
+}
+function afterMove(r, c){
+  const line = winLine(st.b, r, c);
+  if (line) { finish(st.turn, line); return; }
+  if (st.moves === R * C) { finish(0); return; }
+  st.turn = 3 - st.turn; paintScore();
+  if (st.mode === 'cpu' && st.turn === 2) cpuTurn();
+}
+function cpuTurn(){
+  st.busy = true; paintScore();
+  setTimeout(() => {
+    const c = bestMove(st.b, LEVELS[st.level]);
+    const r = drop(c, 2);
+    setTimeout(() => { st.busy = false; afterMove(r, c); }, 200 + r * 45);
+  }, 350 + Math.random() * 300);
+}
+function winLine(b, r, c){
+  const who = b[r][c];
+  for (const [dr, dc] of [[0,1],[1,0],[1,1],[1,-1]]) {
+    const cells = [[r, c]];
+    for (const s of [1, -1]) {
+      let rr = r + dr * s, cc = c + dc * s;
+      while (rr >= 0 && rr < R && cc >= 0 && cc < C && b[rr][cc] === who) { cells.push([rr, cc]); rr += dr * s; cc += dc * s; }
+    }
+    if (cells.length >= 4) return cells;
+  }
+  return null;
+}
+
+/* ---------- INTELIGENCIA DE LA COMPU (minimax con poda alfa-beta) ---------- */
+const ORDER = [3, 2, 4, 1, 5, 0, 6];
+function scoreWindow(w, me){
+  const op = 3 - me; let m = 0, o = 0, e = 0;
+  for (const v of w) v === me ? m++ : v === op ? o++ : e++;
+  if (m === 4) return 1000;
+  if (m === 3 && e === 1) return 6;
+  if (m === 2 && e === 2) return 2;
+  if (o === 3 && e === 1) return -8;
+  if (o === 2 && e === 2) return -1;
+  return 0;
+}
+function evaluate(b, me){
+  let s = 0;
+  for (let r = 0; r < R; r++) if (b[r][3] === me) s += 4; else if (b[r][3] === 3 - me) s -= 4;
+  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
+    if (c + 3 < C) s += scoreWindow([b[r][c], b[r][c+1], b[r][c+2], b[r][c+3]], me);
+    if (r + 3 < R) s += scoreWindow([b[r][c], b[r+1][c], b[r+2][c], b[r+3][c]], me);
+    if (r + 3 < R && c + 3 < C) s += scoreWindow([b[r][c], b[r+1][c+1], b[r+2][c+2], b[r+3][c+3]], me);
+    if (r + 3 < R && c - 3 >= 0) s += scoreWindow([b[r][c], b[r+1][c-1], b[r+2][c-2], b[r+3][c-3]], me);
+  }
+  return s;
+}
+function minimax(b, depth, alpha, beta, maxing, me, moves){
+  if (depth === 0 || moves === R * C) return evaluate(b, me);
+  const who = maxing ? me : 3 - me;
+  let best = maxing ? -Infinity : Infinity;
+  for (const c of ORDER) {
+    const r = freeRow(b, c); if (r < 0) continue;
+    b[r][c] = who;
+    let v;
+    if (winLine(b, r, c)) v = maxing ? 100000 + depth : -100000 - depth;
+    else v = minimax(b, depth - 1, alpha, beta, !maxing, me, moves + 1);
+    b[r][c] = 0;
+    if (maxing) { best = Math.max(best, v); alpha = Math.max(alpha, v); }
+    else { best = Math.min(best, v); beta = Math.min(beta, v); }
+    if (alpha >= beta) break;
+  }
+  return best;
+}
+function bestMove(board, lvl){
+  const b = board.map(r => r.slice());
+  const legal = ORDER.filter(c => freeRow(b, c) >= 0);
+  // ganar ya o tapar al rival (en Fácil a veces se le pasa)
+  for (const who of [2, 1]) for (const c of legal) {
+    const r = freeRow(b, c); b[r][c] = who; const w = winLine(b, r, c); b[r][c] = 0;
+    if (w && !(who === 1 && Math.random() < lvl.mistake)) return c;
+  }
+  if (Math.random() < lvl.mistake) return legal[(Math.random() * legal.length) | 0];
+  let best = -Infinity, pick = legal[0];
+  for (const c of legal) {
+    const r = freeRow(b, c); b[r][c] = 2;
+    const v = minimax(b, lvl.depth - 1, -Infinity, Infinity, false, 2, st.moves + 1) + (Math.random() - .5) * (lvl.depth < 4 ? 6 : .5);
+    b[r][c] = 0;
+    if (v > best) { best = v; pick = c; }
+  }
+  return pick;
+}
+
+/* ---------- FIN DE RONDA ---------- */
+function finish(winner, line){
+  st.over = true; paintScore();
+  st.starter = 3 - st.starter; // alterna quién empieza
+  if (line) line.forEach(([r, c]) => holes[r * C + c].querySelector('.disc')?.classList.add('win'));
+  if (winner) st.score[winner - 1]++;
+  paintScore();
+  const human = st.mode === 'cpu';
+  let emoji, title, lose = false;
+  if (!winner) { emoji = '🤝'; title = '¡Empate!'; $('status').textContent = 'Tablero lleno'; sfx.tone(440, .2); }
+  else if (human && winner === 1) {
+    emoji = '🏆'; title = '¡Le ganaste a la compu!'; sfx.win();
+    const k = st.level; SK.store.set(`sk-c4-wins-${k}`, SK.store.get(`sk-c4-wins-${k}`, 0) + 1);
+    st.streak++; if (st.streak > SK.store.get(`sk-c4-streak-${k}`, 0)) SK.store.set(`sk-c4-streak-${k}`, st.streak);
+  }
+  else if (human) { emoji = '🤖'; title = 'Ganó la compu'; lose = true; sfx.lose(); st.streak = 0; }
+  else { emoji = winner === 1 ? '🔴' : '🟡'; title = `¡Ganó ${winner === 1 ? 'Rojo' : 'Amarillo'}!`; sfx.win(); }
+  if (winner) $('status').textContent = title;
+  const names = human ? ['TÚ', 'COMPU'] : ['ROJO', 'AMARILLO'];
+  setTimeout(() => SK.result({
+    emoji, title, lose, text: `Marcador: ${st.score[0]} - ${st.score[1]}`,
+    stats: [[st.score[0], names[0]], [st.score[1], names[1]]],
+    share: human && winner === 1 ? { emoji:'🔴', title:'¡LE GANÉ A LA COMPU!', game:'Conecta 4', sub:`Nivel ${LEVELS[st.level].label}`, big:`${st.score[0]} - ${st.score[1]}`, stats:[[st.score[0], 'GANADAS'], [st.streak, 'RACHA']], text:`🔴 Le gané a la compu en Conecta 4 (${LEVELS[st.level].label}). Marcador ${st.score[0]}-${st.score[1]}\nJuega: SeaKingsGames`, file:'logro-conecta4' } : null,
+    buttons: [{ label:'Otra ronda →', onClick: newRound }, { label:'Volver al menú', kind:'ghost', onClick: toMenu }],
+  }), line ? 1100 : 500);
+}
+
+/* ---------- TOQUES ---------- */
+const board = $('board'), hl = $('col-hl');
+function colFromEvent(e){
+  const r = board.getBoundingClientRect();
+  const c = Math.floor((e.clientX - r.left - st.g / 2) / (st.cs + st.g));
+  return Math.max(0, Math.min(C - 1, c));
+}
+board.addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse') return;
+  hl.style.display = 'block'; hl.style.left = (st.g / 2 + colFromEvent(e) * (st.cs + st.g)) + 'px';
+});
+board.addEventListener('pointerleave', () => hl.style.display = 'none');
+board.addEventListener('click', e => { sfx.init(); play(colFromEvent(e)); });
+addEventListener('keydown', e => { if ($('game').classList.contains('active') && e.key >= '1' && e.key <= '7') play(+e.key - 1); });
+
+function toMenu(){ buildMenu(); SK.showScreen('menu'); }
+$('btn-back').onclick = () => { sfx.tap(); toMenu(); };
+$('btn-restart').onclick = () => { sfx.tap(); if (!st.moves || st.over) { newRound(); return; } SK.result({ emoji:'🔄', title:'¿Reiniciar ronda?', text:'Esta ronda no cuenta', buttons:[{ label:'Sí, reiniciar', onClick: newRound }, { label:'Cancelar', kind:'secondary' }] }); };
+SK.soundButton($('btn-sound'));
+
+buildMenu();
+SK.bannerAd($('ad-bottom'));
+SK.initPWA('Conecta 4');
+</script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+/* =====================================================
+   SeaKingsGames · estilos compartidos de los juegos
+   Cada juego cambia los colores con sus variables --bg, --panel, --accent...
+   ===================================================== */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+:root{
+  --bg:#2d3e50; --bg-2:#1c2a3a;
+  --panel:#3d4e60; --panel-2:#4d5e70;
+  --accent:#f4cf3a; --accent-deep:#b89800; --accent-ink:#3a2400;
+  --green:#5fc99a; --red:#e85a6b; --blue:#5fa8e8;
+  --text:#fff; --text-dim:#9fb0c4;
+  --line:rgba(159,176,196,.2);
+  --shadow:0 4px 0 rgba(0,0,0,.25), 0 8px 20px rgba(0,0,0,.3);
+}
+html,body{height:100%}
+body{
+  font-family:'Fredoka',system-ui,sans-serif;
+  background:radial-gradient(ellipse at top,var(--panel) 0%,var(--bg) 40%,var(--bg-2) 100%);
+  background-attachment:fixed;color:var(--text);display:flex;flex-direction:column;min-height:100vh;
+  overscroll-behavior:none;touch-action:manipulation;
+}
+button{font-family:inherit;border:none;cursor:pointer;color:inherit;background:none}
+
+.screen{display:none;flex-direction:column;min-height:100vh;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.screen.active{display:flex}
+
+/* ---------- MENÚ ---------- */
+#menu{align-items:center;justify-content:flex-start;gap:14px;padding:28px 24px 100px;flex:1;overflow-y:auto}
+.logo-ico{font-size:52px;line-height:1;display:inline-block;animation:bob 3s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-6px) rotate(3deg)}}
+.logo{
+  font-family:'Bagel Fat One','Fredoka',system-ui,sans-serif;font-size:clamp(36px,10.5vw,62px);line-height:.95;text-align:center;
+  color:var(--accent);text-shadow:0 4px 0 var(--accent-deep),0 8px 24px rgba(0,0,0,.35);letter-spacing:.5px;
+}
+.logo small{display:block;font-family:'Fredoka',system-ui,sans-serif;font-weight:600;font-size:.28em;color:var(--text-dim);letter-spacing:3px;margin-top:8px;text-shadow:none}
+.section-title{font-size:13px;letter-spacing:3px;color:var(--text-dim);font-weight:600;margin-top:4px}
+.seg{display:flex;gap:6px;width:min(380px,94vw);padding:5px;border-radius:14px;background:rgba(0,0,0,.2)}
+.seg button{flex:1;padding:10px 6px;border-radius:10px;font-weight:600;font-size:14px;color:var(--text-dim);transition:background .15s}
+.seg button.on{background:var(--panel-2);color:#fff;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.diff-list{display:flex;flex-direction:column;gap:10px;width:min(380px,94vw);margin-top:4px}
+.diff-btn{
+  padding:14px 20px;border-radius:16px;background:var(--panel);box-shadow:var(--shadow);
+  display:flex;justify-content:space-between;align-items:center;font-size:17px;font-weight:600;transition:transform .1s;text-align:left;
+}
+.diff-btn:active{transform:translateY(2px)}
+.diff-btn .tag{font-size:12px;font-weight:600;padding:4px 10px;border-radius:8px;background:rgba(255,255,255,.12);color:var(--text-dim);letter-spacing:.5px;white-space:nowrap}
+.diff-btn .d0{color:#9be37d;background:rgba(155,227,125,.15)}
+.diff-btn .d1{color:#7ec8ff;background:rgba(126,200,255,.15)}
+.diff-btn .d2{color:#ffa84a;background:rgba(255,168,74,.15)}
+.diff-btn .d3{color:#ff5e7a;background:rgba(255,94,122,.15)}
+.record-line{font-size:12px;color:var(--text-dim);font-weight:500;margin-top:3px;font-variant-numeric:tabular-nums}
+.back-link{color:var(--text-dim);font-size:14px;text-decoration:none;margin-top:8px;margin-bottom:16px}
+.how{width:min(380px,94vw);font-size:13px;line-height:1.5;color:var(--text-dim);text-align:center}
+
+.ad-banner-bottom{
+  position:fixed;left:0;right:0;bottom:env(safe-area-inset-bottom);
+  display:flex;justify-content:center;align-items:center;padding:8px 0;
+  background:rgba(0,0,0,.45);backdrop-filter:blur(8px);
+  z-index:20;min-height:50px;border-top:1px solid var(--line);
+}
+.ad-banner-bottom iframe{max-width:100%}
+
+/* ---------- PANTALLA DE JUEGO ---------- */
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 4px;flex-shrink:0;gap:8px}
+.icon-btn{
+  width:46px;height:46px;border-radius:50%;background:#fff;color:var(--bg-2);
+  display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);
+  font-size:22px;font-weight:700;transition:transform .1s;flex-shrink:0;
+}
+.icon-btn:active{transform:translateY(2px)}
+.icon-btn.small{width:38px;height:38px;font-size:16px}
+.level-title{text-align:center;flex:1;min-width:0}
+.level-title .badge{display:inline-block;font-size:10px;font-weight:600;letter-spacing:2px;padding:3px 10px;border-radius:10px;background:rgba(255,255,255,.12);color:var(--text-dim)}
+.level-title h1{font-size:18px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stats{display:flex;justify-content:center;gap:22px;padding:6px 16px 2px;font-size:13px;font-weight:600;color:var(--text-dim);font-variant-numeric:tabular-nums}
+.stats .val{color:#fff;font-weight:700;font-size:17px}
+.stats .val.danger{color:var(--red)}
+.tool-row{display:flex;justify-content:center;gap:10px;padding:8px 16px}
+.tool-btn{padding:10px 16px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow);font-weight:600;font-size:15px;display:flex;align-items:center;gap:6px}
+.tool-btn:active{transform:translateY(2px)}
+.tool-btn.on{background:var(--accent);color:var(--accent-ink)}
+.tool-btn:disabled{opacity:.45}
+
+/* ---------- MODALES ---------- */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s}
+.modal-overlay.active{display:flex}
+.modal{
+  background:linear-gradient(180deg,var(--panel) 0%,var(--bg-2) 100%);border:1px solid var(--line);
+  border-radius:24px;padding:24px 20px;width:min(380px,100%);max-height:90vh;overflow-y:auto;
+  text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:popIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+.modal .emoji{font-size:60px;margin-bottom:4px;display:inline-block}
+.modal h2{font-family:'Bagel Fat One','Fredoka',system-ui,sans-serif;color:var(--accent);font-size:28px;line-height:1.05;margin-bottom:6px}
+.modal h2.lose{color:var(--red)}
+.modal p{color:var(--text-dim);font-size:15px;margin-bottom:14px}
+.achievement-card{
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent-deep) 140%);
+  border-radius:18px;padding:18px;margin:12px 0;color:var(--accent-ink);
+  box-shadow:0 8px 0 var(--accent-deep), inset 0 -2px 0 rgba(255,255,255,.3);
+}
+.ach-title{font-size:11px;letter-spacing:3px;font-weight:700;opacity:.7;margin-bottom:8px}
+.ach-stats{display:flex;justify-content:space-around;gap:8px}
+.ach-stat{flex:1}
+.ach-num{font-family:'Bagel Fat One','Fredoka',system-ui,sans-serif;font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
+.ach-lbl{font-size:10px;font-weight:600;opacity:.7;letter-spacing:1px;margin-top:4px}
+.new-record{display:inline-block;background:#e91e63;color:#fff;padding:4px 12px;border-radius:8px;font-size:11px;font-weight:700;letter-spacing:1.5px;margin-bottom:6px;animation:wobble .6s ease-in-out infinite}
+@keyframes wobble{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.ad-label{font-size:10px;color:var(--text-dim);opacity:.6;letter-spacing:2px;margin:8px 0 4px}
+.ad-slot{display:flex;justify-content:center;align-items:center;min-height:250px;background:rgba(0,0,0,.2);border-radius:12px;overflow:hidden}
+.ad-slot iframe{max-width:100%;border:0}
+.modal-btns{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.btn-row{display:flex;gap:8px}
+.btn-row .btn-secondary{flex:1}
+.btn-primary{padding:14px 22px;border-radius:14px;background:linear-gradient(180deg,var(--accent) 0%,var(--accent-deep) 160%);color:var(--accent-ink);font-weight:700;font-size:17px;box-shadow:0 4px 0 var(--accent-deep)}
+.btn-primary:active{transform:translateY(2px)}
+.btn-secondary{padding:13px 18px;border-radius:14px;background:rgba(255,255,255,.1);color:#fff;font-weight:600;font-size:15px;box-shadow:0 4px 0 rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-ghost{padding:10px;color:var(--text-dim);font-size:14px;font-weight:500}
+
+/* ---------- INSTALAR APP ---------- */
+.install-prompt{
+  position:fixed;bottom:80px;left:16px;right:16px;max-width:420px;margin:0 auto;
+  background:linear-gradient(180deg,var(--panel) 0%,var(--bg-2) 100%);border:1px solid var(--accent);
+  border-radius:16px;padding:14px 16px;box-shadow:0 8px 20px rgba(0,0,0,.4);
+  display:none;align-items:center;gap:12px;z-index:30;animation:slideUp .4s cubic-bezier(.34,1.56,.64,1);
+}
+.install-prompt.show{display:flex}
+.install-prompt .ico{font-size:28px}
+.install-prompt .txt{flex:1;font-size:13px;color:var(--text-dim);line-height:1.3}
+.install-prompt .txt b{color:#fff;font-size:14px}
+.install-prompt button{padding:8px 14px;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:13px;flex-shrink:0}
+.install-prompt .close{background:transparent;color:var(--text-dim);padding:4px 8px;font-size:18px}
+
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+.bounce{animation:bounceY 1.2s infinite}
+@keyframes bounceY{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes shakeX{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+.shake{animation:shakeX .4s}

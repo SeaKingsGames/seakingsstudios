@@ -29,6 +29,8 @@ const fechaCorta = (f) => { const [a, m, d] = iso(f).split('-').map(Number); ret
 const quitarEtiquetas = (h) => h.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 const slug = (t) => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const urlAbs = (ruta) => SITIO.dominio + (ruta === '/' ? '/' : ruta);
+const NUMEROS = ['Cero', 'Un', 'Dos', 'Tres', 'Cuatro', 'Cinco', 'Seis', 'Siete', 'Ocho', 'Nueve', 'Diez', 'Once', 'Doce', 'Trece', 'Catorce', 'Quince', 'Dieciséis', 'Diecisiete', 'Dieciocho', 'Diecinueve', 'Veinte'];
+const cantidad = (n) => NUMEROS[n] || String(n);
 
 function escribir(ruta, contenido) {
   const f = path.join(DIST, ruta);
@@ -43,7 +45,7 @@ function copiarCarpeta(origen, destino, transformar) {
     if (e.isDirectory()) copiarCarpeta(o, d, transformar);
     else {
       fs.mkdirSync(destino, { recursive: true });
-      if (transformar && e.name.endsWith('.html')) fs.writeFileSync(d, transformar(fs.readFileSync(o, 'utf8'), e.name));
+      if (transformar && /\.(html|js)$/.test(e.name)) fs.writeFileSync(d, transformar(fs.readFileSync(o, 'utf8'), e.name));
       else fs.copyFileSync(o, d);
     }
   }
@@ -333,7 +335,7 @@ function paginaInicio({ proyectos, juegos, articulos, proyectosPorId }) {
     <div><p class="ceja">Gratis y sin descargar</p><h2 id="t-arcada">Juega ahora en la arcada</h2></div>
     <a class="enlace-flecha" href="/arcada">Ver la arcada <span aria-hidden="true">→</span></a>
   </div>
-  <p class="seccion-intro">Siete juegos clásicos rehechos por nosotros para jugarse con el dedo o con el teclado. Cada uno tiene su página con reglas, controles y consejos.</p>
+  <p class="seccion-intro">${cantidad(juegos.length)} juegos clásicos rehechos por nosotros para jugarse con el dedo o con el teclado. Cada uno tiene su página con reglas, controles y consejos.</p>
   <div class="tira-juegos">${juegos.map(tarjetaJuego).join('')}</div>
 </section>
 
@@ -552,11 +554,14 @@ function pagina404({ proyectos }) {
 
 // Los juegos clásicos se publican tal cual, pero sin la publicidad externa
 // que traían, sin service worker y con el botón de regresar a la arcada.
-function prepararJuego(html) {
-  return html
-    .replace(/<link rel="manifest"[^>]*>\s*/g, '')
+// Los archivos .js compartidos (comun.js) reciben los mismos cambios.
+function prepararJuego(codigo, nombre) {
+  const limpio = codigo
     .replace(/'serviceWorker' in navigator/g, 'false')
-    .replace(/function loadAd\(([^)]*)\)\s*\{/, 'function loadAd($1){ return;')
+    .replace(/function loadAd\(([^)]*)\)\s*\{/, 'function loadAd($1){ return;');
+  if (nombre.endsWith('.js')) return limpio;
+  return limpio
+    .replace(/<link rel="manifest"[^>]*>\s*/g, '')
     .replace(/href="index\.html"/g, 'href="/arcada"')
     .replace('</head>', '<meta name="robots" content="noindex">\n<link rel="icon" href="/icono.svg" type="image/svg+xml">\n<style>.ad-label,.ad-slot,.ad-banner-bottom{display:none!important}</style>\n</head>');
 }

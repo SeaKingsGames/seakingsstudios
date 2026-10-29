@@ -181,7 +181,7 @@ a.carta:nth-child(even):hover { transform: rotate(1.2deg) translateY(-4px); }
 }
 
 /* ---------- Arcada ---------- */
-.tira-juegos { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(130px, 1fr); gap: 16px; overflow-x: auto; padding-bottom: 12px; scroll-snap-type: x mandatory; }
+.tira-juegos { display: grid; grid-auto-flow: column; grid-auto-columns: 150px; gap: 16px; overflow-x: auto; padding-bottom: 12px; scroll-snap-type: x mandatory; }
 .rejilla-juegos { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 18px; }
 .juego { display: grid; gap: 10px; text-decoration: none; scroll-snap-align: start; min-width: 0; }
 .juego-foto { aspect-ratio: 9 / 13; border-radius: 16px; overflow: hidden; border: 2px solid var(--linea); background: var(--agua-2); transition: transform .2s ease, border-color .2s ease; }

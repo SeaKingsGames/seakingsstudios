@@ -53,7 +53,7 @@ Este repositorio genera **www.seakingsstudios.com**. Las páginas no se escriben
 
 ## Cómo agregar un juego a la arcada
 
-1. Copia el archivo del juego (`mi-juego.html`) a `juegos-clasicos/`. El generador le quita los anuncios externos y el service worker, y su botón «Volver al inicio» lleva a la arcada.
+1. Copia el archivo del juego (`mi-juego.html`) a `juegos-clasicos/`. Si el repo de la arcada cambió `comun.css`, `comun.js` o `palabras.js`, cópialos también. El generador les quita los anuncios externos y el service worker, y el botón «Volver al inicio» lleva a la arcada.
 2. Copia `contenido/arcada/snake.md` como `mi-juego.md` y pon `archivo: mi-juego`.
 3. Agrega una captura en `publico/img/arcada/`.
 

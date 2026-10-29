@@ -5,9 +5,9 @@ ruta: /arcada
 tipo: Arcada
 estado: publicado
 color: "#8cc4ff"
-lema: Siete clásicos para jugar en el navegador, sin descargar nada.
-resumen: Nuestra arcada de juegos casuales. Tuercas Locas, Ahorcado, Memoria, Snake, Numpuz, Tower y Smash Brick, rehechos por nosotros para jugarse con el dedo o con el teclado. Todos son gratis, en español y abren directo en esta página.
-descripcion: Juega gratis Tuercas Locas, Ahorcado, Memoria, Snake, Numpuz, Tower y Smash Brick en tu navegador. Juegos clásicos en español para celular y PC, sin descargar nada.
+lema: Doce clásicos para jugar en el navegador, sin descargar nada.
+resumen: Nuestra arcada de juegos casuales. Buscaminas, 2048, Ahorcado, Sopa de letras, Conecta 4, Gato, Snake y más, rehechos por nosotros para jugarse con el dedo o con el teclado. Todos son gratis, en español y abren directo en esta página.
+descripcion: Juega gratis Buscaminas, 2048, Ahorcado, Sopa de letras, Conecta 4, Gato, Tuercas Locas, Memoria, Snake, Numpuz, Tower y Smash Brick en tu navegador. Juegos clásicos en español, sin descargar nada.
 icono: /img/arcada/icono.png
 compartir: /img/arcada/menu.webp
 tarjeta:
@@ -28,7 +28,7 @@ enlaces:
     url: "#juegos"
 ficha:
   Precio: Gratis
-  Juegos: 7
+  Juegos: 12
   Plataformas:
     - Navegador en celular, tableta y PC
     - Controles táctiles y de teclado
@@ -41,6 +41,8 @@ historial:
     texto: Llega la versión 2 del Ahorcado, con 15 categorías y más de 800 palabras.
   - fecha: 2026-10-24
     texto: La arcada se muda a seakingsstudios.com, con una página de reglas y consejos para cada juego.
+  - fecha: 2026-10-28
+    texto: Llegan cinco juegos nuevos (Buscaminas, 2048, Sopa de letras, Conecta 4 y Gato) y el Ahorcado crece a 25 temas y casi 1,500 palabras con pista.
 esquema:
   tipo: VideoGame
   genero: Juegos casuales
@@ -54,7 +56,7 @@ SeaKings Classic Games es la arcada de SeaKingsStudios. Tomamos juegos que todo 
 
 Todos los juegos comparten las mismas reglas de la casa:
 
-- **Cuatro dificultades** en casi todos, de Fácil a Extra Difícil. Smash Brick tiene tres.
+- **Varias dificultades** en todos: de Fácil a Extra Difícil, tableros de distintos tamaños o una compu que va de distraída a imposible.
 - **Tu récord se guarda** en tu dispositivo, por dificultad, y el juego te avisa cuando lo rompes.
 - **Compartir y Guardar.** Al terminar una partida puedes compartir tu resultado o guardarlo como imagen cuadrada para subirla a tus redes.
 - **Con el dedo o con el teclado.** Se juegan tocando la pantalla y la mayoría también con las flechas en la PC.
@@ -70,12 +72,12 @@ Cada juego tiene su página con las reglas, los controles, las dificultades y al
 
 Para esos ratos cortos: la fila del banco, el camión o los cinco minutos antes de una junta. Las partidas son cortas y se pueden dejar a la mitad sin perder nada importante.
 
-También son buenos para jugar en familia. El Ahorcado y Memoria funcionan muy bien con niños, porque tienen categorías sencillas como animales, frutas o colores. Numpuz y Tuercas Locas son para quien prefiere pensar antes de moverse, y Snake, Tower y Smash Brick son puro reflejo.
+También son buenos para jugar en familia. El Ahorcado, la Sopa de letras y Memoria funcionan muy bien con niños, porque tienen categorías sencillas como animales, frutas o colores, y Conecta 4 y Gato se juegan entre dos en el mismo celular. Buscaminas, 2048, Numpuz y Tuercas Locas son para quien prefiere pensar antes de moverse, y Snake, Tower y Smash Brick son puro reflejo.
 
 <!-- anuncio -->
 
 ## Cómo están hechos
 
-Cada juego es un solo archivo HTML con su código y sus gráficos. No usamos motores ni librerías: el dibujo va en Canvas y los sonidos se generan en el momento con Web Audio, así que los juegos pesan muy poco y cargan rápido incluso con mala señal.
+Cada juego es un archivo HTML con su código y sus gráficos; los más nuevos comparten sonidos, récords y el banco de palabras. No usamos motores ni librerías: el dibujo va en Canvas y los sonidos se generan en el momento con Web Audio, así que los juegos pesan muy poco y cargan rápido incluso con mala señal.
 
 Las imágenes para compartir se arman dentro del navegador al terminar la partida. No enviamos tus partidas ni tus récords a ningún servidor.
