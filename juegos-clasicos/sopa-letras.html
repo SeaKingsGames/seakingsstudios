@@ -91,7 +91,9 @@ const DIFFS = {
 };
 const COLORS = ['#ff6b6b','#ffa94d','#ffd43b','#69db7c','#38d9a9','#4dabf7','#748ffc','#da77f2','#f783ac','#a9e34b','#3bc9db','#ff922b'];
 const FILL = 'AAAAAEEEEEOOOOIIIUUSSSRRRNNNLLLDDTTCCMMPPBGVYQHFJZXÑK';
-const CATS = { aleatorio:{ ico:'🎲', label:'Aleatorio', list:[] }, ...SK_PALABRAS };
+// solo categorías con suficientes palabras sueltas (los dichos son frases y no caben)
+const CATS = { aleatorio:{ ico:'🎲', label:'Aleatorio', list:[] },
+  ...Object.fromEntries(Object.entries(SK_PALABRAS).filter(([, c]) => c.list.filter(w => !/\s/.test(w.word)).length >= 20)) };
 CATS.aleatorio.list = Object.values(SK_PALABRAS).flatMap(c => c.list);
 
 const st = { cat: SK.store.get('sk-sopa-cat', 'animales'), diff:'facil', mode: SK.store.get('sk-sopa-mode', 'palabras'),

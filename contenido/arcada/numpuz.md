@@ -1,6 +1,6 @@
 ---
 nombre: Numpuz
-orden: 10
+orden: 18
 archivo: numpuz
 genero: Rompecabezas deslizante
 lema: Desliza las piezas y ordena los números del 1 al último.

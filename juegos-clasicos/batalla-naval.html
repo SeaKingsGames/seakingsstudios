@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0d2a4a">
+<title>Batalla Naval · SeaKingsGames</title>
+<meta name="description" content="Batalla naval gratis en español contra la compu: acomoda tu flota y hunde sus barcos. 3 niveles de dificultad. Funciona sin internet.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="comun.css">
+<style>
+  :root{ --bg:#0d2a4a; --bg-2:#06162a; --panel:#173f68; --panel-2:#1f5185; --accent:#ffb84d; --accent-deep:#c47a00; --accent-ink:#3a1f00;
+    --sea:#1d6fa5; --sea-2:#185e8d; --ship:#8a9bb0; --hit:#ff5b5b; --sunk:#7a1f2b; }
+  #setup,#battle{flex:1}
+  #setup > *,#battle > *{flex-shrink:0}
+  .status{text-align:center;font-weight:700;min-height:26px;padding:4px 16px;font-size:16px}
+  .status.mine{color:var(--accent)}
+  .grid-wrap{display:flex;flex-direction:column;align-items:center;padding:4px 8px}
+  .grid-title{font-size:11px;letter-spacing:2px;font-weight:700;color:var(--text-dim);margin:2px 0 4px;display:flex;gap:10px;align-items:center}
+  .grid{display:grid;grid-template-columns:repeat(11,var(--cs));grid-auto-rows:var(--cs);gap:2px}
+  .lbl{display:flex;align-items:center;justify-content:center;font-size:calc(var(--cs) * .38);font-weight:600;color:var(--text-dim)}
+  .sq{background:var(--sea);border-radius:calc(var(--cs) * .16);position:relative;display:flex;align-items:center;justify-content:center;font-size:calc(var(--cs) * .55);transition:background .15s}
+  .sq.alt{background:var(--sea-2)}
+  .grid.target .sq{cursor:crosshair}
+  .grid.target .sq:not(.shot):hover{background:#2b86c2}
+  .sq.ship{background:var(--ship);box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+  .sq.ghost{background:rgba(255,255,255,.45)}
+  .sq.bad{background:rgba(255,91,91,.55)}
+  .sq.miss::after{content:'';width:28%;height:28%;border-radius:50%;background:rgba(255,255,255,.75)}
+  .sq.hit{background:var(--hit)}
+  .sq.hit::after{content:'🔥'}
+  .sq.sunk{background:var(--sunk)}
+  .sq.sunk::after{content:'💀';font-size:calc(var(--cs) * .45)}
+  .sq.reveal{background:rgba(138,155,176,.55)}
+  .sq.pop{animation:sqPop .35s ease-out}
+  .sq.splash{animation:splash .5s ease-out}
+  @keyframes sqPop{0%{transform:scale(.4)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+  @keyframes splash{0%{box-shadow:0 0 0 0 rgba(255,255,255,.7)}100%{box-shadow:0 0 0 calc(var(--cs) * .5) rgba(255,255,255,0)}}
+  .fleet{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;padding:4px 8px}
+  .fleet span{font-size:12px;font-weight:600;padding:4px 8px;border-radius:9px;background:rgba(255,255,255,.08)}
+  .fleet span.down{text-decoration:line-through;opacity:.4}
+  .fleet span.sel{background:var(--accent);color:var(--accent-ink)}
+  .fleet span.ok{background:rgba(95,201,154,.2);color:#9be3c2}
+  .row-btns{display:flex;gap:8px;justify-content:center;padding:10px 12px;flex-wrap:wrap}
+  .chk{display:flex;align-items:center;gap:8px;color:var(--text-dim);font-size:14px;font-weight:500}
+  .chk input{width:18px;height:18px;accent-color:var(--accent)}
+</style>
+</head>
+<body>
+
+<section id="menu" class="screen active">
+  <div class="logo-ico">🚢</div>
+  <div class="logo">BATALLA<br>NAVAL<small>SeaKingsGames</small></div>
+  <div class="section-title">CONTRA LA COMPU</div>
+  <div class="diff-list" id="diff-list"></div>
+  <label class="chk"><input type="checkbox" id="chk-again"> Si atinas, vuelves a tirar</label>
+  <p class="how">Acomoda tus 5 barcos y adivina dónde están los de la compu. Gana quien hunda primero toda la flota enemiga.</p>
+  <a class="back-link" href="index.html">← Volver a la arcada</a>
+  <div class="ad-banner-bottom" id="ad-bottom"></div>
+</section>
+
+<section id="setup" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" id="btn-setup-back">‹</button>
+    <div class="level-title"><div class="badge">PREPARA TU FLOTA</div><h1>Acomoda tus barcos</h1></div>
+    <button class="icon-btn small" id="btn-sound">🔊</button>
+  </div>
+  <div class="status" id="setup-msg">Toca una casilla para poner el barco marcado</div>
+  <div class="fleet" id="setup-fleet"></div>
+  <div class="grid-wrap"><div class="grid" id="setup-grid"></div></div>
+  <div class="row-btns">
+    <button class="tool-btn" id="btn-rotate">↻ Girar: horizontal</button>
+    <button class="tool-btn" id="btn-random">🎲 Al azar</button>
+    <button class="tool-btn" id="btn-clear">🧹 Quitar todo</button>
+  </div>
+  <div class="row-btns"><button class="btn-primary" id="btn-fight" style="min-width:240px">⚓ ¡A la batalla!</button></div>
+</section>
+
+<section id="battle" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" id="btn-back">‹</button>
+    <div class="level-title"><div class="badge" id="badge">VS COMPU</div><h1 id="title">Batalla naval</h1></div>
+    <button class="icon-btn small" id="btn-sound2">🔊</button>
+    <span style="width:46px"></span>
+  </div>
+  <div class="status" id="status">Tu turno: dispara al mar enemigo</div>
+  <div class="grid-wrap">
+    <div class="grid-title">🎯 MAR ENEMIGO</div>
+    <div class="grid target" id="enemy-grid"></div>
+    <div class="fleet" id="enemy-fleet"></div>
+  </div>
+  <div class="grid-wrap">
+    <div class="grid-title">🛟 TU FLOTA</div>
+    <div class="grid" id="my-grid"></div>
+  </div>
+</section>
+
+<script src="comun.js"></script>
+<script>
+/* =====================================================
+   BATALLA NAVAL · SeaKingsGames
+   ===================================================== */
+const { $, sfx } = SK;
+const N = 10, LETTERS = 'ABCDEFGHIJ';
+const SHIPS = [
+  { id:0, name:'Portaaviones', size:5 },
+  { id:1, name:'Acorazado', size:4 },
+  { id:2, name:'Crucero', size:3 },
+  { id:3, name:'Submarino', size:3 },
+  { id:4, name:'Lancha', size:2 },
+];
+const LEVELS = {
+  facil:   { label:'FÁCIL',   cls:'d0', note:'Dispara casi al azar' },
+  medio:   { label:'MEDIO',   cls:'d1', note:'Cuando te pega, te busca' },
+  dificil: { label:'DIFÍCIL', cls:'d3', note:'Calcula dónde es más probable' },
+};
+let again = SK.store.get('sk-naval-again', false);
+
+/* ---------- FLOTAS ---------- */
+// barco: { id, size, cells:[índices], hits:Set }
+function cellsFor(r, c, size, horiz){
+  const out = [];
+  for (let k = 0; k < size; k++) { const rr = r + (horiz ? 0 : k), cc = c + (horiz ? k : 0); if (rr >= N || cc >= N) return null; out.push(rr * N + cc); }
+  return out;
+}
+function fits(cells, occupied){ return cells && cells.every(i => !occupied.has(i)); }
+function randomFleet(){
+  for (;;) {
+    const occ = new Set(), ships = [];
+    let ok = true;
+    for (const s of SHIPS) {
+      let placed = false;
+      for (let t = 0; t < 200 && !placed; t++) {
+        const h = Math.random() < .5, cells = cellsFor((Math.random() * N) | 0, (Math.random() * N) | 0, s.size, h);
+        if (fits(cells, occ)) { cells.forEach(i => occ.add(i)); ships.push({ id: s.id, size: s.size, cells, hits: new Set() }); placed = true; }
+      }
+      if (!placed) { ok = false; break; }
+    }
+    if (ok) return ships;
+  }
+}
+
+/* ---------- ESTADO ---------- */
+const st = { level:'medio', mine:[], enemy:[], myShots:new Map(), cpuShots:new Map(), turn:'me', busy:false, over:false, shotsMe:0, hitsMe:0, shotsCpu:0 };
+// shots: Map(índice -> 'miss'|'hit'|'sunk')
+
+/* ---------- MEDIDAS ---------- */
+function layout(){
+  const w = Math.min(innerWidth, 560) - 20, h = innerHeight;
+  const enemy = Math.floor(Math.min((w - 20) / 11, (h - 250) * .6 / 11, 40));
+  const mine = Math.floor(Math.min(enemy * .62, (h - 250) * .38 / 11));
+  $('enemy-grid').style.setProperty('--cs', Math.max(22, enemy) + 'px');
+  $('my-grid').style.setProperty('--cs', Math.max(14, mine) + 'px');
+  $('setup-grid').style.setProperty('--cs', Math.floor(Math.max(24, Math.min((w - 20) / 11, (h - 330) / 11, 40))) + 'px');
+}
+addEventListener('resize', layout);
+
+function buildGrid(el, onTap){
+  el.innerHTML = '';
+  const add = (cls, txt) => { const d = document.createElement('div'); d.className = cls; d.textContent = txt; el.appendChild(d); return d; };
+  add('lbl', '');
+  for (let c = 0; c < N; c++) add('lbl', c + 1);
+  const cells = [];
+  for (let r = 0; r < N; r++) {
+    add('lbl', LETTERS[r]);
+    for (let c = 0; c < N; c++) {
+      const d = add('sq' + ((r + c) % 2 ? ' alt' : ''), '');
+      const i = r * N + c; d.dataset.i = i;
+      if (onTap) d.addEventListener('click', () => onTap(i));
+      cells.push(d);
+    }
+  }
+  return cells;
+}
+
+/* ---------- PREPARAR FLOTA ---------- */
+let setupCells = [], horiz = true, current = 0;
+function openSetup(level){
+  sfx.init(); sfx.tap(); st.level = level;
+  st.mine = []; current = 0; horiz = true;
+  SK.showScreen('setup'); layout();
+  setupCells = buildGrid($('setup-grid'), placeAt);
+  setupCells.forEach(d => {
+    d.addEventListener('pointerenter', () => preview(+d.dataset.i));
+    d.addEventListener('pointerleave', () => paintSetup());
+  });
+  paintSetup();
+}
+function occupiedBy(ships, except){ const s = new Set(); ships.forEach(sh => { if (sh.id !== except) sh.cells.forEach(i => s.add(i)); }); return s; }
+function nextUnplaced(){ const ids = new Set(st.mine.map(s => s.id)); const n = SHIPS.find(s => !ids.has(s.id)); return n ? n.id : -1; }
+function placeAt(i){
+  sfx.init();
+  const onShip = st.mine.find(s => s.cells.includes(i));
+  if (onShip) { // levantarlo para moverlo
+    st.mine = st.mine.filter(s => s !== onShip); current = onShip.id; sfx.tap(); paintSetup(); return;
+  }
+  if (current < 0) return;
+  const s = SHIPS[current], cells = cellsFor((i / N) | 0, i % N, s.size, horiz);
+  if (!fits(cells, occupiedBy(st.mine))) { sfx.bad(); $('setup-msg').textContent = '🚫 No cabe ahí, prueba otra casilla o gíralo'; return; }
+  st.mine.push({ id: s.id, size: s.size, cells, hits: new Set() });
+  sfx.tone(300, .08, 'triangle', .12);
+  current = nextUnplaced(); paintSetup();
+}
+function preview(i){
+  paintSetup();
+  if (current < 0) return;
+  const s = SHIPS[current], cells = cellsFor((i / N) | 0, i % N, s.size, horiz);
+  const ok = fits(cells, occupiedBy(st.mine));
+  (cells || [i]).forEach(k => setupCells[k] && setupCells[k].classList.add(ok ? 'ghost' : 'bad'));
+}
+function paintSetup(){
+  const occ = occupiedBy(st.mine);
+  setupCells.forEach((d, i) => { d.classList.toggle('ship', occ.has(i)); d.classList.remove('ghost', 'bad'); });
+  const fl = $('setup-fleet'); fl.innerHTML = '';
+  SHIPS.forEach(s => {
+    const placed = st.mine.some(m => m.id === s.id), sp = document.createElement('span');
+    sp.textContent = `${s.name} ${'■'.repeat(s.size)}`;
+    sp.className = s.id === current ? 'sel' : placed ? 'ok' : '';
+    sp.onclick = () => { if (!placed) { current = s.id; paintSetup(); } };
+    fl.appendChild(sp);
+  });
+  $('btn-rotate').textContent = `↻ Girar: ${horiz ? 'horizontal' : 'vertical'}`;
+  $('btn-fight').disabled = st.mine.length < SHIPS.length;
+  $('btn-fight').style.opacity = st.mine.length < SHIPS.length ? .45 : 1;
+  $('setup-msg').textContent = current >= 0 ? `Toca una casilla para poner tu ${SHIPS[current].name} (${SHIPS[current].size})` : '¡Flota lista! Toca un barco para moverlo';
+}
+$('btn-rotate').onclick = () => { sfx.tap(); horiz = !horiz; paintSetup(); };
+$('btn-random').onclick = () => { sfx.tap(); st.mine = randomFleet(); current = -1; paintSetup(); };
+$('btn-clear').onclick = () => { sfx.tap(); st.mine = []; current = 0; paintSetup(); };
+$('btn-fight').onclick = () => { if (st.mine.length === SHIPS.length) startBattle(); };
+$('btn-setup-back').onclick = () => { sfx.tap(); toMenu(); };
+
+/* ---------- BATALLA ---------- */
+let enemyCells = [], myCells = [];
+function startBattle(){
+  sfx.init(); sfx.good();
+  Object.assign(st, { enemy: randomFleet(), myShots: new Map(), cpuShots: new Map(), turn:'me', busy:false, over:false, shotsMe:0, hitsMe:0, shotsCpu:0 });
+  st.mine.forEach(s => s.hits = new Set());
+  SK.showScreen('battle'); layout(); $('btn-sound2').textContent = sfx.enabled ? '🔊' : '🔇';
+  enemyCells = buildGrid($('enemy-grid'), fire);
+  myCells = buildGrid($('my-grid'), null);
+  $('badge').textContent = `VS COMPU · ${LEVELS[st.level].label}`;
+  paint(); setStatus('🎯 Tu turno: toca el mar enemigo', true);
+}
+function setStatus(t, mine){ $('status').textContent = t; $('status').classList.toggle('mine', !!mine); }
+function paint(){
+  enemyCells.forEach((d, i) => { const s = st.myShots.get(i); d.className = 'sq' + ((((i / N) | 0) + i % N) % 2 ? ' alt' : '') + (s ? ' shot ' + s : ''); });
+  const myOcc = occupiedBy(st.mine);
+  myCells.forEach((d, i) => { const s = st.cpuShots.get(i); d.className = 'sq' + ((((i / N) | 0) + i % N) % 2 ? ' alt' : '') + (myOcc.has(i) ? ' ship' : '') + (s ? ' ' + s : ''); });
+  const fl = $('enemy-fleet'); fl.innerHTML = '';
+  st.enemy.forEach(s => { const sp = document.createElement('span'); sp.textContent = `${SHIPS[s.id].name} ${s.size}`; if (s.hits.size === s.size) sp.className = 'down'; fl.appendChild(sp); });
+  $('title').textContent = `🎯 ${st.enemy.filter(s => s.hits.size === s.size).length}/5 · 🛟 ${st.mine.filter(s => s.hits.size < s.size).length}/5`;
+}
+// aplica un disparo a una flota; regresa 'miss' | 'hit' | barco hundido
+function shoot(fleet, shots, i){
+  const ship = fleet.find(s => s.cells.includes(i));
+  if (!ship) { shots.set(i, 'miss'); return 'miss'; }
+  ship.hits.add(i);
+  if (ship.hits.size === ship.size) { ship.cells.forEach(k => shots.set(k, 'sunk')); return ship; }
+  shots.set(i, 'hit'); return 'hit';
+}
+function fire(i){
+  if (st.over || st.busy || st.turn !== 'me' || st.myShots.has(i)) return;
+  sfx.init(); st.shotsMe++;
+  const res = shoot(st.enemy, st.myShots, i);
+  paint(); fx(enemyCells, i, res);
+  if (res === 'miss') { sfx.tone(160, .18, 'sine', .14); setStatus('💧 Agua…'); }
+  else { st.hitsMe++; if (res === 'hit') { sfx.noise(.18, .2); setStatus('🔥 ¡Le diste!', true); } else { sfx.noise(.35, .3); sfx.win(); setStatus(`💀 ¡Hundiste su ${SHIPS[res.id].name}!`, true); } }
+  if (st.enemy.every(s => s.hits.size === s.size)) return end(true);
+  if (res !== 'miss' && again) { setTimeout(() => !st.over && setStatus('🎯 ¡Tira otra vez!', true), 600); return; }
+  st.turn = 'cpu'; st.busy = true;
+  setTimeout(cpuTurn, 900);
+}
+function fx(cells, i, res){
+  const d = cells[i]; if (!d) return;
+  d.classList.add(res === 'miss' ? 'splash' : 'pop');
+  if (res !== 'miss' && res !== 'hit') res.cells.forEach((k, n) => setTimeout(() => cells[k].classList.add('pop'), n * 70));
+}
+function cpuTurn(){
+  if (st.over) return;
+  setStatus('🤖 La compu está apuntando…');
+  setTimeout(() => {
+    const i = cpuPick(); st.shotsCpu++;
+    const res = shoot(st.mine, st.cpuShots, i);
+    paint(); fx(myCells, i, res);
+    const coord = LETTERS[(i / N) | 0] + (i % N + 1);
+    if (res === 'miss') { sfx.tone(200, .12, 'sine', .1); setStatus(`💧 La compu tiró a ${coord}: agua`); }
+    else if (res === 'hit') { sfx.noise(.2, .2); if (navigator.vibrate) navigator.vibrate(40); setStatus(`🔥 La compu le dio a tu barco en ${coord}`); }
+    else { sfx.noise(.35, .3); sfx.lose(); if (navigator.vibrate) navigator.vibrate([60, 40, 60]); setStatus(`💀 La compu hundió tu ${SHIPS[res.id].name}`); }
+    if (st.mine.every(s => s.hits.size === s.size)) return end(false);
+    if (res !== 'miss' && again) { setTimeout(cpuTurn, 900); return; }
+    setTimeout(() => { if (st.over) return; st.turn = 'me'; st.busy = false; setStatus('🎯 Tu turno', true); }, 700);
+  }, 450 + Math.random() * 400);
+}
+
+/* ---------- INTELIGENCIA DE LA COMPU ---------- */
+function cpuPick(){
+  const shots = st.cpuShots, untried = [];
+  for (let i = 0; i < N * N; i++) if (!shots.has(i)) untried.push(i);
+  const hits = [...shots.entries()].filter(([, v]) => v === 'hit').map(([k]) => k);
+  const nb = i => { const r = (i / N) | 0, c = i % N, o = []; if (r > 0) o.push(i - N); if (r < N - 1) o.push(i + N); if (c > 0) o.push(i - 1); if (c < N - 1) o.push(i + 1); return o.filter(k => !shots.has(k)); };
+  const rnd = a => a[(Math.random() * a.length) | 0];
+  if (st.level === 'facil') {
+    if (hits.length && Math.random() < .45) { const opts = hits.flatMap(nb); if (opts.length) return rnd(opts); }
+    return rnd(untried);
+  }
+  const alive = st.mine.filter(s => s.hits.size < s.size).map(s => s.size);
+  if (st.level === 'medio') {
+    if (hits.length) {
+      // si hay dos o más golpes en línea, sigue esa línea
+      for (const h of hits) for (const d of [1, N]) {
+        if (hits.includes(h + d) && (d === N || ((h / N) | 0) === (((h + d) / N) | 0))) {
+          const line = []; let a = h; while (hits.includes(a - d) && (d === N || ((a - d) / N | 0) === ((a / N) | 0))) a -= d;
+          let b = h; while (hits.includes(b + d) && (d === N || ((b + d) / N | 0) === ((b / N) | 0))) b += d;
+          [a - d, b + d].forEach(k => { if (k >= 0 && k < N * N && !shots.has(k) && (d === N || ((k / N) | 0) === ((a / N) | 0))) line.push(k); });
+          if (line.length) return rnd(line);
+        }
+      }
+      const opts = hits.flatMap(nb); if (opts.length) return rnd(opts);
+    }
+    const min = Math.min(...alive), parity = untried.filter(i => (((i / N) | 0) + i % N) % min === 0);
+    return rnd(parity.length ? parity : untried);
+  }
+  // difícil: mapa de probabilidad
+  const heat = new Array(N * N).fill(0);
+  const blocked = i => shots.get(i) === 'miss' || shots.get(i) === 'sunk';
+  for (const size of alive) for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) for (const h of [true, false]) {
+    const cells = cellsFor(r, c, size, h);
+    if (!cells || cells.some(blocked)) continue;
+    const covered = cells.filter(k => shots.get(k) === 'hit').length;
+    if (hits.length && !covered) continue;
+    const w = hits.length ? 1 + covered * 12 : 1;
+    cells.forEach(k => { if (!shots.has(k)) heat[k] += w; });
+  }
+  let best = -1, pick = untried[0];
+  untried.forEach(i => { const v = heat[i] + Math.random() * .5; if (v > best) { best = v; pick = i; } });
+  return pick;
+}
+
+/* ---------- FIN ---------- */
+function end(won){
+  st.over = true; st.busy = true;
+  // al perder, enseña dónde estaban los barcos enemigos
+  if (!won) st.enemy.forEach(s => s.cells.forEach(i => { if (!st.myShots.has(i)) enemyCells[i].classList.add('reveal'); }));
+  const acc = st.shotsMe ? Math.round(100 * st.hitsMe / st.shotsMe) : 0;
+  if (won) {
+    sfx.win();
+    SK.store.set(`sk-naval-wins-${st.level}`, SK.store.get(`sk-naval-wins-${st.level}`, 0) + 1);
+    const key = `sk-naval-best-${st.level}`, best = SK.store.get(key), isRec = !best || st.shotsMe < best;
+    if (isRec) { SK.store.set(key, st.shotsMe); setTimeout(() => sfx.newRec(), 400); }
+    setTimeout(() => SK.result({
+      emoji:'🏆', title:'¡Hundiste toda su flota!', newRecord: isRec,
+      stats:[[st.shotsMe, 'DISPAROS'], [acc + '%', 'PUNTERÍA'], [st.mine.filter(s => s.hits.size < s.size).length, 'BARCOS VIVOS']],
+      share:{ emoji:'🚢', title:'¡GANÉ LA BATALLA!', game:'Batalla Naval', sub:`Nivel ${LEVELS[st.level].label}`, big:`${st.shotsMe} disparos`, stats:[[st.shotsMe, 'DISPAROS'], [acc + '%', 'PUNTERÍA']], text:`🚢 Hundí la flota de la compu (${LEVELS[st.level].label}) en ${st.shotsMe} disparos con ${acc}% de puntería\nJuega: SeaKingsGames`, file:'logro-naval' },
+      buttons:[{ label:'Otra batalla →', onClick: () => openSetup(st.level) }, { label:'Menú', kind:'ghost', onClick: toMenu }],
+    }), 1100);
+  } else {
+    sfx.lose();
+    setTimeout(() => SK.result({
+      emoji:'🌊', lose:true, title:'La compu hundió tu flota',
+      text:'En el mar enemigo marqué dónde estaban sus barcos',
+      stats:[[st.shotsMe, 'DISPAROS'], [acc + '%', 'PUNTERÍA'], [st.enemy.filter(s => s.hits.size === s.size).length, 'HUNDISTE']],
+      buttons:[{ label:'Revancha →', onClick: () => openSetup(st.level) }, { label:'Ver el tablero', kind:'secondary' }, { label:'Menú', kind:'ghost', onClick: toMenu }],
+    }), 1300);
+  }
+}
+
+/* ---------- MENÚ ---------- */
+function buildMenu(){
+  const list = $('diff-list'); list.innerHTML = '';
+  Object.entries(LEVELS).forEach(([k, d]) => {
+    const w = SK.store.get(`sk-naval-wins-${k}`, 0), best = SK.store.get(`sk-naval-best-${k}`);
+    const b = document.createElement('button'); b.className = 'diff-btn';
+    b.innerHTML = `<div><div>🤖 ${d.label}</div><div class="record-line">${w ? `✅ ${w} ganadas${best ? ` · 🎯 mejor: ${best} disparos` : ''}` : d.note}</div></div><span class="tag ${d.cls}">VS COMPU</span>`;
+    b.onclick = () => openSetup(k);
+    list.appendChild(b);
+  });
+  $('chk-again').checked = again;
+}
+$('chk-again').onchange = e => { again = e.target.checked; SK.store.set('sk-naval-again', again); };
+function toMenu(){ SK.closeModal(); st.over = true; buildMenu(); SK.showScreen('menu'); }
+$('btn-back').onclick = () => {
+  sfx.tap();
+  if (st.over) { toMenu(); return; }
+  SK.result({ emoji:'🏳️', title:'¿Rendirte?', text:'Se perderá esta batalla', buttons:[{ label:'Sí, salir', onClick: toMenu }, { label:'Seguir peleando', kind:'secondary' }] });
+};
+SK.soundButton($('btn-sound')); SK.soundButton($('btn-sound2'));
+buildMenu();
+SK.bannerAd($('ad-bottom'));
+SK.initPWA('Batalla Naval');
+</script>
+</body>
+</html>

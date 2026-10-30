@@ -1,6 +1,6 @@
 ---
 nombre: Buscaminas
-orden: 3
+orden: 11
 archivo: buscaminas
 genero: Rompecabezas de lógica
 lema: Destapa todo el campo sin tocar una sola mina.

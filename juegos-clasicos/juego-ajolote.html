@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#5a2a4a">
+<title>El Juego del Ajolote · SeaKingsGames</title>
+<meta name="description" content="El Juego del Ajolote: un juego de mesa tipo Oca con reglas mexicanas. De ajolote a ajolote, trajineras, taquería, cenote, La Llorona y cartas del tianguis. Gratis y sin internet.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="comun.css">
+<style>
+  :root{ --bg:#5a2a4a; --bg-2:#2a1022; --panel:#7a3a63; --panel-2:#8f4877; --accent:#ffd43b; --accent-deep:#c79a00; --accent-ink:#3a2a00; }
+  #game{flex:1}
+  .rules{width:min(420px,94vw);display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .rules div{background:rgba(255,255,255,.07);border-radius:12px;padding:8px 10px;font-size:12px;line-height:1.3;color:#f3dcea}
+  .rules b{display:block;font-size:13px;color:#fff;margin-bottom:2px}
+</style>
+</head>
+<body>
+
+<section id="menu" class="screen active">
+  <div class="logo-ico">💚</div>
+  <div class="logo">EL JUEGO<br>DEL AJOLOTE<small>Un juego tipo Oca, a la mexicana</small></div>
+  <div class="record-line" id="wins"></div>
+  <div class="section-title">¿CON QUIÉN JUEGAS?</div>
+  <div id="modes"></div>
+  <div class="section-title">LAS CASILLAS</div>
+  <div class="rules" id="rules"></div>
+  <p class="how">Se juega con dos dados y gana quien llegue exacto a la casilla 63. Si te pasas, rebotas hacia atrás.</p>
+  <a class="back-link" href="index.html">← Volver a la arcada</a>
+  <div class="ad-banner-bottom" id="ad-bottom"></div>
+</section>
+
+<section id="game" class="screen"></section>
+
+<script src="comun.js"></script>
+<script src="tablero.js"></script>
+<script>
+/* =====================================================
+   EL JUEGO DEL AJOLOTE · SeaKingsGames
+   Un juego de recorrido tipo Oca (dominio público) con
+   casillas y reglas propias de inspiración mexicana.
+   ===================================================== */
+const COLS = 9, ROWS = 7, MAX = 63;
+const AJOLOTES = [5, 9, 14, 18, 23, 27, 32, 36, 41, 45, 50, 54, 59];
+const TIANGUIS = [10, 22, 37, 47];
+const SPECIAL = {
+  6:  { ico:'🛶', bg:'#ffd1e8', name:'Trajinera' },
+  12: { ico:'⚓', bg:'#ffd1e8', name:'Embarcadero' },
+  19: { ico:'🌮', bg:'#ffd8a8', name:'Taquería' },
+  26: { ico:'🦗', bg:'#d3f9d8', name:'Chapulín' },
+  53: { ico:'🦗', bg:'#d3f9d8', name:'Chapulín' },
+  31: { ico:'🕳️', bg:'#a5d8ff', name:'Cenote' },
+  42: { ico:'🚇', bg:'#e5dbff', name:'Metro' },
+  52: { ico:'🚦', bg:'#ffc9c9', name:'Tráfico' },
+  58: { ico:'👻', bg:'#ced4da', name:'La Llorona' },
+  63: { ico:'🎉', bg:'#ffe066', name:'Meta' },
+};
+TIANGUIS.forEach(n => SPECIAL[n] = { ico:'🛍️', bg:'#fff3bf', name:'Tianguis' });
+const RULES = [
+  ['💚 Ajolote', 'De ajolote a ajolote y tiro porque me toca: brincas al siguiente y tiras otra vez.'],
+  ['🛶 Trajinera (6)', 'La corriente te lleva a la 12 y tiras otra vez.'],
+  ['🌮 Taquería (19)', 'Te quedaste comiendo tacos: pierdes un turno.'],
+  ['🦗 Chapulín (26 y 53)', 'De la 26 brincas a la 53 y tiras otra vez. De la 53 te regresa a la 26.'],
+  ['🕳️ Cenote (31)', 'Caíste al cenote: pierdes dos turnos.'],
+  ['🚇 Metro (42)', 'Hora pico: regresas a la 30.'],
+  ['🚦 Tráfico (52)', 'Te atoraste en el Periférico: pierdes dos turnos.'],
+  ['👻 La Llorona (58)', '¡Te espantó! Regresas al inicio.'],
+  ['🛍️ Tianguis', 'Sacas una carta de la suerte: puede ayudarte… o no.'],
+  ['🎉 Meta (63)', 'Hay que llegar exacto. Si te pasas, rebotas.'],
+];
+const CARDS = [
+  { t:'Te encontraste $20 en la calle 💵 Avanzas 3.', d:3 },
+  { t:'¡Ganaste en la rifa del tianguis! 🎉 Avanzas 5.', d:5 },
+  { t:'Un amigo te dio aventón 🚗 Avanzas 4.', d:4 },
+  { t:'Te regalaron un elote 🌽 ¡Tiras otra vez!', again:true },
+  { t:'Te tocó el último pan dulce 🥐 ¡Tiras otra vez!', again:true },
+  { t:'Se te ponchó la llanta de la bici 🚲 Retrocedes 3.', d:-3 },
+  { t:'Llovió y se te mojaron los tenis 🌧️ Retrocedes 2.', d:-2 },
+  { t:'Te quedaste viendo videos en el celular 📱 Pierdes un turno.', skip:1, why:'se quedó viendo videos' },
+  { t:'Te pusiste a regatear y se te hizo tarde 🧾 Retrocedes 1.', d:-1 },
+  { t:'Encontraste un atajo entre los puestos 🛒 Avanzas 2.', d:2 },
+];
+
+/* ---------- ESPIRAL DE 63 CASILLAS ---------- */
+const PATH = (() => {
+  const out = []; let top = 0, bottom = ROWS - 1, left = 0, right = COLS - 1;
+  while (top <= bottom && left <= right) {
+    for (let c = left; c <= right; c++) out.push([c, bottom]); bottom--;
+    for (let r = bottom; r >= top; r--) out.push([right, r]); right--;
+    if (top <= bottom) { for (let c = right; c >= left; c--) out.push([c, top]); top++; }
+    if (left <= right) { for (let r = top; r <= bottom; r++) out.push([left, r]); left++; }
+  }
+  return out;
+})();
+function center(n, W){
+  const s = W / COLS;
+  if (n <= 0) return { x: s * .45, y: s * (ROWS + .4) };
+  const [c, r] = PATH[n - 1];
+  return { x: (c + .5) * s, y: (r + .5) * s };
+}
+function miniAxo(ctx, x, y, r){
+  const mint = '#8fe3c6', mintD = '#3fae8c', pink = '#ff8fb1';
+  [-1, 1].forEach(sg => [-.7, 0, .7].forEach(a => {
+    const ang = (sg > 0 ? 0 : Math.PI) + sg * a * -1;
+    ctx.fillStyle = pink; ctx.beginPath(); ctx.ellipse(x + sg * r * .8 + Math.cos(ang) * r * .35, y - r * .15 + Math.sin(ang) * r * .35, r * .32, r * .14, ang, 0, Math.PI * 2); ctx.fill();
+  }));
+  ctx.fillStyle = mint; ctx.strokeStyle = mintD; ctx.lineWidth = Math.max(1, r * .1);
+  ctx.beginPath(); ctx.ellipse(x, y, r, r * .78, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#173d33';
+  [-1, 1].forEach(sg => { ctx.beginPath(); ctx.arc(x + sg * r * .4, y - r * .12, r * .12, 0, Math.PI * 2); ctx.fill(); });
+  ctx.strokeStyle = '#173d33'; ctx.lineWidth = Math.max(1, r * .1);
+  ctx.beginPath(); ctx.arc(x, y + r * .05, r * .3, Math.PI * .2, Math.PI * .8); ctx.stroke();
+}
+function drawBoard(ctx, W, H){
+  const s = W / COLS;
+  ctx.fillStyle = '#3b1a30'; ctx.fillRect(0, 0, W, H);
+  // camino: une los centros
+  ctx.strokeStyle = 'rgba(255,212,59,.35)'; ctx.lineWidth = s * .62; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  ctx.beginPath(); for (let n = 1; n <= MAX; n++) { const c = center(n, W); n === 1 ? ctx.moveTo(c.x, c.y) : ctx.lineTo(c.x, c.y); } ctx.stroke();
+  for (let n = 1; n <= MAX; n++) {
+    const c = center(n, W), sp = SPECIAL[n], axo = AJOLOTES.includes(n);
+    const x = c.x - s / 2 + 2, y = c.y - s / 2 + 2, w = s - 4;
+    ctx.fillStyle = axo ? '#bdf2df' : sp ? sp.bg : (n % 2 ? '#fff3d6' : '#ffe1b8');
+    ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, w, s * .14) : ctx.rect(x, y, w, w); ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,.12)'; ctx.fillRect(x + s * .1, y + w - 3, w - s * .2, 3);
+    ctx.fillStyle = 'rgba(60,30,50,.6)'; ctx.font = `600 ${Math.round(s * .22)}px Fredoka, system-ui, sans-serif`; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    ctx.fillText(n, x + s * .07, y + s * .05);
+    if (axo) miniAxo(ctx, c.x, c.y + s * .1, s * .22);
+    else if (sp) { ctx.font = `${Math.round(s * .42)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(sp.ico, c.x, c.y + s * .1); }
+    // flechita hacia la siguiente casilla
+    if (n < MAX) {
+      const nx = center(n + 1, W), ang = Math.atan2(nx.y - c.y, nx.x - c.x), ax = c.x + Math.cos(ang) * s * .44, ay = c.y + Math.sin(ang) * s * .44;
+      ctx.fillStyle = 'rgba(90,42,74,.45)'; ctx.beginPath();
+      ctx.moveTo(ax + Math.cos(ang) * s * .07, ay + Math.sin(ang) * s * .07);
+      ctx.lineTo(ax + Math.cos(ang + 2.3) * s * .07, ay + Math.sin(ang + 2.3) * s * .07);
+      ctx.lineTo(ax + Math.cos(ang - 2.3) * s * .07, ay + Math.sin(ang - 2.3) * s * .07);
+      ctx.fill();
+    }
+  }
+  // salida
+  ctx.fillStyle = '#ffd43b'; ctx.font = `700 ${Math.round(s * .3)}px Fredoka, system-ui, sans-serif`; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  ctx.fillText('◀ SALIDA', s * 2.8, s * (ROWS + .4));
+}
+
+/* ---------- REGLAS ---------- */
+function bounce(n){ return n > MAX ? MAX - (n - MAX) : Math.max(1, n); }
+function onLand(p, n){
+  if (n === MAX) return null;
+  const i = AJOLOTES.indexOf(n);
+  if (i >= 0) {
+    const to = i < AJOLOTES.length - 1 ? AJOLOTES[i + 1] : MAX;
+    return { to, again: to !== MAX, sound:'good', msg:`💚 ¡De ajolote a ajolote y tiro porque me toca! ${p.you ? 'Brincas' : p.name + ' brinca'} de la ${n} a la ${to}` };
+  }
+  switch (n) {
+    case 6:  return { to:12, again:true, sound:'good', msg:'🛶 ¡De trajinera en trajinera! La corriente te lleva a la 12 y tiras otra vez' };
+    case 19: return { skip:1, skipWhy:'está en la taquería', sound:'bad', msg: p.you ? '🌮 Te quedaste comiendo tacos: pierdes un turno' : `🌮 ${p.name} se quedó comiendo tacos: pierde un turno` };
+    case 26: return { to:53, again:true, sound:'good', msg:'🦗 ¡Brinco de chapulín! De la 26 a la 53 y tiras otra vez' };
+    case 53: return { to:26, sound:'bad', msg:'🦗 ¡Uy! El chapulín te regresó de la 53 a la 26' };
+    case 31: return { skip:2, skipWhy:'está en el cenote', sound:'bad', msg: p.you ? '🕳️ Caíste al cenote: pierdes dos turnos' : `🕳️ ${p.name} cayó al cenote: pierde dos turnos` };
+    case 42: return { to:30, sound:'bad', msg:'🚇 Metro en hora pico: tardaste tanto que regresas a la 30' };
+    case 52: return { skip:2, skipWhy:'está en el tráfico', sound:'bad', msg: p.you ? '🚦 Te atoraste en el tráfico del Periférico: pierdes dos turnos' : `🚦 ${p.name} se atoró en el tráfico del Periférico: pierde dos turnos` };
+    case 58: return { to:0, sound:'bad', ms:1500, msg: p.you ? '👻 ¡Ayyy, mis hijos! La Llorona te espantó: regresas al inicio' : `👻 ¡Ayyy, mis hijos! La Llorona espantó a ${p.name}: regresa al inicio` };
+  }
+  if (TIANGUIS.includes(n)) {
+    const c = CARDS[(Math.random() * CARDS.length) | 0];
+    return {
+      to: c.d ? bounce(n + c.d) : undefined, again: !!c.again, skip: c.skip || 0, skipWhy: c.why,
+      sound: (c.d && c.d < 0) || c.skip ? 'bad' : 'good', pause:1600, delay:900,
+      msg:`🛍️ Carta del tianguis: ${c.t}`,
+    };
+  }
+  return null;
+}
+
+/* ---------- MENÚ ---------- */
+RULES.forEach(([t, d]) => { const div = document.createElement('div'); div.innerHTML = '<b></b><span></span>'; div.firstChild.textContent = t; div.lastChild.textContent = d; SK.$('rules').appendChild(div); });
+
+const juego = Tablero({
+  id:'juego-ajolote', title:'El Juego del Ajolote', emoji:'💚', maxCell:MAX, aspect: COLS / (ROWS + .8),
+  dice:2, exact:true, extraOnSix:false,
+  cellSize: W => W / COLS,
+  cellCenter: (n, W) => center(n, W),
+  drawBoard, onLand,
+});
+SK.bannerAd(SK.$('ad-bottom'));
+SK.initPWA('El Juego del Ajolote');
+</script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 /* =====================================================
    SeaKingsGames · Banco de palabras
    Lo usan: ahorcado.html, ahorcado-live.html y sopa-letras.html
+   34 categorías · ~2,300 palabras
 
    CÓMO AGREGAR PALABRAS
    - Cada línea es:   palabra: pista
@@ -110,6 +111,46 @@ saltamontes: Insecto brincador, primo del chapulín
 oso hormiguero: Come insectos con una lengua larguísima
 caballito de mar: El macho es quien se embaraza
 estrella de mar: Tiene cinco brazos y vive en el fondo marino
+boa: Serpiente que aprieta a sus presas
+orca: Ballena asesina blanca y negra
+atún: Pez grande que se come en lata
+mosca: Zumba y se para en la comida
+cobra: Serpiente que abre su capucha
+garza: Ave blanca de patas largas que pesca en el agua
+morsa: Tiene colmillos largos y bigotes
+grillo: Canta frotando sus patas en la noche
+babosa: Caracol sin concha
+trucha: Pez de río de agua fría
+perico: Ave verde que repite lo que escucha
+paloma: Ave gris de las plazas
+cuervo: Ave negra y muy inteligente
+buitre: Ave que come animales muertos
+cóndor: Ave enorme de los Andes
+víbora: Serpiente venenosa
+gacela: Antílope veloz de la sabana
+búfalo: Bovino grande de cuernos curvos
+hormiga: Pequeña, trabajadora y vive en colonia
+lombriz: Gusano que vive en la tierra mojada
+sardina: Pescadito que viene apretado en lata
+anguila: Pez alargado como serpiente
+calamar: Molusco que suelta tinta
+manatí: Mamífero marino lento al que le dicen vaca marina
+canario: Pajarito amarillo que canta
+bisonte: Búfalo de las praderas de Norteamérica
+mosquito: Te pica en la noche y deja ronchas
+chapulín: Saltamontes que se come en Oaxaca
+catarina: Escarabajo rojo con puntos negros
+ciempiés: Bicho largo con muchísimas patas
+langosta: Crustáceo grande con antenas
+camarón: Crustáceo pequeño que se come en coctel
+pelícano: Ave con una bolsa enorme en el pico
+zorrillo: Huele horrible cuando se asusta
+libélula: Insecto de cuatro alas que vuela sobre el agua
+pavorreal: Ave que abre una cola llena de ojos de colores
+golondrina: Ave que migra en grupo y anuncia la primavera
+pez payaso: Naranja con rayas blancas, vive entre anémonas
+tiburón ballena: El pez más grande del mundo
+pájaro carpintero: Hace hoyos en los troncos con el pico
 `},
 
 comida: { ico:'🌮', label:'Comida', lista:`
@@ -181,6 +222,81 @@ chiles en nogada: Platillo patrio con los colores de la bandera
 cochinita pibil: Cerdo con achiote, típico de Yucatán
 sopa de fideo: Caldito de pasta delgada que hace la abuela
 huevos rancheros: Estrellados sobre tortilla con salsa
+tripa: Taco crujiente que se pide bien dorado
+gringa: Taco de harina con pastor y queso
+cemita: Torta poblana con pápalo y quesillo
+bistec: Carne de res delgada a la plancha
+suadero: Carne suave de res para tacos
+chalupa: Tortilla pequeña frita con salsa
+memela: Tortilla gruesa con frijol y queso
+consomé: Caldo de la barbacoa
+cuernito: Pan dulce con forma de media luna
+panuchos: Tortillitas rellenas de frijol, de Yucatán
+bisquet: Pan esponjoso que se come con mantequilla y mermelada
+guajolota: Torta de tamal
+arrachera: Carne marinada que se asa al carbón
+mantecada: Panquecito en capacillo rojo
+pan dulce: Conchas, orejas y cuernitos
+campechana: Taco o coctel con dos tipos de carne
+papadzules: Tacos yucatecos con huevo y salsa de pepita
+sopa azteca: Caldo con tiras de tortilla frita y chile pasilla
+champurrado: Atole de chocolate
+café de olla: Café con piloncillo y canela en jarro
+caldo de res: Sopa con carne y verduras para el frío
+elote asado: Mazorca a las brasas con limón y chile
+entomatadas: Tortillas bañadas en salsa roja de jitomate
+enfrijoladas: Tortillas bañadas en salsa de frijol
+sincronizada: Dos tortillas de harina con jamón y queso
+taco de canasta: Tacos sudados que llegan en bicicleta
+tacos de pescado: Típicos de Ensenada, capeados y con col
+`},
+
+dulces: { ico:'🍬', label:'Dulces y botanas', lista:`
+ate: Dulce de fruta firme, como el de membrillo
+bolis: Hielo de sabor en bolsita alargada
+chicle: Se masca y se hacen bombas
+paleta: Dulce con palito
+cocada: Dulce de coco rallado
+oblea: Hoja delgada de harina con cajeta en medio
+gloria: Dulce de leche quemada con nuez envuelto en celofán
+chamoy: Salsa agridulce y enchilada
+mentas: Pastillas que refrescan el aliento
+nachos: Totopos con queso derretido
+bombón: Dulce suave y esponjoso
+mazapán: Dulce de cacahuate que se desmorona
+muégano: Cuadritos de harina pegados con piloncillo
+gomitas: Dulces de grenetina de colores
+regaliz: Dulce negro y largo de sabor muy raro
+papitas: Botana de papa delgada y crujiente
+totopos: Trocitos de tortilla frita
+raspado: Hielo picado con jarabe de sabor
+rompope: Bebida dulce de huevo y vainilla
+acitrón: Dulce de biznaga cristalizada
+pepitas: Semillas de calabaza tostadas
+caramelo: Dulce de azúcar derretida
+pistache: Semilla verde con cáscara que se abre
+frituras: Botanas fritas de bolsita
+churritos: Botana de harina enchilada con limón
+macarrón: Dulce de leche en forma de tubito
+polvorón: Galleta que se deshace en la boca
+cacahuate: Botana salada que viene en bolsita
+pepitoria: Dulce de pepitas de calabaza con piloncillo
+chiclosos: Caramelos masticables que se pegan en los dientes
+mangonada: Fruta picada con chamoy y chilito
+piloncillo: Azúcar morena en forma de cono
+palanqueta: Barra de cacahuate con caramelo
+jamoncillo: Dulce de leche en barrita
+charamusca: Dulce de piloncillo trenzado
+malvavisco: Dulce esponjoso que se asa en la fogata
+borrachito: Dulce suave cubierto de azúcar con sabor a rompope
+garapiñado: Cacahuate cubierto de azúcar caramelizada
+besos de nuez: Bolitas de nuez cubiertas de azúcar glas
+dulce de leche: Crema café y espesa, prima de la cajeta
+paleta de hielo: Agua de sabor congelada con palito
+manzana cubierta: Fruta bañada en caramelo rojo de la feria
+algodón de azúcar: Nube de colores que venden en la feria
+cacahuates japoneses: Cubiertos de harina crujiente
+pulpa de tamarindo: Dulce ácido y enchilado de una fruta en vaina
 `},
 
 mundo: { ico:'🌍', label:'Comida del mundo', lista:`
@@ -231,6 +347,26 @@ papas fritas: Bastones de papa dorados y salados
 lomo saltado: Plato peruano de carne salteada con papas
 pollo frito: Piezas empanizadas y doradas en aceite
 tortilla española: Omelette grueso de papa y huevo
+pho: Sopa vietnamita de fideos
+asado: Carne a la parrilla en Argentina
+nigiri: Bolita de arroz con pescado encima
+waffle: Masa en cuadritos con miel
+pupusa: Tortilla rellena de El Salvador
+borsch: Sopa rusa roja de betabel
+dim sum: Bocadillos chinos al vapor
+pierogi: Empanaditas polacas
+cachapa: Panqueque venezolano de maíz
+poutine: Papas con queso y salsa de Canadá
+nuggets: Trocitos de pollo empanizado
+shawarma: Carne en pan árabe, parecida al pastor
+choripán: Chorizo en pan, típico de Argentina
+milanesa: Carne empanizada y frita
+takoyaki: Bolitas japonesas de pulpo
+sancocho: Caldo espeso del Caribe
+arroz chaufa: Plato frito chino peruano con huevo y cebollín
+bandeja paisa: Plato colombiano con frijoles, carne y huevo
+ají de gallina: Guiso peruano de pollo cremoso
+fish and chips: Pescado frito con papas, típico de Inglaterra
 `},
 
 frutas: { ico:'🍓', label:'Frutas y verduras', lista:`
@@ -296,6 +432,21 @@ espárrago: Tallo verde y delgado que se come asado
 calabacita: Verde y alargada, va en guisos
 huitlacoche: Hongo negro del maíz, delicia mexicana
 flor de calabaza: Amarilla, se pone en quesadillas
+higo: Fruta dulce con muchas semillitas
+nabo: Raíz blanca parecida al rábano
+poro: Primo de la cebolla, largo y verde
+lichi: Fruta asiática de cáscara roja y pulpa blanca
+dátil: Fruto dulce de la palmera
+nanche: Frutita amarilla que se come en almíbar
+acelga: Hoja verde grande para guisos
+capulín: Cerecita silvestre de México
+lenteja: Legumbre plana para la sopa
+chícharo: Bolitas verdes que vienen en vaina
+garbanzo: Legumbre redonda del hummus
+membrillo: Fruta amarilla con la que se hace ate
+carambola: Fruta en forma de estrella
+alcachofa: Flor verde que se come hoja por hoja
+guanábana: Fruta verde con espinas suaves y pulpa blanca
 `},
 
 naturaleza: { ico:'🌿', label:'Naturaleza', lista:`
@@ -363,6 +514,61 @@ archipiélago: Grupo de islas
 aurora boreal: Luces de colores en el cielo del norte
 desembocadura: Donde el río llega al mar
 lluvia de estrellas: Muchos meteoros cruzando el cielo
+`},
+
+plantas: { ico:'🌻', label:'Plantas y flores', lista:`
+rosa: Flor con espinas, símbolo del amor
+raíz: Parte de la planta que va bajo tierra
+lirio: Flor elegante de pétalos alargados
+dalia: Flor nacional de México
+nardo: Flor blanca muy perfumada
+tallo: Sostiene a la flor
+polen: Polvito amarillo que llevan las abejas
+abono: Alimento para la tierra
+sauce: Árbol de ramas que cuelgan hacia el agua
+roble: Árbol fuerte de madera dura
+agave: De esta planta sale el tequila
+bambú: Tallo largo que comen los pandas
+espina: Pica cuando agarras un rosal
+pétalo: Parte de colores de la flor
+maceta: Recipiente para tener plantas en casa
+cactus: Planta del desierto llena de espinas
+sábila: Su gel se usa para las quemaduras
+romero: Hierba aromática para cocinar
+clavel: Flor de bordes rizados
+jazmín: Flor blanca de olor dulce
+encino: Árbol que da bellotas
+trébol: Si tiene cuatro hojas da buena suerte
+hiedra: Planta trepadora de las paredes
+maguey: De esta planta sale el pulque
+vivero: Lugar donde venden plantas
+bonsái: Arbolito en miniatura
+semilla: De ella nace una planta
+girasol: Flor amarilla que sigue al sol
+tulipán: Flor de Holanda con forma de copa
+amapola: Flor roja de pétalos delicados
+helecho: Planta de sombra con hojas como plumas
+palmera: Árbol de playa que da cocos
+biznaga: Cactus redondo de México
+perejil: Hierba verde parecida al cilantro
+epazote: Hierba que se le pone a los frijoles
+azucena: Flor blanca alargada muy perfumada
+cilantro: Hierba que va en los tacos con cebolla
+albahaca: Hierba aromática de la salsa pesto
+orquídea: Flor exótica y delicada
+gardenia: Flor blanca de perfume intenso
+alcatraz: Flor blanca con forma de cono
+margarita: Flor blanca para jugar a me quiere, no me quiere
+jacaranda: Árbol de flores moradas en primavera
+ahuehuete: Árbol nacional de México
+manzanilla: Flor para el té que calma la panza
+bugambilia: Planta trepadora de flores fucsias
+suculenta: Planta gordita que guarda agua en sus hojas
+enredadera: Planta que crece trepando
+hierbabuena: Hoja fresca para el té y el caldo
+invernadero: Casa de cristal para cultivar plantas
+flor de loto: Flor que nace en el agua lodosa
+diente de león: Flor que se sopla y vuelan sus semillas
 `},
 
 paises: { ico:'🌎', label:'Países', lista:`
@@ -564,6 +770,78 @@ achicopalado: Triste y sin ánimo
 tirar la onda: Coquetear con alguien
 hacer la barba: Adular para conseguir algo
 ponerse las pilas: Echarle ganas
+nel: No
+varo: Un peso, dinero
+ñero: Compa del barrio
+chale: Expresión de decepción
+feria: Monedas sueltas, el cambio
+simón: Sí, claro
+bronca: Problema
+godín: Oficinista de horario fijo
+menso: Medio tonto
+cámara: Va, sale, de acuerdo
+baboso: Tonto, despistado
+malora: Persona traviesa que hace maldades
+rifarse: Hacer algo muy bien
+al chile: Sinceramente, sin rodeos
+qué onda: Saludo entre cuates
+garnacha: Antojito frito y grasoso
+cascarita: Partido informal de futbol en la calle
+chamagoso: Sucio, mugroso
+chachalaca: Persona que habla mucho
+`},
+
+dichos: { ico:'📖', label:'Dichos y refranes', lista:`
+ver para creer: Solo crees si lo compruebas
+el tiempo es oro: No lo desperdicies
+el que busca encuentra: La perseverancia da resultados
+más vale tarde que nunca: Mejor hacerlo aunque sea con retraso
+de tal palo tal astilla: Los hijos se parecen a sus padres
+al mal tiempo buena cara: Hay que ponerle actitud a los problemas
+perro que ladra no muerde: El que mucho amenaza no hace nada
+a falta de pan tortillas: Si no hay lo que quieres, te conformas con otra cosa
+el flojo trabaja doble: Por hacerlo mal lo terminas haciendo dos veces
+hierba mala nunca muere: Los latosos siempre aguantan
+ya ni llorar es bueno: Lamentarse no arregla lo que ya pasó
+poco a poco se anda lejos: Con constancia se llega a la meta
+la práctica hace al maestro: Repetir te vuelve experto
+no todo lo que brilla es oro: Las apariencias engañan
+zapatero a tus zapatos: Dedícate a lo que sabes
+echando a perder se aprende: Equivocarse es parte de aprender
+matar dos pájaros de un tiro: Resolver dos cosas con una sola acción
+barriga llena corazón contento: Con la panza satisfecha todo está bien
+la curiosidad mató al gato: Por meterte donde no te llaman te puede ir mal
+crea fama y échate a dormir: La reputación te sigue aunque ya no hagas nada
+más vale prevenir que lamentar: Mejor cuidarse antes de que pase algo
+en boca cerrada no entran moscas: A veces es mejor quedarse callado
+a palabras necias oídos sordos: Ignora las tonterías que te dicen
+el que madruga Dios lo ayuda: Levantarse temprano trae beneficios
+no hay mal que por bien no venga: De lo malo también sale algo bueno
+ojos que no ven corazón que no siente: Lo que no sabes no te duele
+genio y figura hasta la sepultura: La forma de ser no cambia nunca
+caras vemos corazones no sabemos: No sabes lo que piensa alguien por su apariencia
+en casa del herrero azadón de palo: Donde más debería haber algo, falta
+el que mucho abarca poco aprieta: Querer hacer todo hace que nada salga bien
+quien bien te quiere te hará llorar: El que te ama a veces te corrige
+del plato a la boca se cae la sopa: Nada es seguro hasta que pasa
+cría cuervos y te sacarán los ojos: A veces el que ayudaste te traiciona
+donde manda capitán no gobierna marinero: Se obedece al que tiene la autoridad
+lo que bien se aprende nunca se olvida: Lo que aprendes de verdad se queda contigo
+el que es perico donde quiera es verde: El talento se nota en cualquier lugar
+a caballo regalado no se le ve colmillo: No critiques lo que te dan gratis
+agua que no has de beber déjala correr: No te metas en lo que no te interesa
+dime con quién andas y te diré quién eres: Tus amistades dicen mucho de ti
+más vale pájaro en mano que ciento volando: Mejor lo seguro que lo que solo es promesa
+al que no quiere caldo se le dan dos tazas: Te toca justo lo que no querías, y doble
+más sabe el diablo por viejo que por diablo: La experiencia enseña más que la astucia
+no hay peor ciego que el que no quiere ver: El que se niega a aceptar la verdad
+el que con lobos anda a aullar se enseña: Se te pegan las costumbres de tus amigos
+no dejes para mañana lo que puedes hacer hoy: Evita dejar las cosas para después
+en el país de los ciegos el tuerto es rey: Entre los que no saben, el que sabe poco destaca
+tanto va el cántaro al agua hasta que se rompe: Si te arriesgas siempre, un día sale mal
+camarón que se duerme se lo lleva la corriente: Si te distraes, pierdes la oportunidad
+no por mucho madrugar amanece más temprano: Apresurarse no adelanta las cosas
+cada quien habla de la feria según le va en ella: Uno opina de acuerdo a su experiencia
 `},
 
 profesiones: { ico:'👔', label:'Profesiones', lista:`
@@ -641,6 +919,29 @@ veterinario: Doctor de animales
 programador: Escribe código
 electricista: Arregla la instalación de luz
 farmacéutico: Prepara y vende medicinas
+joyero: Hace anillos y collares
+editor: Corrige y arma textos o videos
+taquero: Prepara los tacos en el puesto
+elotero: Vende elotes y esquites en la calle
+locutor: Habla en la radio
+velador: Cuida un lugar durante la noche
+gerente: El jefe de la tienda
+conserje: Cuida y limpia el edificio
+zapatero: Arregla tus zapatos
+relojero: Arregla los relojes
+animador: Da vida a los dibujos o anima las fiestas
+carnicero: Vende carne en el mercado
+costurera: Cose y arregla la ropa
+vigilante: Cuida la entrada
+conductor: Maneja un vehículo o presenta un programa
+fumigador: Acaba con las plagas
+tortillero: Hace y vende tortillas
+tianguista: Vende en el mercado sobre ruedas
+lavaplatos: Lava los trastes en el restaurante
+ilustrador: Hace dibujos para libros
+comerciante: Vive de comprar y vender
+camarógrafo: Graba con la cámara de video
+recepcionista: Te recibe en la entrada de la oficina
 `},
 
 hogar: { ico:'🏠', label:'Hogar', lista:`
@@ -716,6 +1017,28 @@ servilleta: Para limpiarte la boca
 trapeador: Para dejar el piso brillante
 refrigerador: Mantiene fría la comida
 control remoto: Siempre se pierde entre los cojines
+cuna: Camita del bebé
+cloro: Blanquea y desinfecta
+jerga: Trapo grueso para el piso
+gancho: Sirve para colgar la ropa
+hamaca: Red colgada para descansar
+clóset: Ahí cuelgas la ropa
+plancha: Quita las arrugas de la ropa
+colchón: Va encima de la base de la cama
+colador: Separa el líquido de lo sólido
+perchero: Para colgar abrigos y bolsas
+persiana: Cortina de tablitas
+rallador: Para hacer tiritas de queso o zanahoria
+cucharón: Cuchara grande para servir caldo
+espátula: Para voltear los hot cakes
+mecedora: Silla que se mueve hacia adelante y atrás
+tapadera: Cubre la olla
+abrelatas: Herramienta para destapar el atún
+estropajo: Fibra para tallar los trastes
+exprimidor: Para sacarle el jugo al limón
+detergente: Jabón para la lavadora
+suavizante: Deja la ropa suavecita y perfumada
+burro de planchar: Tabla con patas para quitar arrugas a la ropa
 `},
 
 ropa: { ico:'👕', label:'Ropa', lista:`
@@ -767,6 +1090,25 @@ minifalda: Falda muy corta
 zapatillas: Zapatos de tacón
 impermeable: Te protege de la lluvia
 traje de baño: Para meterte a la alberca
+capa: La usan los superhéroes en la espalda
+toga: La usan los jueces y los graduados
+bata: Se usa al salir de bañarse o en el laboratorio
+moño: Lazo que se pone en el pelo o en el cuello
+blusa: Prenda de mujer para la parte de arriba
+bolsa: Se carga al hombro con tus cosas
+casco: Protege tu cabeza en la moto
+poncho: Prenda con un hoyo para pasar la cabeza
+abrigo: Prenda larga y gruesa para el invierno
+mandil: Protege la ropa cuando cocinas
+visera: Gorra sin la parte de arriba
+cartera: Ahí guardas el dinero
+diadema: Arco que se pone en el pelo
+tacones: Zapatos que te hacen ver más alta
+esmoquin: Traje elegante para una gala
+paraguas: Te cubre de la lluvia
+agujetas: Cordones de los tenis
+mocasines: Zapatos sin cordones
+pantimedias: Medias completas hasta la cintura
 `},
 
 transporte: { ico:'🚗', label:'Transporte', lista:`
@@ -816,6 +1158,24 @@ cuatrimoto: Moto de cuatro ruedas
 helicóptero: Vuela con hélices encima
 motocicleta: Vehículo de dos ruedas con motor
 nave espacial: Viaja por el universo
+balsa: Plataforma flotante hecha de troncos
+buque: Barco grande
+vagón: Cada carro del tren
+vocho: Coche escarabajo de los taxis de antes
+pesero: Micro de ruta en la Ciudad de México
+góndola: Bote alargado de Venecia
+cablebús: Teleférico de transporte público en la CDMX
+mototaxi: Moto con cabina para pasajeros
+diablito: Carretilla de dos ruedas para cargar cajas
+elevador: Sube y baja por los pisos de un edificio
+planeador: Avión sin motor
+catamarán: Barco de dos cascos
+carretilla: Carrito de una rueda para la obra
+paracaídas: Para bajar del cielo sin lastimarte
+locomotora: Jala a todos los vagones
+tren ligero: Tranvía moderno que llega a Xochimilco
+portaaviones: Barco donde aterrizan aviones
+escalera eléctrica: Escalones que se mueven solos
 `},
 
 deportes: { ico:'⚽', label:'Deportes', lista:`
@@ -871,6 +1231,81 @@ lucha libre: Máscaras, llaves y rudos contra técnicos
 tiro con arco: Flechas a una diana
 halterofilia: Levantamiento de pesas
 futbol americano: Casco, hombreras y touchdown
+yoga: Posturas y respiración para relajarse
+sumo: Luchadores japoneses muy grandes
+rally: Carreras de autos por caminos de tierra
+pesas: Se levantan para hacer músculo
+rapel: Bajar una pared colgado de una cuerda
+softbol: Primo del béisbol con pelota más grande
+karting: Carreras en carritos pequeños
+pilates: Ejercicio de control y estiramiento
+motocross: Carreras de motos en tierra con saltos
+balonmano: Se juega con las manos y porterías chicas
+bádminton: Raqueta y gallito de plumas
+senderismo: Caminar por el campo y las montañas
+fórmula uno: Carreras de los autos más rápidos del mundo
+tenis de mesa: Le dicen pimpón
+`},
+
+futbol: { ico:'🥅', label:'Futbol', lista:`
+gol: El grito más esperado del partido
+Tri: Apodo de la Selección Mexicana
+red: Se infla cuando entra el balón
+VAR: Revisión en video de las jugadas polémicas
+caño: Pasar el balón entre las piernas del rival
+poste: Palo vertical de la portería
+penal: Falta en el área que se cobra frente al portero
+balón: Se patea durante noventa minutos
+porra: Aficionados que cantan en la tribuna
+final: El último partido del torneo
+Pumas: Club de la UNAM
+Atlas: Los Zorros de Guadalajara
+Chivas: Club de Guadalajara que solo juega con mexicanos
+Tigres: Club felino de la UANL
+Santos: Los Guerreros de Torreón
+Toluca: Los Diablos Rojos
+Necaxa: Los Rayos
+córner: Tiro desde la esquina de la cancha
+cancha: Pasto con líneas blancas donde se juega
+empate: Cuando los dos equipos anotan lo mismo
+Pachuca: Los Tuzos de Hidalgo
+América: Las Águilas de Coapa
+Rayados: Club de Monterrey
+Clásico: Partido de las Águilas contra el Rebaño
+barrera: Jugadores en fila para tapar un tiro libre
+capitán: Lleva el gafete y habla con el árbitro
+chilena: Remate de espaldas en el aire
+chanfle: Efecto que hace que el balón se curve
+regate: Quitarte al rival con el balón pegado al pie
+afición: La gente que apoya a un equipo
+silbato: Lo usa el árbitro para marcar faltas
+tribuna: Gradas donde se sienta la gente
+jornada: Fecha del torneo con todos los partidos
+autogol: Anotar en tu propia portería
+defensa: Jugador que cuida su área
+tachones: Zapatos con picos para el pasto
+liguilla: Fase final del futbol mexicano
+cabezazo: Rematar el balón con la frente
+goleador: El que más anotaciones lleva
+marcador: Dice cómo va el partido
+descenso: Bajar de división por quedar hasta abajo
+Cruz Azul: La Máquina celeste
+delantero: Su trabajo es meter goles
+selección: Equipo que representa a un país
+travesaño: Palo de arriba de la portería
+asistencia: El pase que termina en anotación
+entrenador: El que dirige y decide quién juega
+alineación: Los once que salen a la cancha
+tiro libre: Cobro tras una falta
+sombrerito: Pasar el balón por encima de la cabeza del rival
+espinilleras: Protegen tus piernas de las patadas
+tiempo extra: Se juega cuando hay empate en una final
+medio tiempo: El descanso a la mitad del partido
+tarjeta roja: Te expulsa del partido
+saque de banda: Se lanza con las manos desde la orilla
+fuera de lugar: Cuando el delantero está adelantado al último defensa
+tarjeta amarilla: Amonestación, la primera advertencia
+tanda de penales: Desempate desde los once pasos
 `},
 
 musica: { ico:'🎵', label:'Música', lista:`
@@ -1050,6 +1485,147 @@ multijugador: Jugar con otras personas
 mundo abierto: Puedes ir a donde quieras
 modo historia: Sigues la trama del juego
 guardar partida: Para no perder tu avance
+pro: Jugador muy bueno
+clan: Grupo de jugadores que se juntan
+pausa: Detiene el juego un momento
+botón: Lo presionas en el control
+hongo: Te hace crecer en un juego de plomeros
+manco: Así le dicen al que juega muy mal
+campero: Jugador que se esconde y espera
+minimapa: Mapa chiquito en una esquina de la pantalla
+laberinto: Camino con muchas vueltas y salidas falsas
+vida extra: Te salva de perder la partida
+potenciador: Objeto que te da poderes por un rato
+barra de vida: Indica cuánta salud te queda
+francotirador: Dispara desde lejos con mira
+nivel secreto: Escondido para los que exploran
+punto de control: Si pierdes, regresas a ese lugar
+pantalla de carga: Lo que ves mientras inicia el nivel
+consola portátil: Para jugar en cualquier lugar
+modo cooperativo: Juegas en equipo con tus amigos
+`},
+
+peliculas: { ico:'🎬', label:'Películas y caricaturas', lista:`
+Coco: Película de Pixar sobre el Día de Muertos
+Cars: Película del Rayo McQueen
+Goku: Guerrero saiyajin de pelo de punta
+Nemo: Pez payaso que se perdió en el océano
+Dory: Pez azul con muy mala memoria
+Elsa: Reina con poderes de hielo
+Olaf: Muñeco de nieve que ama los abrazos
+Buzz: Guardián espacial de juguete que cree que puede volar
+Bart: Hijo travieso de una familia amarilla
+Shrek: Ogro verde que vive en un pantano
+Dumbo: Elefantito que vuela con sus orejas
+Bambi: Cervatillo del bosque que perdió a su mamá
+Simba: Cachorro de león que será rey
+Moana: Navega por el océano con un semidiós
+Mulán: Se disfrazó de soldado para salvar a su padre
+Woody: Vaquero de juguete con una serpiente en su bota
+Quico: Niño cachetón que presume sus juguetes
+Stitch: Experimento azul que vive en Hawái
+Frozen: Película de dos hermanas en un reino congelado
+Naruto: Ninja que sueña con ser Hokage
+Homero: Papá amarillo que trabaja en una planta nuclear
+Mickey: Ratón famoso de orejas redondas
+Piolín: Canario amarillo que siempre escapa del gato
+Popeye: Marinero fuerte gracias a las espinacas
+Batman: Héroe enmascarado de Ciudad Gótica
+Titanic: Barco que choca con un iceberg en la película
+Encanto: La familia Madrigal y su casa mágica
+Pinocho: Muñeco de madera al que le crece la nariz
+Aladino: Joven con una lámpara mágica y un genio
+Tarzán: Lo criaron los gorilas en la selva
+Minions: Ayudantes amarillos que hablan raro
+Pikachu: Ratón eléctrico amarillo
+Scooby: Perro gran danés que resuelve misterios
+Pokémon: Hay que atraparlos a todos
+Hércules: Semidiós griego en una película de Disney
+Garfield: Gato naranja que odia los lunes
+Rapunzel: Princesa de cabello larguísimo
+Superman: Viene de Kriptón y vuela
+Doraemon: Gato robot azul que viene del futuro
+Patricio: Estrella de mar rosa, mejor amigo de una esponja
+El Chavo: Niño que vive en un barril de la vecindad
+Don Ramón: El que nunca paga la renta en la vecindad
+Calamardo: Vecino gruñón que toca el clarinete
+Toy Story: Película de juguetes que cobran vida
+Increíbles: Familia de superhéroes de Pixar
+Cenicienta: Perdió una zapatilla de cristal a medianoche
+Madagascar: Animales del zoológico que escapan a una isla
+Mario Bros: Hermanos plomeros que rescatan a una princesa
+Picapiedra: Familia de las cavernas con un dinosaurio de mascota
+Chilindrina: Niña pecosa de lentes y coletas
+Ratatouille: Rata que sueña con ser chef en París
+Bob Esponja: Vive en una piña debajo del mar
+Bugs Bunny: Conejo que pregunta qué hay de nuevo, viejo
+Era de Hielo: Un mamut, un perezoso y un tigre dientes de sable
+Blancanieves: Vivía con siete enanos
+Pantera Rosa: Felina elegante que camina de puntitas
+Pájaro Loco: Ave carpintera roja de risa escandalosa
+Dragon Ball: Serie de Goku y las siete esferas mágicas
+Sailor Moon: Guerrera con traje de marinera y poderes de la luna
+Monsters Inc: Monstruos que asustan niños para tener energía
+Intensa Mente: Película de las emociones dentro de una niña
+Harry Potter: Mago con una cicatriz de rayo en la frente
+Hombre Araña: Héroe que trepa paredes y lanza telarañas
+Kung Fu Panda: Oso que se vuelve guerrero dragón
+Parque Jurásico: Isla con dinosaurios clonados
+Chapulín Colorado: Héroe de antenitas de vinil
+Mi Villano Favorito: Gru y sus ayudantes amarillos
+`},
+
+juguetes: { ico:'🪀', label:'Juegos y juguetes', lista:`
+yoyo: Sube y baja colgado de un hilo
+cubo: Rompecabezas de colores que se gira
+dados: Cubos con puntitos que se lanzan
+tazos: Fichas redondas que venían en las papitas
+globo: Se infla y se amarra
+osito: Peluche suavecito de oso
+basta: Escribir palabras que empiecen con la misma letra
+trompo: Se enrolla con cordón y se lanza a girar
+balero: Hay que meter el palito en la bola de madera
+muñeca: Juguete con forma de persona
+pelota: Rueda, rebota y se patea
+dominó: Fichas con puntitos que se emparejan
+títere: Muñeco que se mueve metiendo la mano
+baraja: Cartas para jugar
+cuerda: Se brinca mientras dos la hacen girar
+canicas: Bolitas de vidrio que se tiran con el dedo
+carrito: Coche de juguete
+peluche: Juguete suavecito de tela
+resorte: Saltar un elástico estirado entre dos personas
+rayuela: Brincar cuadros pintados en el piso
+matatena: Se lanza una pelotita y se recogen piezas
+papalote: Se eleva con el viento y un hilo
+pirinola: Trompito de seis caras: toma uno, pon dos
+columpio: Te meces colgado de cadenas
+triciclo: Bici de tres ruedas para niños
+burbujas: Se soplan con agua y jabón
+estampas: Se pegan en el álbum
+memorama: Juego de encontrar los pares
+quemados: Lanzar la pelota para sacar a los rivales
+bebeleche: Otro nombre del avioncito pintado en el piso
+cocinita: Juguete para jugar a preparar la comida
+marioneta: Muñeco que se mueve con hilos
+las traes: Uno persigue y al tocar te toca perseguir
+plastilina: Masa de colores para moldear
+escondidas: Uno cuenta y los demás se ocultan
+encantados: Si te tocan te quedas congelado
+trenecito: Juguete que corre sobre rieles
+soldaditos: Figuritas verdes de plástico
+sube y baja: Tabla con un niño en cada lado
+damas chinas: Tablero de estrella con canicas
+resbaladilla: Te deslizas por ella en el parque
+rompecabezas: Piezas que se arman para formar una imagen
+Doña Blanca: Ronda de pilares de oro y plata
+gallina ciega: Con los ojos tapados atrapas a los demás
+tiro al blanco: Atinarle al centro de la diana
+pistola de agua: Juguete para mojar a los demás
+casita de muñecas: Hogar en miniatura para jugar
+víbora de la mar: Ronda donde se pasa debajo de un puente de brazos
+piedra papel o tijera: Se decide quién gana con la mano
+serpientes y escaleras: Subes por unas y bajas por otras
 `},
 
 ciencia: { ico:'🔬', label:'Ciencia', lista:`
@@ -1177,6 +1753,19 @@ traje espacial: Lo usa el astronauta para salir de la nave
 sistema solar: El Sol y sus planetas
 agujero de gusano: Atajo teórico entre dos puntos del universo
 estación espacial: Laboratorio que orbita la Tierra
+rover: Vehículo que explora otro planeta
+Apolo: Misiones que llevaron humanos a la luna
+Fobos: Luna de Marte
+púlsar: Estrella que gira y lanza pulsos de radio
+cuásar: Núcleo de galaxia superbrillante
+Big Bang: La gran explosión que inició todo
+Ganímedes: La luna más grande de Júpiter
+cosmonauta: Así se le dice al astronauta ruso
+luna nueva: Cuando casi no se ve en el cielo
+eclipse solar: La luna tapa al sol
+materia oscura: No se ve, pero tiene gravedad
+lluvia de meteoros: Muchas estrellas fugaces juntas
+cinturón de asteroides: Rocas que giran entre Marte y Júpiter
 `},
 
 cuerpo: { ico:'🫀', label:'Cuerpo humano', lista:`
@@ -1314,9 +1903,20 @@ independencia: Se celebra cada 16 de septiembre
 Renacimiento: Época de Da Vinci y Miguel Ángel
 Niños Héroes: Defendieron el Castillo de Chapultepec
 Edad Media: Época de castillos y caballeros
-piedra del sol: Calendario azteca de piedra
+piedra del sol: Calendario mexica tallado en roca
 imperio romano: Gobernado por césares desde Roma
 Cristóbal Colón: Llegó a América en 1492
+Madero: Inició la Revolución en 1910
+Cortés: Conquistador español que llegó a Tenochtitlan
+Pípila: Quemó la puerta de la Alhóndiga de Granaditas
+Allende: Militar insurgente compañero de Hidalgo
+Malinche: Intérprete del conquistador español
+Carranza: Promulgó la Constitución de 1917
+Iturbide: Consumó la Independencia y fue emperador
+Sor Juana: Monja poeta del virreinato
+Santa Anna: Fue presidente once veces en el siglo XIX
+Corregidora: Josefa Ortiz, avisó a los insurgentes
+Maximiliano: Emperador austriaco de México
 `},
 
 mitos: { ico:'💀', label:'Mitos y leyendas', lista:`
@@ -1361,6 +1961,142 @@ xoloitzcuintle: Perro sin pelo que guía a las almas
 Huitzilopochtli: Dios mexica del sol y la guerra
 Mictlantecuhtli: Señor del inframundo mexica
 callejón del beso: Leyenda de amor de Guanajuato
+Odín: Padre de los dioses nórdicos
+grifo: Mitad águila, mitad león
+hidra: Serpiente de muchas cabezas que vuelven a crecer
+troll: Ser feo que vive bajo los puentes
+Chaac: Dios maya de la lluvia
+gólem: Gigante de barro que cobra vida
+kraken: Pulpo gigante que hunde barcos
+Medusa: Su mirada convierte en piedra
+Atenea: Diosa griega de la sabiduría
+Aquiles: Héroe griego con un talón débil
+Ehécatl: Dios mexica del viento
+lechuza: Dicen que es una bruja transformada
+tecolote: Ave nocturna que, según la leyenda, anuncia la muerte
+Poseidón: Dios griego del mar
+Mayahuel: Diosa mexica del maguey
+Kukulkán: Serpiente emplumada de los mayas
+valquiria: Guerrera que lleva a los caídos al Valhalla
+charro negro: Jinete oscuro que ofrece riquezas a cambio del alma
+La Planchada: Fantasma de enfermera que cuida a los pacientes de noche
+Xochiquetzal: Diosa mexica de las flores y el amor
+mulata de Córdoba: Bruja que escapó de la cárcel en un barco dibujado
+`},
+
+muertos: { ico:'🎃', label:'Muertos y Halloween', lista:`
+sal: En la ofrenda sirve para purificar
+vela: Se enciende para guiar a las almas
+agua: Se deja en el altar para la sed de las almas
+foto: Imagen del difunto que se pone en el altar
+cruz: Se coloca sobre las tumbas
+arco: Adorno de flores que enmarca el altar
+copal: Resina que se quema y perfuma el altar
+altar: Mesa adornada para recordar a los que se fueron
+tumba: Ahí descansan los restos de alguien
+momia: Cuerpo vendado de las películas de miedo
+zombi: Muerto viviente que camina lento
+susto: Lo que te dan en una casa embrujada
+araña: Teje su red en las esquinas oscuras
+ouija: Tablero para hablar con los espíritus
+ataúd: Caja donde se sepulta a alguien
+diablo: Rojo, con cuernos y cola puntiaguda
+lápida: Piedra con el nombre del difunto
+escoba: Medio de transporte de las brujas
+catrín: Pareja elegante de la famosa calavera de sombrero
+disfraz: Te lo pones el 31 de octubre
+hechizo: Palabras mágicas de una bruja
+caldero: Olla negra donde hierven las pociones
+máscara: Te tapa la cara en la noche de brujas
+difunto: Persona que ya murió
+demonio: Ser maligno de las películas de terror
+Mixquic: Pueblo de la CDMX famoso por su noche de velación
+panteón: Se visita el 2 de noviembre
+Drácula: El conde vampiro de Transilvania
+veladora: Vela en vaso que dura toda la noche
+Janitzio: Isla de Michoacán donde se vela en el lago
+fantasma: Alma en pena tapada con una sábana
+telaraña: Red pegajosa en los rincones
+monstruo: Criatura que asusta a los niños
+incienso: Varita que perfuma con su humo
+epitafio: Frase escrita sobre una tumba
+calabaza: Se talla con una cara y se le pone una vela adentro
+colmillos: Los tiene el vampiro para morder
+esqueleto: Todos los huesos juntos y sin piel
+alfeñique: Figuritas de azúcar del Día de Muertos
+exorcismo: Ritual para sacar a un demonio de un cuerpo
+calaverita: Versito chistoso que se escribe en noviembre
+camposanto: Otro nombre del cementerio
+cementerio: Lugar lleno de tumbas
+luna llena: Noche perfecta para los hombres lobo
+gato negro: Dicen que trae mala suerte si se te cruza
+ultratumba: Lo que hay más allá de la muerte
+murciélago: Vuela de noche y es símbolo de Halloween
+sepulturero: Trabaja cavando tumbas
+Frankenstein: Monstruo armado con partes y despertado con un rayo
+papel picado: Banderitas de colores que adornan el altar
+Todos Santos: Otro nombre del 1 de noviembre
+pan de muerto: Lleva huesitos de masa y azúcar encima
+dulce o truco: Lo que dicen los niños al tocar puertas
+Día de Muertos: Se celebra el 1 y 2 de noviembre
+casa embrujada: Lugar lleno de fantasmas y ruidos raros
+espantapájaros: Muñeco de paja que asusta a las aves
+noche de brujas: Otro nombre de Halloween
+`},
+
+navidad: { ico:'🎄', label:'Navidad y posadas', lista:`
+reno: Jala el trineo de Santa
+pavo: Se hornea para la cena de diciembre
+uvas: Se comen doce a medianoche en Año Nuevo
+elfo: Ayudante en la fábrica de juguetes del Polo Norte
+heno: Planta gris que se pone en el nacimiento
+pino: Árbol que se pone en casa en diciembre
+caña: Fruta dulce que va en el ponche y en la piñata
+ángel: Figura con alas que se pone en el nacimiento
+Belén: Ciudad donde nació el niño Jesús
+Santa: Viste de rojo, tiene barba blanca y trae regalos
+nieve: Copos blancos que caen en invierno
+luces: Foquitos de colores que parpadean en el árbol
+abeto: Árbol de hoja que nunca se cae, típico de diciembre
+esfera: Bolita brillante que cuelga del árbol
+regalo: Se abre el 25 de diciembre
+ponche: Bebida caliente con frutas y canela
+trineo: Vehículo de Santa sobre la nieve
+pierna: Carne de cerdo horneada para la cena
+deseos: Se piden con cada uva de Año Nuevo
+brindis: Se levantan las copas para celebrar
+bacalao: Pescado que se guisa en Nochebuena
+pesebre: Lugar con paja donde nació el niño Dios
+Rodolfo: El reno de nariz roja
+buñuelo: Tortilla dulce y crujiente con miel de piloncillo
+campana: Suena en las canciones de diciembre
+letanía: Canto que se reza en las posadas
+pastores: Figuras del nacimiento que cuidan ovejas
+muérdago: Planta bajo la que se dan un beso
+estrella: Va en la punta del árbol
+galletas: Se le dejan a Santa con un vaso de leche
+invierno: La estación del frío
+cascabel: Suena colgado del trineo
+chimenea: Por donde entra Santa a las casas
+colación: Dulces de azúcar que se reparten en las posadas
+arrullar: Lo que se hace con el niño Dios en Nochebuena
+Niño Dios: Se arrulla y se acuesta en Nochebuena
+romeritos: Hierba que se come con mole y tortitas de camarón
+guirnalda: Tira brillante para adornar el árbol
+aguinaldo: Bolsita de dulces de la posada, y el pago extra de diciembre
+Año Nuevo: Se recibe con doce uvas
+villancico: Canción de diciembre
+peregrinos: Los que piden posada cantando
+Nochebuena: La noche del 24 de diciembre
+Candelaria: Día de los tamales, el 2 de febrero
+nacimiento: Escena del niño Dios con figuritas
+intercambio: Se rifa a quién le vas a regalar
+Reyes Magos: Melchor, Gaspar y Baltasar
+Día de Reyes: El 6 de enero se parte la rosca
+árbol de Navidad: Se adorna con esferas, luces y una estrella
+bastón de caramelo: Dulce rayado rojo y blanco
+chocolate caliente: Bebida perfecta para el frío
+flor de nochebuena: Planta roja originaria de México
 `},
 
 colores: { ico:'🎨', label:'Colores', lista:`
@@ -1409,8 +2145,22 @@ chocolate: Café oscuro y dulce
 terracota: Color del barro cocido
 aguamarina: Azul verdoso clarito
 azul marino: Azul muy oscuro
-verde limón: Verde brillante y amarillento
+verde limón: Como la cáscara del cítrico más ácido
 rosa mexicano: Rosa intenso, orgullo nacional
+cian: Azul verdoso de las impresoras
+tinto: Rojo oscuro como el vino
+caqui: Café verdoso de los uniformes de safari
+arena: Beige como la playa
+mamey: Naranja rosado como la fruta
+granate: Rojo oscuro como la piedra preciosa
+azul rey: Azul intenso y brillante
+gris perla: Gris clarito y brillante
+rojo fuego: Rojo intenso como las llamas
+verde menta: Como el helado de hierbabuena
+verde militar: Color de los uniformes del ejército
+café con leche: Café clarito
+negro azabache: El tono más oscuro e intenso
+amarillo canario: Brillante como el pajarito que canta
 `},
 
 escuela: { ico:'🎒', label:'Escuela', lista:`
@@ -1472,6 +2222,83 @@ cuestionario: Lista de preguntas
 calificación: Número del uno al diez
 transportador: Mide ángulos
 globo terráqueo: Mapa del mundo en forma de pelota
+mapa: Representa un país o el mundo en papel
+pluma: Para escribir con tinta
+compás: Para trazar círculos
+útiles: Lista de cosas para el regreso a clases
+director: El jefe de la escuela
+prefecto: Vigila los pasillos de la secundaria
+uniforme: Ropa igual para todos los alumnos
+corrector: Tapa los errores de tinta
+cartulina: Papel grueso para exposiciones
+credencial: Identificación del alumno
+monografía: Estampita con información para la tarea
+cooperativa: Tiendita de la escuela
+jefe de grupo: Representante del salón
+tablas de multiplicar: Se memorizan en la primaria: dos por dos...
+`},
+
+verbos: { ico:'🏃', label:'Verbos', lista:`
+ver: Lo haces con los ojos
+oír: Lo haces con las orejas
+reír: Lo haces cuando algo te da gracia
+leer: Lo haces con un libro
+oler: Lo haces con la nariz
+nadar: Lo haces en la alberca
+jugar: Lo hacen los niños en el recreo
+volar: Lo hacen las aves y los aviones
+comer: Lo haces tres veces al día
+soñar: Lo haces mientras duermes
+tocar: Lo haces con las manos, o con un instrumento
+mirar: Fijar la vista en algo
+besar: Se hace con los labios
+lavar: Limpiar con agua y jabón
+jalar: Traer algo hacia ti
+ganar: Quedar en primer lugar
+saltar: Despegar los pies del suelo
+correr: Ir más rápido que caminando
+bailar: Moverse al ritmo de la música
+cantar: Usar tu voz con melodía
+dormir: Lo haces en la cama por la noche
+llorar: Te salen lágrimas
+gritar: Hablar muy, muy fuerte
+barrer: Limpiar el piso con escoba
+pintar: Dar color con pincel
+vender: Dar algo a cambio de dinero
+viajar: Ir a un lugar lejos de casa
+buscar: Tratar de dar con algo perdido
+morder: Clavar los dientes
+silbar: Hacer sonido soplando con los labios
+roncar: Hacer ruido al dormir
+trepar: Subir agarrándote con manos y pies
+gatear: Andar a cuatro patas como bebé
+pensar: Usar la cabeza para razonar
+romper: Hacer pedazos algo
+perder: Lo contrario de ganar
+abrazar: Rodear a alguien con los brazos
+caminar: Avanzar paso a paso
+dibujar: Hacer trazos para formar una imagen
+cocinar: Preparar la comida
+manejar: Lo haces al volante
+comprar: Pagar para llevarte algo
+empujar: Mover algo hacia adelante con fuerza
+olvidar: Ya no acordarte de algo
+enseñar: Lo hace el maestro
+escribir: Hacer letras con lápiz o pluma
+esconder: Poner algo donde nadie lo vea
+masticar: Triturar la comida con las muelas
+aplaudir: Juntar las manos para felicitar
+bostezar: Abrir la boca cuando tienes sueño
+tropezar: Casi caerte por un obstáculo
+resbalar: Patinar sin querer en el piso mojado
+susurrar: Hablar muy bajito al oído
+recordar: Traer algo a la memoria
+aprender: Saber algo nuevo
+arreglar: Componer lo que está roto
+encontrar: Dar con lo que buscabas
+construir: Levantar una casa o un edificio
+parpadear: Abrir y cerrar los ojos rápido
+estornudar: Lo que haces con la nariz cuando tienes gripa
 `},
 
 emociones: { ico:'😄', label:'Emociones', lista:`
@@ -1567,6 +2394,23 @@ transmisión: Lo que hace el creador en vivo
 cámara lenta: Efecto para que todo vaya despacio
 notificación: Aviso que te llega al celular
 pantalla verde: Efecto para cambiar el fondo detrás de ti
+dona: Regalo del live con chispitas
+vista: Cada vez que alguien ve tu video
+fijar: Dejar un comentario arriba de todos
+efecto: Lo que le pones al video para que se vea diferente
+alcance: A cuántas personas llegó tu video
+sticker: Calcomanía para tu video o tus mensajes
+galaxia: Regalo del live lleno de estrellas
+encuesta: Pregunta con opciones para que tus seguidores voten
+historia: Video que desaparece en 24 horas
+reacción: Video donde respondes a otro video
+bloquear: Que alguien ya no pueda ver tu perfil
+reportar: Avisar que algo rompe las reglas
+silenciar: Dejar de ver lo que publica alguien sin dejar de seguirlo
+tendencia: Lo que está de moda en la app
+subtítulos: Texto que aparece abajo del video
+colaboración: Video que hacen dos creadores juntos
+cuenta privada: Solo tus seguidores pueden ver tus videos
 `},
 
 };

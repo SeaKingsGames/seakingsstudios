@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#14432f">
+<title>Dominó · SeaKingsGames</title>
+<meta name="description" content="Dominó gratis en español: juega en parejas con la compu, mano a mano con pozo o todos contra todos, a 100 puntos. Funciona sin internet.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="comun.css">
+<style>
+  :root{ --bg:#14432f; --bg-2:#0a2419; --panel:#1f5a41; --panel-2:#2a6f51; --accent:#ffd43b; --accent-deep:#c79a00; --accent-ink:#3a2a00; --felt:#1b6b47; }
+  #game{flex:1}
+  #game > *{flex-shrink:0}
+  .score{display:flex;justify-content:center;gap:8px;padding:4px 10px;font-weight:700;font-size:14px}
+  .score span{background:rgba(0,0,0,.25);padding:5px 10px;border-radius:10px}
+  .score b{color:var(--accent)}
+  .opps{display:flex;justify-content:center;gap:6px;padding:4px 8px;flex-wrap:wrap}
+  .opp{display:flex;align-items:center;gap:6px;padding:5px 9px;border-radius:12px;background:rgba(255,255,255,.07);font-size:13px;font-weight:600;border:2px solid transparent;position:relative}
+  .opp.turn{border-color:#fff;background:rgba(255,255,255,.15)}
+  .opp.mate{background:rgba(95,201,154,.18)}
+  .opp .backs{display:flex;gap:2px}
+  .opp .backs i{width:7px;height:13px;border-radius:2px;background:#f5f1e6;box-shadow:inset 0 -2px 0 #c9c2ae}
+  .opp .bub{position:absolute;top:-10px;right:-6px;font-size:11px;background:#ff8787;color:#fff;padding:1px 6px;border-radius:8px;animation:popIn .3s}
+  .table{position:relative;margin:6px 8px;border-radius:18px;background:radial-gradient(ellipse at center,#22865a 0%,var(--felt) 60%,#145238 100%);box-shadow:inset 0 0 0 4px #0f3d29,inset 0 6px 20px rgba(0,0,0,.35);padding:10px;display:flex;flex-direction:column;justify-content:center;gap:4px;overflow:hidden}
+  .trow{display:flex;align-items:center;gap:3px;min-height:calc(var(--h) * 2)}
+  .trow.rev{flex-direction:row-reverse}
+  .trow.solo{justify-content:center}
+  .table .empty{color:rgba(255,255,255,.55);font-weight:600;text-align:center;padding:20px}
+  .slot{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:calc(var(--h) * 1.1);height:calc(var(--h) * 2);border-radius:8px;border:2px dashed rgba(255,212,59,.9);color:var(--accent);font-weight:700;font-size:calc(var(--h) * .6);cursor:pointer;animation:pulse 1s infinite}
+  @keyframes pulse{50%{background:rgba(255,212,59,.18)}}
+  .tile{display:flex;background:linear-gradient(180deg,#fffdf6,#efe8d6);border-radius:calc(var(--h) * .16);box-shadow:0 2px 0 #b9af93,0 3px 6px rgba(0,0,0,.35);position:relative;flex-shrink:0}
+  .tile.h{width:calc(var(--h) * 2);height:var(--h);flex-direction:row}
+  .tile.v{width:var(--h);height:calc(var(--h) * 2);flex-direction:column}
+  .tile .half{flex:1;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:calc(var(--h) * .12)}
+  .tile.h .half + .half{border-left:1.5px solid #b9af93}
+  .tile.v .half + .half{border-top:1.5px solid #b9af93}
+  .tile .half b{width:calc(var(--h) * .17);height:calc(var(--h) * .17);border-radius:50%;margin:auto;background:transparent}
+  .tile .half b.on{background:#1c2a3a}
+  .tile.new{animation:tileIn .35s cubic-bezier(.34,1.56,.64,1)}
+  .tile.end{box-shadow:0 2px 0 #b9af93,0 0 0 2px rgba(255,212,59,.6),0 3px 6px rgba(0,0,0,.35)}
+  @keyframes tileIn{from{transform:scale(.4) rotate(-20deg);opacity:0}to{transform:none;opacity:1}}
+  .msg{text-align:center;font-weight:600;min-height:24px;padding:2px 12px;font-size:15px}
+  .hand{display:flex;justify-content:center;gap:6px;padding:8px 8px 4px;flex-wrap:wrap;--h:30px}
+  .hand .tile{cursor:pointer;transition:transform .15s,opacity .15s}
+  .hand .tile.can{transform:translateY(-8px);box-shadow:0 2px 0 #b9af93,0 0 0 3px var(--accent),0 6px 10px rgba(0,0,0,.4)}
+  .hand .tile.no{opacity:.55}
+  .hand .tile.pick{transform:translateY(-14px) scale(1.06)}
+  .actions{display:flex;justify-content:center;gap:10px;padding:6px 10px 16px;min-height:60px}
+  .actions button:disabled{opacity:.35}
+</style>
+</head>
+<body>
+
+<section id="menu" class="screen active">
+  <div class="logo-ico">🁫</div>
+  <div class="logo">DOMINÓ<small>SeaKingsGames</small></div>
+  <div class="section-title">¿CÓMO QUIERES JUGAR?</div>
+  <div class="diff-list" id="mode-list"></div>
+  <p class="how">Coloca fichas que coincidan con las puntas. Quien se quede sin fichas hace dominó y gana los puntos que les quedan a los rivales. Si nadie puede tirar hay tranque y gana quien tenga menos puntos. La partida es a 100.</p>
+  <a class="back-link" href="index.html">← Volver a la arcada</a>
+  <div class="ad-banner-bottom" id="ad-bottom"></div>
+</section>
+
+<section id="game" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" id="btn-back">‹</button>
+    <div class="level-title"><div class="badge" id="badge">PAREJAS</div><h1 id="title">Mano 1</h1></div>
+    <button class="icon-btn small" id="btn-sound">🔊</button>
+    <span style="width:46px"></span>
+  </div>
+  <div class="score" id="score"></div>
+  <div class="opps" id="opps"></div>
+  <div class="table" id="table"></div>
+  <div class="msg" id="msg"></div>
+  <div class="hand" id="hand"></div>
+  <div class="actions"><button class="btn-secondary" id="btn-draw">🂠 Robar</button><button class="btn-secondary" id="btn-pass">✋ Paso</button></div>
+</section>
+
+<script src="comun.js"></script>
+<script>
+/* =====================================================
+   DOMINÓ · SeaKingsGames
+   ===================================================== */
+const { $, sfx } = SK;
+const PIPS = { 0:[], 1:[4], 2:[0,8], 3:[0,4,8], 4:[0,2,6,8], 5:[0,2,4,6,8], 6:[0,2,3,5,6,8] };
+const MODES = {
+  parejas: { label:'👥 Parejas', note:'Tú y tu compa contra dos rivales', players:['Tú', 'Lupita', 'Don Chuy', 'Pancho'], teams:[0, 1, 0, 1], pozo:false },
+  mano:    { label:'🤝 Mano a mano', note:'Tú contra la compu, con pozo para robar', players:['Tú', 'Lupita'], teams:[0, 1], pozo:true },
+  todos:   { label:'🎯 Todos contra todos', note:'Cuatro jugadores, cada quien por su lado', players:['Tú', 'Lupita', 'Don Chuy', 'Pancho'], teams:[0, 1, 2, 3], pozo:false },
+};
+const GOAL = 100;
+const wait = ms => new Promise(r => setTimeout(r, ms * (window.DOM_SPEED || 1)));
+const pips = t => t[0] + t[1];
+const fitsEnd = (t, v) => t[0] === v || t[1] === v;
+
+/* ---------- ESTADO ---------- */
+const st = { mode:'parejas', hands:[], pozo:[], chain:[], cur:0, passes:0, starter:-1, firstHand:true, scores:[], handNo:0, run:0, over:true, waiting:false, pick:null, missing:[], lastPlayed:null };
+const M = () => MODES[st.mode];
+
+function deck(){ const d = []; for (let a = 0; a <= 6; a++) for (let b = a; b <= 6; b++) d.push([a, b]); for (let i = d.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [d[i], d[j]] = [d[j], d[i]]; } return d; }
+const ends = () => st.chain.length ? [st.chain[0][0], st.chain[st.chain.length - 1][1]] : null;
+function movesFor(hand){
+  const e = ends(), out = [];
+  hand.forEach((t, i) => {
+    if (!e) { out.push({ i, side:'R' }); return; }
+    if (fitsEnd(t, e[0])) out.push({ i, side:'L' });
+    if (fitsEnd(t, e[1]) && !(e[0] === e[1] && fitsEnd(t, e[0]) && out.some(m => m.i === i))) out.push({ i, side:'R' });
+  });
+  // primera mano de la partida: hay que abrir con la ficha de salida
+  if (!st.chain.length && st.mustOpen) return out.filter(m => hand[m.i][0] === st.mustOpen[0] && hand[m.i][1] === st.mustOpen[1]);
+  return out;
+}
+
+/* ---------- PARTIDA ---------- */
+function startMatch(mode){
+  sfx.init(); sfx.tap();
+  st.mode = mode; st.scores = Array(new Set(M().teams).size).fill(0); st.handNo = 0; st.firstHand = true; st.starter = -1;
+  $('badge').textContent = M().label.replace(/^\S+ /, '').toUpperCase();
+  SK.showScreen('game'); newHand();
+}
+function newHand(){
+  st.run++; st.over = false; st.handNo++;
+  const d = deck(), n = M().players.length;
+  st.hands = Array.from({ length:n }, (_, k) => d.slice(k * 7, k * 7 + 7).sort((a, b) => pips(a) - pips(b)));
+  st.pozo = M().pozo ? d.slice(n * 7) : [];
+  st.chain = []; st.passes = 0; st.pick = null; st.missing = Array.from({ length:n }, () => new Set()); st.mustOpen = null; st.lastPlayed = null;
+  if (st.firstHand || st.starter < 0) {
+    // abre quien tenga la mula más alta (o la ficha más alta si nadie tiene mulas)
+    let best = null;
+    st.hands.forEach((h, p) => h.forEach(t => { const v = (t[0] === t[1] ? 100 : 0) + pips(t); if (!best || v > best.v) best = { v, p, t }; }));
+    st.cur = best.p; st.mustOpen = best.t;
+  } else st.cur = st.starter;
+  st.firstHand = false;
+  $('title').textContent = `Mano ${st.handNo}`;
+  render(); turn(st.run);
+}
+async function turn(run){
+  if (run !== st.run || st.over) return;
+  render();
+  const p = st.cur, name = M().players[p], moves = movesFor(st.hands[p]);
+  if (p === 0) {
+    st.waiting = true;
+    if (moves.length) msg(st.mustOpen && !st.chain.length ? `Abres tú: tira la ${st.mustOpen.join('|')}` : 'Tu turno: toca una ficha que brille');
+    else if (M().pozo && st.pozo.length) msg('No tienes ficha: roba del pozo');
+    else msg('No tienes ficha: toca "Paso"');
+    render(); return;
+  }
+  msg(`🤖 ${name} está pensando…`);
+  await wait(650 + Math.random() * 450); if (run !== st.run) return;
+  let mv = movesFor(st.hands[p]);
+  while (!mv.length && M().pozo && st.pozo.length) {
+    st.hands[p].push(st.pozo.pop()); sfx.tone(260, .05, 'triangle', .06); msg(`🂠 ${name} roba del pozo (${st.pozo.length} quedan)`); render();
+    await wait(380); if (run !== st.run) return;
+    mv = movesFor(st.hands[p]);
+  }
+  if (!mv.length) return pass(p, run);
+  const m = cpuChoose(p, mv);
+  play(p, m.i, m.side, run);
+}
+function msg(t){ $('msg').textContent = t; }
+
+/* ---------- JUGAR Y PASAR ---------- */
+function play(p, i, side, run){
+  const t = st.hands[p].splice(i, 1)[0];
+  if (!st.chain.length) st.chain.push([t[0], t[1]]);
+  else if (side === 'L') { const v = st.chain[0][0]; st.chain.unshift(t[1] === v ? [t[0], t[1]] : [t[1], t[0]]); }
+  else { const v = st.chain[st.chain.length - 1][1]; st.chain.push(t[0] === v ? [t[0], t[1]] : [t[1], t[0]]); }
+  st.lastPlayed = { side, double: t[0] === t[1] };
+  st.passes = 0; st.mustOpen = null; st.pick = null;
+  sfx.tone(t[0] === t[1] ? 520 : 420, .07, 'square', .08); sfx.tone(220, .05, 'triangle', .1, .04);
+  msg(`${p === 0 ? 'Tiraste' : M().players[p] + ' tiró'} ${t[0]}|${t[1]}`);
+  render();
+  if (!st.hands[p].length) return endHand('domino', p);
+  next(run);
+}
+function pass(p, run){
+  const e = ends(); if (e) e.forEach(v => st.missing[p].add(v));
+  st.passes++;
+  sfx.tone(180, .12, 'sine', .08);
+  msg(`✋ ${p === 0 ? 'Pasaste' : M().players[p] + ' pasó'}`);
+  st.bubble = p; render(); setTimeout(() => { if (st.bubble === p) { st.bubble = null; render(); } }, 1200);
+  if (st.passes >= M().players.length) return endHand('tranque');
+  next(run);
+}
+function next(run){ if (run !== st.run || st.over) return; st.waiting = false; st.cur = (st.cur + 1) % M().players.length; setTimeout(() => turn(run), 250 * (window.DOM_SPEED || 1)); }
+
+/* ---------- COMPU ---------- */
+function cpuChoose(p, moves){
+  const hand = st.hands[p], e = ends(), myTeam = M().teams[p];
+  let best = null;
+  moves.forEach(m => {
+    const t = hand[m.i];
+    let score = pips(t) + (t[0] === t[1] ? 7 : 0);
+    if (e) {
+      const matched = m.side === 'L' ? e[0] : e[1], exposed = t[0] === matched ? t[1] : t[0];
+      const otherEnd = m.side === 'L' ? e[1] : e[0];
+      // que me queden fichas para la punta que dejo
+      score += hand.filter((x, k) => k !== m.i && fitsEnd(x, exposed)).length * 3;
+      // ahogar a los rivales: dejar números que ya no tienen
+      st.missing.forEach((set, q) => { if (q === p) return; const rival = M().teams[q] !== myTeam; if (set.has(exposed)) score += rival ? 5 : -5; if (set.has(otherEnd)) score += rival ? 2 : -2; });
+    }
+    score += Math.random() * 2.5;
+    if (!best || score > best.score) best = { ...m, score };
+  });
+  return best;
+}
+
+/* ---------- FIN DE MANO ---------- */
+function endHand(kind, winnerP){
+  st.over = true; st.waiting = false; render();
+  const teams = M().teams, totals = st.hands.map(h => h.reduce((s, t) => s + pips(t), 0));
+  let winTeam = -1, points = 0, title, sub;
+  if (kind === 'domino') {
+    winTeam = teams[winnerP];
+    points = totals.reduce((s, v, q) => s + (teams[q] !== winTeam ? v : 0), 0);
+    title = winnerP === 0 ? '¡Dominó!' : `¡Dominó de ${M().players[winnerP]}!`;
+    st.starter = winnerP;
+  } else {
+    // tranque: gana el equipo con menos puntos en la mano
+    const byTeam = {}; totals.forEach((v, q) => byTeam[teams[q]] = (byTeam[teams[q]] || 0) + v);
+    const sorted = Object.entries(byTeam).sort((a, b) => a[1] - b[1]);
+    if (sorted.length > 1 && sorted[0][1] === sorted[1][1]) { winTeam = -1; title = '¡Tranque empatado!'; }
+    else {
+      winTeam = +sorted[0][0]; points = Object.entries(byTeam).reduce((s, [t, v]) => s + (+t !== winTeam ? v : 0), 0);
+      title = '¡Tranque!';
+      st.starter = teams.indexOf(winTeam);
+    }
+  }
+  if (winTeam >= 0) st.scores[winTeam] += points;
+  const meWin = winTeam === 0;
+  meWin ? sfx.win() : (winTeam >= 0 ? sfx.lose() : sfx.tone(440, .2));
+  if (winTeam < 0) sub = 'Nadie suma puntos esta mano';
+  else if (st.mode === 'parejas') sub = `${winTeam === 0 ? 'Ustedes ganan' : 'Ellos ganan'} ${points} puntos`;
+  else sub = winTeam === 0 ? `Ganas ${points} puntos` : `${M().players[winTeam]} gana ${points} puntos`;
+  const done = st.scores.some(s => s >= GOAL);
+  // fichas que le quedaron a cada quien
+  const extra = document.createElement('div');
+  extra.style.cssText = 'display:flex;flex-direction:column;gap:6px;margin:4px 0';
+  st.hands.forEach((h, q) => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,.07);font-size:13px;font-weight:600;flex-wrap:wrap;--h:16px';
+    const nm = document.createElement('span'); nm.style.minWidth = '74px'; nm.style.textAlign = 'left'; nm.textContent = M().players[q]; row.appendChild(nm);
+    h.forEach(t => row.appendChild(tileEl(t, 'h')));
+    const pt = document.createElement('small'); pt.style.marginLeft = 'auto'; pt.style.color = 'var(--text-dim)'; pt.textContent = `${totals[q]} pts`; row.appendChild(pt);
+    extra.appendChild(row);
+  });
+  setTimeout(() => {
+    if (done) return endMatch();
+    SK.result({
+      emoji: winTeam < 0 ? '🤝' : (meWin ? '🎉' : '😬'), lose: winTeam > 0, title, text: sub, extra,
+      stats: st.scores.map((s, t) => [s, (st.mode === 'parejas' ? (t === 0 ? 'USTEDES' : 'ELLOS') : M().players[t].toUpperCase())]),
+      buttons:[{ label:'Siguiente mano →', onClick: newHand }, { label:'Salir', kind:'ghost', onClick: toMenu }],
+    });
+  }, 900 * (window.DOM_SPEED || 1));
+}
+function endMatch(){
+  const win = st.scores.indexOf(Math.max(...st.scores)), me = win === 0;
+  if (me) { SK.store.set(`sk-domino-wins-${st.mode}`, SK.store.get(`sk-domino-wins-${st.mode}`, 0) + 1); sfx.newRec(); }
+  SK.result({
+    emoji: me ? '🏆' : '🤖', lose: !me,
+    title: me ? (st.mode === 'parejas' ? '¡Ganaron la partida!' : '¡Ganaste la partida!') : `Ganó ${st.mode === 'parejas' ? 'el otro equipo' : M().players[win]}`,
+    text: `Llegaron a ${GOAL} puntos en ${st.handNo} manos`,
+    stats: st.scores.map((s, t) => [s, (st.mode === 'parejas' ? (t === 0 ? 'USTEDES' : 'ELLOS') : M().players[t].toUpperCase())]),
+    share: me ? { emoji:'🁫', title:'¡GANÉ EL DOMINÓ!', game:'Dominó', sub: M().label.replace(/^\S+ /, ''), big:`${st.scores[0]} puntos`, stats: st.scores.slice(0, 3).map((s, t) => [s, st.mode === 'parejas' ? (t === 0 ? 'NOSOTROS' : 'ELLOS') : M().players[t].toUpperCase()]), text:`🁫 ¡Gané una partida de dominó (${M().label.replace(/^\S+ /, '')}) a ${GOAL} puntos!\nJuega: SeaKingsGames`, file:'logro-domino' } : null,
+    buttons:[{ label:'Otra partida →', onClick: () => startMatch(st.mode) }, { label:'Menú', kind:'ghost', onClick: toMenu }],
+  });
+}
+
+/* ---------- DIBUJO ---------- */
+function tileEl(t, dir){
+  const d = document.createElement('div'); d.className = 'tile ' + dir;
+  t.forEach(v => { const h = document.createElement('div'); h.className = 'half'; for (let k = 0; k < 9; k++) { const b = document.createElement('b'); if (PIPS[v].includes(k)) b.className = 'on'; h.appendChild(b); } d.appendChild(h); });
+  return d;
+}
+// acomoda la cadena en filas tipo serpiente: una fila de ida y la siguiente de regreso
+function tableRows(items, W, h){
+  const rows = [[]]; let rowW = 0;
+  items.forEach(it => {
+    const w = (it.kind === 'slot' ? 1.1 * h : it.t[0] === it.t[1] ? h : 2 * h) + 3;
+    if (rowW + w > W && rows[rows.length - 1].length) { rows.push([]); rowW = 0; }
+    rows[rows.length - 1].push(it); rowW += w;
+  });
+  return rows;
+}
+function sizeTable(items){
+  const tbl = $('table'), W = Math.min(innerWidth, 620) - 40, H = Math.max(160, innerHeight - 380);
+  tbl.style.height = H + 'px';
+  let h = 30;
+  for (; h > 12; h--) if (tableRows(items, W, h).length * (2 * h + 4) <= H - 20) break;
+  tbl.style.setProperty('--h', h + 'px');
+  return tableRows(items, W, h);
+}
+function render(){
+  // marcador
+  const sc = $('score'); sc.innerHTML = '';
+  st.scores.forEach((s, t) => { const sp = document.createElement('span'); sp.innerHTML = `<b></b> ${s}`; sp.firstChild.textContent = st.mode === 'parejas' ? (t === 0 ? 'Ustedes' : 'Ellos') : M().players[t]; sc.appendChild(sp); });
+  const goal = document.createElement('span'); goal.textContent = `🏁 ${GOAL}`; sc.appendChild(goal);
+  // rivales y compa
+  const op = $('opps'); op.innerHTML = '';
+  M().players.forEach((name, p) => {
+    if (p === 0) return;
+    const d = document.createElement('div'); d.className = 'opp' + (st.cur === p && !st.over ? ' turn' : '') + (st.mode === 'parejas' && M().teams[p] === 0 ? ' mate' : '');
+    d.innerHTML = `<span></span><div class="backs">${'<i></i>'.repeat(st.hands[p] ? st.hands[p].length : 0)}</div>`;
+    d.firstChild.textContent = name + (st.mode === 'parejas' && M().teams[p] === 0 ? ' 🤝' : '');
+    if (st.bubble === p) { const b = document.createElement('span'); b.className = 'bub'; b.textContent = 'paso'; d.appendChild(b); }
+    op.appendChild(d);
+  });
+  if (M().pozo) { const d = document.createElement('div'); d.className = 'opp'; d.textContent = `🂠 Pozo: ${st.pozo.length}`; op.appendChild(d); }
+  // mesa
+  const tbl = $('table'); tbl.innerHTML = '';
+  const myMoves = st.cur === 0 && st.waiting && !st.over ? movesFor(st.hands[0]) : [];
+  const pickSides = st.pick != null ? myMoves.filter(m => m.i === st.pick).map(m => m.side) : [];
+  if (!st.chain.length) {
+    sizeTable([]);
+    const e = document.createElement('div'); e.className = 'empty'; e.textContent = st.mustOpen ? `Abre la ${st.mustOpen.join('|')}` : 'La mesa está vacía'; tbl.appendChild(e);
+  } else {
+    const items = [];
+    if (pickSides.includes('L')) items.push({ kind:'slot', side:'L' });
+    st.chain.forEach((t, k) => items.push({ kind:'tile', t, k }));
+    if (pickSides.includes('R')) items.push({ kind:'slot', side:'R' });
+    const rows = sizeTable(items);
+    rows.forEach((row, r) => {
+      const div = document.createElement('div'); div.className = 'trow' + (r % 2 ? ' rev' : '') + (rows.length === 1 ? ' solo' : '');
+      row.forEach(it => {
+        if (it.kind === 'slot') { div.appendChild(slot(it.side)); return; }
+        const t = it.t, dbl = t[0] === t[1];
+        const el = tileEl(r % 2 && !dbl ? [t[1], t[0]] : t, dbl ? 'v' : 'h');
+        if (it.k === 0 || it.k === st.chain.length - 1) el.classList.add('end');
+        if (st.lastPlayed && ((st.lastPlayed.side === 'L' && it.k === 0) || (st.lastPlayed.side === 'R' && it.k === st.chain.length - 1))) el.classList.add('new');
+        div.appendChild(el);
+      });
+      tbl.appendChild(div);
+    });
+  }
+  // mi mano
+  const hand = $('hand'); hand.innerHTML = '';
+  (st.hands[0] || []).forEach((t, i) => {
+    const el = tileEl(t, 'v'), can = myMoves.some(m => m.i === i);
+    el.classList.add(st.cur === 0 && st.waiting && !st.over ? (can ? 'can' : 'no') : 'idle');
+    if (st.pick === i) el.classList.add('pick');
+    el.onclick = () => tapTile(i);
+    hand.appendChild(el);
+  });
+  const mine = st.cur === 0 && st.waiting && !st.over, noMoves = mine && !myMoves.length;
+  $('btn-draw').style.display = M().pozo ? '' : 'none';
+  $('btn-draw').disabled = !(noMoves && st.pozo.length);
+  $('btn-draw').textContent = `🂠 Robar (${st.pozo.length})`;
+  $('btn-pass').disabled = !(noMoves && (!M().pozo || !st.pozo.length));
+}
+function slot(side){ const s = document.createElement('div'); s.className = 'slot'; const e = ends(); s.textContent = side === 'L' ? e[0] : e[1]; s.title = side === 'L' ? 'Punta izquierda' : 'Punta derecha'; s.onclick = () => humanPlay(st.pick, side); return s; }
+
+/* ---------- TUS JUGADAS ---------- */
+function tapTile(i){
+  if (!(st.cur === 0 && st.waiting && !st.over)) return;
+  sfx.init();
+  const opts = movesFor(st.hands[0]).filter(m => m.i === i);
+  if (!opts.length) { sfx.bad(); msg('Esa no entra en ninguna punta'); return; }
+  const sides = [...new Set(opts.map(m => m.side))];
+  const e = ends();
+  if (sides.length === 1 || (e && e[0] === e[1])) return humanPlay(i, sides[0]);
+  if (st.pick === i) return humanPlay(i, 'R');
+  st.pick = i; sfx.tap(); msg('Entra en las dos puntas: toca la punta donde la quieres'); render();
+}
+function humanPlay(i, side){ if (!(st.cur === 0 && st.waiting)) return; st.waiting = false; play(0, i, side, st.run); }
+$('btn-draw').onclick = () => {
+  if (!(st.cur === 0 && st.waiting) || !st.pozo.length) return;
+  st.hands[0].push(st.pozo.pop()); st.hands[0].sort((a, b) => pips(a) - pips(b)); sfx.tone(260, .05, 'triangle', .08);
+  msg(movesFor(st.hands[0]).length ? '¡Ya tienes ficha! Tírala' : st.pozo.length ? 'Sigue sin entrar: roba otra' : 'Se acabó el pozo: toca "Paso"');
+  render();
+};
+$('btn-pass').onclick = () => { if (st.cur === 0 && st.waiting && !movesFor(st.hands[0]).length) { st.waiting = false; pass(0, st.run); } };
+addEventListener('resize', () => { if ($('game').classList.contains('active')) render(); });
+
+/* ---------- MENÚ ---------- */
+function buildMenu(){
+  const list = $('mode-list'); list.innerHTML = '';
+  Object.entries(MODES).forEach(([k, m]) => {
+    const w = SK.store.get(`sk-domino-wins-${k}`, 0);
+    const b = document.createElement('button'); b.className = 'diff-btn';
+    b.innerHTML = `<div><div>${m.label}</div><div class="record-line">${w ? `🏆 ${w} partida${w > 1 ? 's' : ''} ganada${w > 1 ? 's' : ''}` : m.note}</div></div><span class="tag d1">${m.players.length} 🁫</span>`;
+    b.onclick = () => startMatch(k);
+    list.appendChild(b);
+  });
+}
+function toMenu(){ st.run++; st.over = true; SK.closeModal(); buildMenu(); SK.showScreen('menu'); }
+$('btn-back').onclick = () => {
+  sfx.tap();
+  SK.result({ emoji:'🚪', title:'¿Salir de la partida?', text:'Se perderán los puntos', buttons:[{ label:'Sí, salir', onClick: toMenu }, { label:'Seguir jugando', kind:'secondary' }] });
+};
+SK.soundButton($('btn-sound'));
+buildMenu();
+SK.bannerAd($('ad-bottom'));
+SK.initPWA('Dominó');
+</script>
+</body>
+</html>

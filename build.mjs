@@ -29,6 +29,8 @@ const fechaCorta = (f) => { const [a, m, d] = iso(f).split('-').map(Number); ret
 const quitarEtiquetas = (h) => h.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 const slug = (t) => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const urlAbs = (ruta) => SITIO.dominio + (ruta === '/' ? '/' : ruta);
+// La arcada se instala como app: empieza en el menú de juegos y abarca todo /arcada
+const APP = { manifiesto: '/arcada/app.webmanifest', sw: '/arcada-sw.js', alcance: '/arcada', inicio: '/arcada/jugar' };
 const NUMEROS = ['Cero', 'Un', 'Dos', 'Tres', 'Cuatro', 'Cinco', 'Seis', 'Siete', 'Ocho', 'Nueve', 'Diez', 'Once', 'Doce', 'Trece', 'Catorce', 'Quince', 'Dieciséis', 'Diecisiete', 'Dieciocho', 'Diecinueve', 'Veinte'];
 const cantidad = (n) => NUMEROS[n] || String(n);
 
@@ -221,7 +223,7 @@ function jsonMigas(items) {
   return { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: items.map((it, i) => ({ '@type': 'ListItem', position: i + 1, name: it.texto, item: urlAbs(it.url) })) };
 }
 
-function layout({ titulo, descripcion, ruta, imagen, cuerpo, jsonld = [], anuncios = true, indexar = true, tipoOg = 'website', proyectos }) {
+function layout({ titulo, descripcion, ruta, imagen, cuerpo, jsonld = [], anuncios = true, indexar = true, tipoOg = 'website', proyectos, app = false }) {
   const tituloCompleto = ruta === '/' ? `${SITIO.nombre}: juegos y herramientas creativas` : `${titulo} | ${SITIO.nombre}`;
   const og = urlAbs(imagen || '/og.jpg');
   const ads = anuncios && SITIO.adsense?.cliente
@@ -246,7 +248,11 @@ ${SITIO.verificacionGoogle ? `<meta name="google-site-verification" content="${e
 <meta property="og:image" content="${og}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/icono.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+${app ? `<link rel="manifest" href="${APP.manifiesto}">
+<link rel="apple-touch-icon" href="${APP.inicio}/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SeaKings">
+` : ''}<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chango&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,700;1,400&family=IBM+Plex+Mono:wght@500&display=swap">
 <link rel="stylesheet" href="/estilos.css?v=${VERSION_CSS}">
@@ -260,10 +266,56 @@ ${cabecera(ruta)}
 ${cuerpo}
 </main>
 ${pie(proyectos)}
+${app ? SCRIPT_INSTALAR : ''}
 </body>
 </html>
 `;
 }
+
+// ---------------------------------------------------------------------
+//  Botón para instalar la arcada en el celular
+//  Solo aparece si la página se abrió en un navegador (no dentro de la app).
+// ---------------------------------------------------------------------
+const BOTON_INSTALAR = `<div class="instalar-app" id="instalar-app" hidden>
+  <button class="btn btn--menta" type="button" id="btn-instalar">📲 Instalar la arcada en tu celular</button>
+  <p class="instalar-ayuda" id="instalar-ayuda" hidden></p>
+</div>`;
+const SCRIPT_INSTALAR = `<script>
+(function () {
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('${APP.sw}', { scope: '${APP.alcance}' }).catch(function () {});
+  var caja = document.getElementById('instalar-app');
+  if (!caja) return;
+  var btn = document.getElementById('btn-instalar'), ayuda = document.getElementById('instalar-ayuda');
+  var ua = navigator.userAgent;
+  var instalada = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  var ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var android = /Android/i.test(ua);
+  var dentroDeOtraApp = /FBAN|FBAV|FB_IAB|Instagram|TikTok|musical_ly|BytedanceWebview|Line\\/|Snapchat/i.test(ua);
+  var aviso = null;
+  if (instalada) return;
+  if (ios || android) caja.hidden = false;
+  function listo() { btn.textContent = '✓ La arcada ya está instalada'; btn.disabled = true; ayuda.hidden = true; }
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault(); aviso = e;
+    if (!ios && !android) btn.textContent = '💻 Instalar la arcada';
+    caja.hidden = false;
+  });
+  window.addEventListener('appinstalled', listo);
+  btn.addEventListener('click', function () {
+    if (aviso) {
+      aviso.prompt();
+      aviso.userChoice.then(function (r) { if (r.outcome === 'accepted') listo(); aviso = null; });
+      return;
+    }
+    ayuda.textContent = dentroDeOtraApp
+      ? 'Estás viendo esta página dentro de otra app. Ábrela en tu navegador (toca ⋯ o ⋮ y elige «Abrir en el navegador») y vuelve a tocar este botón.'
+      : ios
+        ? 'En Safari, toca el botón Compartir (el cuadro con la flecha hacia arriba) y luego «Agregar a inicio». La arcada queda con su ícono, como cualquier app.'
+        : 'Toca el menú ⋮ de Chrome y elige «Instalar app» o «Agregar a la pantalla principal».';
+    ayuda.hidden = false;
+  });
+})();
+</script>`;
 
 // ---------------------------------------------------------------------
 //  Tarjetas
@@ -433,6 +485,7 @@ function paginaProyecto(p, { proyectos, juegos, articulos, proyectosPorId }) {
     <p class="heroe-lema">${esc(p.lema)}</p>
     <p class="entrada">${esc(p.resumen)}</p>
     <div class="acciones">${botones(p.enlaces)}</div>
+    ${p.instalable ? BOTON_INSTALAR : ''}
     ${p.nota ? `<p class="nota-boton">${esc(p.nota)}</p>` : ''}
   </div>
   <div class="heroe-arte">${portada}</div>
@@ -458,7 +511,7 @@ function paginaProyecto(p, { proyectos, juegos, articulos, proyectosPorId }) {
     ...(p.esquema.gratis ? { offers: { '@type': 'Offer', price: '0', priceCurrency: 'MXN' } } : {}),
   } : null;
   const faq = (p.preguntas || []).length ? { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: p.preguntas.map((q) => ({ '@type': 'Question', name: q.p, acceptedAnswer: { '@type': 'Answer', text: q.r } })) } : null;
-  return layout({ titulo: p.nombre, descripcion: p.descripcion || p.resumen, ruta: p.ruta, imagen: p.compartir, cuerpo, jsonld: [jsonMigas(mg), esquema, faq].filter(Boolean), proyectos });
+  return layout({ titulo: p.nombre, descripcion: p.descripcion || p.resumen, ruta: p.ruta, imagen: p.compartir, cuerpo, jsonld: [jsonMigas(mg), esquema, faq].filter(Boolean), proyectos, app: !!p.instalable });
 }
 
 function paginaJuego(j, { juegos, proyectos }) {
@@ -475,6 +528,7 @@ function paginaJuego(j, { juegos, proyectos }) {
     <p class="entrada">${esc(j.descripcion)}</p>
     <div class="acciones"><a class="btn btn--principal btn--grande" href="/arcada/jugar/${j.archivo}">Jugar ${esc(j.nombre)}</a></div>
     <ul class="chips">${(j.datos || []).map((d) => `<li>${esc(d)}</li>`).join('')}</ul>
+    ${BOTON_INSTALAR}
   </div>
 </section>
 <div class="envoltura cuerpo-juego">
@@ -489,7 +543,7 @@ function paginaJuego(j, { juegos, proyectos }) {
     image: urlAbs(j.imagen), genre: j.genero, inLanguage: 'es', gamePlatform: ['Navegador web', 'Android', 'iPhone', 'PC'],
     author: { '@type': 'Organization', name: SITIO.nombre }, offers: { '@type': 'Offer', price: '0', priceCurrency: 'MXN' },
   };
-  return layout({ titulo: `${j.nombre}: juega gratis en línea`, descripcion: `${j.descripcion} Gratis, en español y sin descargar.`, ruta: `/arcada/${j.id}`, imagen: j.imagen, cuerpo, jsonld: [jsonMigas(mg), esquema], proyectos });
+  return layout({ titulo: `${j.nombre}: juega gratis en línea`, descripcion: `${j.descripcion} Gratis, en español y sin descargar.`, ruta: `/arcada/${j.id}`, imagen: j.compartir || j.imagen, cuerpo, jsonld: [jsonMigas(mg), esquema], proyectos, app: true });
 }
 
 function paginaBitacora({ articulos, proyectos, proyectosPorId }) {
@@ -552,18 +606,85 @@ function pagina404({ proyectos }) {
   return layout({ titulo: 'Página no encontrada', descripcion: 'La página que buscas no existe.', ruta: '/404', cuerpo, anuncios: false, indexar: false, proyectos });
 }
 
-// Los juegos clásicos se publican tal cual, pero sin la publicidad externa
-// que traían, sin service worker y con el botón de regresar a la arcada.
+// Los juegos clásicos se publican tal cual, con estos cambios:
+// sin la publicidad externa que traían, con el manifiesto y el service worker
+// de la arcada instalable, y con el botón de regresar al menú de la arcada.
 // Los archivos .js compartidos (comun.js) reciben los mismos cambios.
 function prepararJuego(codigo, nombre) {
   const limpio = codigo
-    .replace(/'serviceWorker' in navigator/g, 'false')
+    .replace(/register\((['"])sw\.js\1\)/g, `register('${APP.sw}', { scope: '${APP.alcance}' })`)
     .replace(/function loadAd\(([^)]*)\)\s*\{/, 'function loadAd($1){ return;');
   if (nombre.endsWith('.js')) return limpio;
-  return limpio
+  let html = limpio
     .replace(/<link rel="manifest"[^>]*>\s*/g, '')
-    .replace(/href="index\.html"/g, 'href="/arcada"')
-    .replace('</head>', '<meta name="robots" content="noindex">\n<link rel="icon" href="/icono.svg" type="image/svg+xml">\n<style>.ad-label,.ad-slot,.ad-banner-bottom{display:none!important}</style>\n</head>');
+    .replace(/href="index\.html"/g, `href="${APP.inicio}"`)
+    .replace(/<head(\s[^>]*)?>/i, (m) => `${m}\n<base href="${APP.inicio}/">`)
+    .replace('</head>', `<meta name="robots" content="noindex">\n<link rel="manifest" href="${APP.manifiesto}">\n<link rel="icon" href="/icono.svg" type="image/svg+xml">\n<style>.ad-label,.ad-slot,.ad-banner-bottom{display:none!important}</style>\n<script>if ('serviceWorker' in navigator && (matchMedia('(display-mode: standalone)').matches || navigator.standalone)) navigator.serviceWorker.ready.then(function (r) { r.active && r.active.postMessage('precargar-todo'); });</script>\n</head>`);
+  // En el menú, los enlaces a los juegos van sin .html para que funcionen sin internet
+  if (nombre === 'index.html') html = html.replace(/(['"])([a-z0-9-]+)\.html(?=[?#'"])/g, '$1$2');
+  return html;
+}
+
+// ---------------------------------------------------------------------
+//  Arcada instalable: manifiesto y service worker
+// ---------------------------------------------------------------------
+function manifiestoArcada() {
+  let base = {};
+  try { base = JSON.parse(fs.readFileSync(path.join(RAIZ, 'juegos-clasicos', 'manifest.json'), 'utf8')); } catch { /* usa los valores de abajo */ }
+  const archivo = (u) => `${APP.inicio}/${String(u).replace(/^\.\//, '')}`;
+  const pagina = (u) => `${APP.inicio}/${String(u).replace(/^\.\//, '').replace(/\.html$/, '').replace(/^index$/, '')}`.replace(/\/$/, '');
+  return {
+    id: APP.inicio,
+    name: base.name || 'SeaKingsGames',
+    short_name: base.short_name || 'SeaKings',
+    description: base.description || 'Arcada de juegos clásicos en español.',
+    start_url: APP.inicio,
+    scope: APP.alcance,
+    display: 'standalone',
+    orientation: base.orientation || 'portrait',
+    background_color: base.background_color || '#0a1429',
+    theme_color: base.theme_color || '#0a1429',
+    lang: 'es',
+    categories: base.categories || ['games'],
+    icons: (base.icons || []).map((i) => ({ ...i, src: archivo(i.src) })),
+    shortcuts: (base.shortcuts || []).map((s) => ({ ...s, url: pagina(s.url), icons: (s.icons || []).map((i) => ({ ...i, src: archivo(i.src) })) })),
+  };
+}
+
+function swArcada() {
+  const dir = path.join(RAIZ, 'juegos-clasicos');
+  const archivos = fs.existsSync(dir) ? fs.readdirSync(dir) : [];
+  const juegos = archivos.filter((f) => f.endsWith('.html') && f !== 'index.html').map((f) => `${APP.inicio}/${f.replace(/\.html$/, '')}`);
+  const base = [APP.inicio, ...archivos.filter((f) => /^(comun\.(css|js)|icon-192\.png)$/.test(f)).map((f) => `${APP.inicio}/${f}`)];
+  const resto = archivos.filter((f) => /\.(js|css|png)$/.test(f) && !base.includes(`${APP.inicio}/${f}`)).map((f) => `${APP.inicio}/${f}`);
+  return `// Service worker de la arcada de SeaKingsStudios (lo genera build.mjs)
+const CACHE = 'sk-arcada-${VERSION_CSS}';
+const BASE = ${JSON.stringify(base)};
+const TODO = ${JSON.stringify([...juegos, ...resto])};
+const guardar = (lista) => caches.open(CACHE).then((c) => Promise.all(lista.map((u) => c.add(u).catch(() => {}))));
+
+self.addEventListener('install', (e) => { self.skipWaiting(); e.waitUntil(guardar(BASE)); });
+self.addEventListener('activate', (e) => {
+  e.waitUntil(caches.keys()
+    .then((ks) => Promise.all(ks.filter((k) => k.startsWith('sk-arcada-') && k !== CACHE).map((k) => caches.delete(k))))
+    .then(() => self.clients.claim()));
+});
+// Cuando la arcada ya está instalada, se guardan todos los juegos para jugar sin internet
+self.addEventListener('message', (e) => { if (e.data === 'precargar-todo') e.waitUntil(guardar(TODO)); });
+
+// Primero internet, y si no hay, lo guardado
+self.addEventListener('fetch', (e) => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== location.origin || !url.pathname.startsWith('${APP.alcance}')) return;
+  e.respondWith(fetch(req).then((res) => {
+    if (res.ok && res.type === 'basic' && !res.redirected) { const copia = res.clone(); caches.open(CACHE).then((c) => c.put(req, copia)); }
+    return res;
+  }).catch(() => caches.match(req, { ignoreSearch: true })
+    .then((r) => r || (req.mode === 'navigate' ? caches.match('${APP.inicio}') : Response.error()))));
+});
+`;
 }
 
 // ---------------------------------------------------------------------
@@ -587,6 +708,9 @@ function construir() {
   copiarCarpeta(PUBLICO, DIST);
   fs.copyFileSync(path.join(RAIZ, 'estilos.css'), path.join(DIST, 'estilos.css'));
   copiarCarpeta(path.join(RAIZ, 'juegos-clasicos'), path.join(DIST, 'arcada', 'jugar'), prepararJuego);
+  fs.rmSync(path.join(DIST, 'arcada', 'jugar', 'manifest.json'), { force: true });
+  escribir(APP.manifiesto.slice(1), JSON.stringify(manifiestoArcada(), null, 2));
+  escribir(APP.sw.slice(1), swArcada());
 
   const rutas = [];
   const pagina = (ruta, html) => { escribir(ruta === '/' ? 'index.html' : `${ruta.slice(1)}.html`, html); rutas.push(ruta); };

@@ -1,0 +1,132 @@
+{
+  "name": "SeaKingsGames",
+  "short_name": "SeaKings",
+  "description": "Arcada de juegos clásicos en español: Lotería, Dominó, Solitario, Sudoku, Ahorcado, Batalla Naval, Serpientes y Escaleras, Buscaminas, 2048 y más.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a1429",
+  "theme_color": "#0a1429",
+  "lang": "es",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ahorcado",
+      "short_name": "Ahorcado",
+      "url": "./ahorcado.html",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Lotería",
+      "short_name": "Lotería",
+      "url": "./loteria.html",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Solitario",
+      "short_name": "Solitario",
+      "url": "./solitario.html",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Dominó",
+      "short_name": "Dominó",
+      "url": "./domino.html",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Sudoku",
+      "short_name": "Sudoku",
+      "url": "./sudoku.html",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Buscaminas",
+      "short_name": "Buscaminas",
+      "url": "./buscaminas.html",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Batalla Naval",
+      "short_name": "Naval",
+      "url": "./batalla-naval.html",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Serpientes y Escaleras",
+      "short_name": "Serpientes",
+      "url": "./serpientes.html",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

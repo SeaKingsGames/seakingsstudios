@@ -1,12 +1,12 @@
 ---
 nombre: Sopa de letras
-orden: 5
+orden: 13
 archivo: sopa-letras
 genero: Juego de palabras
 lema: Encuentra las palabras escondidas, o adivínalas por su pista.
-descripcion: Sopa de letras en español con 25 temas, cuatro dificultades y un modo de solo pistas donde tienes que adivinar qué palabra buscar.
+descripcion: Sopa de letras en español con 33 temas, cuatro dificultades y un modo de solo pistas donde tienes que adivinar qué palabra buscar.
 imagen: /img/arcada/sopa-letras.webp
-datos: [25 temas, Modo solo pistas, 4 dificultades, Gratis]
+datos: [33 temas, Modo solo pistas, 4 dificultades, Gratis]
 ---
 
 ## Cómo se juega
@@ -30,7 +30,7 @@ Si te atoras, el botón **Ayuda** hace parpadear la primera letra de una de las 
 
 ## Temas
 
-Los mismos 25 temas del Ahorcado: Animales, Comida, Comida del mundo, Frutas y verduras, Naturaleza, Países, México, Mexicanismos, Profesiones, Hogar, Ropa, Transporte, Deportes, Música, Tecnología, Videojuegos, Ciencia, Espacio, Cuerpo humano, Historia, Mitos y leyendas, Colores, Escuela, Emociones y Cosas de TikTok. También hay un modo **Aleatorio** que mezcla todos.
+Usa el mismo banco de palabras del Ahorcado, con 33 temas: todos menos Dichos y refranes, porque los dichos son frases completas y no caben en la cuadrícula. Hay temas como Animales, Comida, Dulces y botanas, México, Mexicanismos, Futbol, Videojuegos, Películas y caricaturas, Muertos y Halloween, Navidad y posadas o Cosas de TikTok, y un modo **Aleatorio** que mezcla todos.
 
 ## Dificultades
 

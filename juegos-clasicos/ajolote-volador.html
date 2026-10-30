@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b4f6c">
+<title>Ajolote Volador · SeaKingsGames</title>
+<meta name="description" content="Ajolote Volador: nada entre los corales sin chocar. Toca para nadar, gana medallas y supera tu récord. Gratis y sin internet.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="comun.css">
+<style>
+  :root{ --bg:#0b4f6c; --bg-2:#06263a; --panel:#13607f; --panel-2:#1b7598; --accent:#ffd34d; --accent-deep:#c99a00; --accent-ink:#3a2a00; }
+  html,body{height:100%;overflow:hidden;background:#06263a}
+  body{display:block}
+  canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+  .hud-btns{position:fixed;top:calc(env(safe-area-inset-top) + 12px);left:12px;right:12px;display:flex;justify-content:space-between;z-index:5;pointer-events:none}
+  .hud-btns .icon-btn{pointer-events:auto}
+  .overlay{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:4;padding:24px;text-align:center;
+    background:radial-gradient(ellipse at center,rgba(6,38,58,.35),rgba(6,38,58,.75))}
+  .overlay.hide{display:none}
+  .overlay .logo{font-size:clamp(34px,10vw,58px)}
+  .best{font-weight:600;color:#cfefff}
+  .medals{display:flex;gap:10px;font-size:13px;color:#cfefff;font-weight:600}
+  .medals span{background:rgba(255,255,255,.1);padding:5px 9px;border-radius:10px}
+  .tap-hint{position:fixed;left:0;right:0;top:62%;text-align:center;font-weight:700;font-size:20px;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.5);z-index:3;pointer-events:none;animation:bounceY 1.2s infinite}
+  .tap-hint.hide{display:none}
+  .ad-banner-bottom{z-index:6}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div class="hud-btns">
+  <a class="icon-btn" href="index.html" style="text-decoration:none">‹</a>
+  <button class="icon-btn small" id="btn-sound">🔊</button>
+</div>
+
+<div class="overlay" id="menu">
+  <div class="logo">AJOLOTE<br>VOLADOR<small>SeaKingsGames</small></div>
+  <div class="best" id="best"></div>
+  <div class="seg" id="seg-mode"><button data-m="normal">🌊 Normal</button><button data-m="facil">🫧 Fácil</button></div>
+  <button class="btn-primary" id="btn-play" style="width:min(320px,90vw);font-size:22px;padding:16px">▶ ¡A nadar!</button>
+  <div class="medals"><span>🥉 10</span><span>🥈 25</span><span>🥇 50</span><span>💎 100</span></div>
+  <p class="how" style="color:#cfefff">Toca la pantalla (o la barra espaciadora) para nadar hacia arriba. Pasa entre los corales sin chocar.</p>
+</div>
+<div class="tap-hint hide" id="tap-hint">👆 Toca para nadar</div>
+<div class="ad-banner-bottom" id="ad-bottom"></div>
+
+<script src="comun.js"></script>
+<script>
+/* =====================================================
+   AJOLOTE VOLADOR · SeaKingsGames
+   ===================================================== */
+const { $, sfx } = SK;
+const MODES = {
+  normal: { gap:168, speed:150, accel:2.2, maxSpeed:235, spacing:215, label:'NORMAL' },
+  facil:  { gap:205, speed:135, accel:1.5, maxSpeed:200, spacing:235, label:'FÁCIL' },
+};
+const MEDALS = [[100, '💎', 'DIAMANTE'], [50, '🥇', 'ORO'], [25, '🥈', 'PLATA'], [10, '🥉', 'BRONCE']];
+const GRAV = 1500, FLAP = -420, MAXFALL = 620, R = 15, H = 640, FLOOR = H - 64;
+
+const cv = $('c'), ctx = cv.getContext('2d');
+let W = 360, scale = 1, dpr = 1;
+let mode = SK.store.get('sk-ajolote-mode', 'normal');
+const g = { state:'menu', y:H * .42, vy:0, x:110, t:0, score:0, speed:150, obs:[], bubbles:[], deco:[], shake:0, flash:0, sandX:0, puffs:[] };
+
+/* ---------- MEDIDAS ---------- */
+function resize(){
+  dpr = Math.min(2, devicePixelRatio || 1);
+  const vw = innerWidth, vh = innerHeight;
+  scale = vh / H;
+  W = Math.max(300, Math.min(520, vw / scale));
+  if (vw / scale > 520) scale = vw / 520;
+  cv.width = vw * dpr; cv.height = vh * dpr;
+  g.x = Math.min(130, W * .3);
+}
+addEventListener('resize', resize); resize();
+
+/* ---------- DECORACIÓN ---------- */
+for (let i = 0; i < 14; i++) g.deco.push({ x: Math.random() * 560, h: 50 + Math.random() * 90, w: 10 + Math.random() * 10, ph: Math.random() * 6, layer: Math.random() < .5 ? 0 : 1 });
+function spawnBubble(x, y, small){ g.bubbles.push({ x, y, r: small ? 2 + Math.random() * 3 : 3 + Math.random() * 6, vy: 25 + Math.random() * 35, ph: Math.random() * 6, life: 1 }); }
+
+/* ---------- PARTIDA ---------- */
+function reset(){
+  const m = MODES[mode];
+  Object.assign(g, { y:H * .42, vy:0, t:0, score:0, speed:m.speed, obs:[], shake:0, flash:0, puffs:[] });
+  let x = W + 120;
+  for (let i = 0; i < 4; i++) { addObstacle(x); x += m.spacing; }
+}
+function addObstacle(x){
+  const m = MODES[mode];
+  const gap = Math.max(m.gap - Math.min(30, g.score * .6), 132);
+  // el hueco no cambia de altura más de lo que el ajolote alcanza a nadar
+  const prev = g.obs.length ? g.obs[g.obs.length - 1].gy : (FLOOR - gap) / 2;
+  const minY = Math.max(70, prev - 125), maxY = Math.min(FLOOR - gap - 50, prev + 140);
+  const gy = minY + Math.random() * Math.max(0, maxY - minY);
+  const kind = Math.random() < .5 ? 'coral' : 'roca';
+  g.obs.push({ x, gy, gap, w:62, passed:false, kind, hue: Math.random() < .5 ? 340 : 20 });
+}
+function flap(){
+  sfx.init();
+  if (g.state === 'menu') return;
+  if (g.state === 'ready') { g.state = 'play'; $('tap-hint').classList.add('hide'); }
+  if (g.state !== 'play') return;
+  g.vy = FLAP;
+  sfx.tone(520 + Math.random() * 60, .06, 'sine', .08);
+  for (let i = 0; i < 3; i++) g.puffs.push({ x: g.x + 14, y: g.y + 4, vx: 30 + Math.random() * 40, vy: -10 - Math.random() * 30, r: 2 + Math.random() * 3, life: 1 });
+}
+function start(){
+  sfx.init(); sfx.tap();
+  $('menu').classList.add('hide'); $('tap-hint').classList.remove('hide'); $('ad-bottom').style.display = 'none';
+  reset(); g.state = 'ready';
+}
+function die(){
+  if (g.state !== 'play') return;
+  g.state = 'dead'; g.shake = 14; g.flash = 1;
+  sfx.noise(.25, .25); sfx.tone(180, .3, 'sawtooth', .12);
+  if (navigator.vibrate) navigator.vibrate(80);
+  const score = g.score, key = `sk-ajolote-best-${mode}`, best = SK.store.get(key, 0), isRec = score > best;
+  if (isRec) SK.store.set(key, score);
+  SK.store.set('sk-ajolote-games', SK.store.get('sk-ajolote-games', 0) + 1);
+  const medal = MEDALS.find(([n]) => score >= n);
+  setTimeout(() => {
+    if (isRec && score > 0) sfx.newRec(); else sfx.lose();
+    SK.result({
+      emoji: medal ? medal[1] : '💦', lose: !medal && !isRec,
+      title: isRec && score > 0 ? '¡Nuevo récord!' : (medal ? `¡Medalla de ${medal[2].toLowerCase()}!` : '¡Ups, chocaste!'),
+      stats:[[score, 'CORALES'], [Math.max(best, score), 'RÉCORD']],
+      share:{ emoji: medal ? medal[1] : '💚', title: isRec ? '¡NUEVO RÉCORD!' : 'MI PARTIDA', game:'Ajolote Volador', sub:`Modo ${MODES[mode].label}`, big:`${score} corales`, stats:[[score, 'CORALES'], [Math.max(best, score), 'RÉCORD']], text:`💚 Mi ajolote pasó ${score} corales en Ajolote Volador. ¿Me ganas?\nJuega: SeaKingsGames`, file:'logro-ajolote' },
+      buttons:[{ label:'Otra vez →', onClick: start }, { label:'Menú', kind:'ghost', onClick: toMenu }],
+    });
+  }, 650);
+}
+function toMenu(){ SK.closeModal(); g.state = 'menu'; $('ad-bottom').style.display = ''; paintMenu(); $('menu').classList.remove('hide'); $('tap-hint').classList.add('hide'); g.y = H * .42; g.vy = 0; }
+
+/* ---------- ACTUALIZAR ---------- */
+function update(dt){
+  g.t += dt;
+  const m = MODES[mode];
+  const moving = g.state === 'play' || g.state === 'ready' || g.state === 'menu';
+  const sp = g.state === 'play' ? g.speed : 70;
+  if (moving) { g.sandX = (g.sandX + sp * dt) % 40; g.deco.forEach(d => { d.x -= sp * dt * (d.layer ? .55 : .3); if (d.x < -30) d.x += 590; }); }
+  if (g.state === 'menu' || g.state === 'ready') { g.y = H * .42 + Math.sin(g.t * 3) * 10; g.vy = Math.cos(g.t * 3) * 30; }
+  if (g.state === 'play' || g.state === 'dead') {
+    g.vy = Math.min(MAXFALL, g.vy + GRAV * dt); g.y += g.vy * dt;
+    if (g.y < R + 6) { g.y = R + 6; g.vy = Math.max(0, g.vy); }
+    if (g.y > FLOOR - R) { g.y = FLOOR - R; if (g.state === 'play') die(); g.vy = 0; }
+  }
+  if (g.state === 'play') {
+    g.speed = Math.min(m.maxSpeed, m.speed + g.score * m.accel);
+    g.obs.forEach(o => {
+      o.x -= g.speed * dt;
+      if (!o.passed && o.x + o.w / 2 < g.x) { o.passed = true; g.score++; sfx.tone(880, .07, 'triangle', .1); sfx.tone(1320, .08, 'triangle', .08, .05); if ([10, 25, 50, 100].includes(g.score)) sfx.win(); }
+      // choque: círculo contra los dos bloques
+      const cx = Math.max(o.x, Math.min(g.x, o.x + o.w));
+      const top = Math.max(0, Math.min(g.y, o.gy)), bot = Math.max(o.gy + o.gap, Math.min(g.y, FLOOR));
+      if (Math.hypot(g.x - cx, g.y - top) < R - 3 || Math.hypot(g.x - cx, g.y - bot) < R - 3) die();
+    });
+    if (g.obs.length && g.obs[0].x + g.obs[0].w < -20) { g.obs.shift(); addObstacle(g.obs[g.obs.length - 1].x + m.spacing); }
+    if (Math.random() < dt * 1.2) spawnBubble(g.x + 10, g.y, true);
+  }
+  if (Math.random() < dt * 3) spawnBubble(Math.random() * W, FLOOR, false);
+  g.bubbles.forEach(b => { b.y -= b.vy * dt; b.x += Math.sin(g.t * 2 + b.ph) * 12 * dt; });
+  g.bubbles = g.bubbles.filter(b => b.y > -10);
+  g.puffs.forEach(p => { p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt * 1.6; });
+  g.puffs = g.puffs.filter(p => p.life > 0);
+  g.shake = Math.max(0, g.shake - dt * 40); g.flash = Math.max(0, g.flash - dt * 3);
+}
+
+/* ---------- DIBUJO ---------- */
+function draw(){
+  ctx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
+  const offY = (innerHeight / scale - H) / 2;
+  ctx.translate((innerWidth / scale - W) / 2 + (g.shake ? (Math.random() - .5) * g.shake : 0), offY + (g.shake ? (Math.random() - .5) * g.shake : 0));
+  // agua
+  const grd = ctx.createLinearGradient(0, -offY, 0, H + offY);
+  grd.addColorStop(0, '#2aa7c9'); grd.addColorStop(.5, '#0f6f93'); grd.addColorStop(1, '#073a55');
+  ctx.fillStyle = grd; ctx.fillRect(-200, -offY - 10, W + 400, H + offY * 2 + 20);
+  // rayos de luz
+  ctx.save(); ctx.globalAlpha = .08; ctx.fillStyle = '#fff';
+  for (let i = 0; i < 4; i++) { const x = (i * 140 + g.t * 8) % (W + 200) - 100; ctx.beginPath(); ctx.moveTo(x, -offY); ctx.lineTo(x + 50, -offY); ctx.lineTo(x + 170, H); ctx.lineTo(x + 90, H); ctx.fill(); }
+  ctx.restore();
+  // algas de fondo
+  g.deco.forEach(d => {
+    ctx.strokeStyle = d.layer ? 'rgba(20,90,70,.55)' : 'rgba(10,60,60,.4)'; ctx.lineWidth = d.w; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(d.x, FLOOR + 10);
+    for (let k = 1; k <= 4; k++) ctx.lineTo(d.x + Math.sin(g.t * 1.5 + d.ph + k) * 8, FLOOR + 10 - d.h * k / 4);
+    ctx.stroke();
+  });
+  // burbujas
+  g.bubbles.forEach(b => { ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = 'rgba(255,255,255,.25)'; ctx.beginPath(); ctx.arc(b.x - b.r * .3, b.y - b.r * .3, b.r * .3, 0, Math.PI * 2); ctx.fill(); });
+  // obstáculos
+  g.obs.forEach(drawObstacle);
+  // arena
+  ctx.fillStyle = '#e8c98a'; ctx.fillRect(-200, FLOOR, W + 400, H - FLOOR + offY + 10);
+  ctx.fillStyle = '#d4af6a';
+  for (let x = -g.sandX - 40; x < W + 40; x += 40) { ctx.beginPath(); ctx.ellipse(x + 20, FLOOR + 10, 16, 4, 0, 0, Math.PI * 2); ctx.fill(); }
+  ctx.fillStyle = '#c99d55'; ctx.fillRect(-200, FLOOR, W + 400, 4);
+  // ajolote
+  g.puffs.forEach(p => { ctx.globalAlpha = p.life * .7; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.stroke(); });
+  ctx.globalAlpha = 1;
+  drawAxolotl(g.x, g.y, Math.max(-.5, Math.min(1.1, g.vy / 650)), g.state === 'dead');
+  // marcador
+  if (g.state === 'play' || g.state === 'ready' || g.state === 'dead') {
+    ctx.font = "64px 'Bagel Fat One', Fredoka, sans-serif"; ctx.textAlign = 'center';
+    ctx.lineWidth = 8; ctx.strokeStyle = 'rgba(6,38,58,.8)'; ctx.strokeText(g.score, W / 2, 110);
+    ctx.fillStyle = '#fff'; ctx.fillText(g.score, W / 2, 110);
+  }
+  if (g.flash) { ctx.fillStyle = `rgba(255,255,255,${g.flash * .6})`; ctx.fillRect(-200, -offY - 10, W + 400, H + offY * 2 + 20); }
+}
+function drawObstacle(o){
+  const parts = [[-40, o.gy, true], [o.gy + o.gap, FLOOR + 6, false]];
+  parts.forEach(([y1, y2, top]) => {
+    if (o.kind === 'coral') {
+      const base = `hsl(${o.hue},70%,60%)`, dark = `hsl(${o.hue},60%,42%)`;
+      ctx.fillStyle = base; ctx.strokeStyle = dark; ctx.lineWidth = 3;
+      roundRect(o.x, y1, o.w, y2 - y1, 18); ctx.fill(); ctx.stroke();
+      // bolitas del coral
+      ctx.fillStyle = `hsl(${o.hue},80%,72%)`;
+      for (let y = y1 + 14; y < y2 - 8; y += 26) for (let k = 0; k < 2; k++) { ctx.beginPath(); ctx.arc(o.x + 16 + k * 30 + ((y / 26) % 2) * 6, y, 5, 0, Math.PI * 2); ctx.fill(); }
+      // ramitas en la punta
+      const ty = top ? y2 : y1, dir = top ? 1 : -1;
+      ctx.strokeStyle = base; ctx.lineWidth = 9; ctx.lineCap = 'round';
+      [10, 31, 52].forEach((dx, k) => { ctx.beginPath(); ctx.moveTo(o.x + dx, ty); ctx.lineTo(o.x + dx + (k - 1) * 6, ty + dir * (12 + k % 2 * 8)); ctx.stroke(); });
+    } else {
+      ctx.fillStyle = '#5b6b7a'; ctx.strokeStyle = '#3c4955'; ctx.lineWidth = 3;
+      roundRect(o.x, y1, o.w, y2 - y1, 14); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,.08)';
+      for (let y = y1 + 20; y < y2 - 10; y += 34) { ctx.beginPath(); ctx.ellipse(o.x + 20 + ((y / 34) % 2) * 20, y, 12, 7, 0, 0, Math.PI * 2); ctx.fill(); }
+      // musgo verde en la orilla
+      const ty = top ? y2 - 6 : y1 + 6;
+      ctx.fillStyle = '#4fbf73';
+      for (let k = 0; k < 5; k++) { ctx.beginPath(); ctx.arc(o.x + 6 + k * 12.5, ty, 6, 0, Math.PI * 2); ctx.fill(); }
+    }
+  });
+}
+function roundRect(x, y, w, h, r){ ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+function drawAxolotl(x, y, rot, dead){
+  const mint = '#8fe3c6', mintD = '#3fae8c', pink = '#ff8fb1', pinkD = '#e0607f';
+  const wig = Math.sin(g.t * 12) * (g.state === 'play' ? .35 : .2);
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  // cola
+  ctx.save(); ctx.translate(-14, 2); ctx.rotate(wig);
+  ctx.fillStyle = mint; ctx.strokeStyle = mintD; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0, -6); ctx.quadraticCurveTo(-22, -12, -32, 0); ctx.quadraticCurveTo(-22, 10, 0, 7); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.restore();
+  // patitas
+  ctx.strokeStyle = mintD; ctx.lineWidth = 5;
+  [[-6, 8, -12, 15], [6, 9, 2, 17]].forEach(([a, b, c, d], i) => { const k = Math.sin(g.t * 10 + i * 2) * 3; ctx.beginPath(); ctx.moveTo(a, b); ctx.lineTo(c + k, d); ctx.stroke(); });
+  // cuerpo
+  ctx.fillStyle = mint; ctx.strokeStyle = mintD; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.ellipse(-4, 3, 16, 9, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#c9f5e6'; ctx.beginPath(); ctx.ellipse(-3, 6, 10, 4.5, 0, 0, Math.PI * 2); ctx.fill();
+  // branquias
+  [[-0.9, -14], [-0.35, -16], [0.2, -14]].forEach(([a, dy], i) => {
+    ctx.save(); ctx.translate(5, -4); ctx.rotate(a + Math.sin(g.t * 6 + i) * .08 - .3);
+    ctx.fillStyle = pink; ctx.strokeStyle = pinkD; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.ellipse(0, dy * .55, 4, 9, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore();
+  });
+  // cabeza
+  ctx.fillStyle = mint; ctx.strokeStyle = mintD; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.ellipse(12, -2, 13, 11, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,143,177,.55)'; ctx.beginPath(); ctx.arc(15, 3, 3, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#173d33'; ctx.fillStyle = '#173d33'; ctx.lineWidth = 1.8;
+  if (dead) { ctx.beginPath(); ctx.moveTo(14, -7); ctx.lineTo(20, -1); ctx.moveTo(20, -7); ctx.lineTo(14, -1); ctx.stroke(); }
+  else { ctx.beginPath(); ctx.arc(17, -4, 2.6, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(17.8, -4.8, .9, 0, Math.PI * 2); ctx.fill(); }
+  ctx.beginPath(); if (dead) ctx.arc(19, 6, 3, Math.PI * 1.1, Math.PI * 1.9); else ctx.arc(19, 2, 3.2, Math.PI * .15, Math.PI * .85); ctx.stroke();
+  ctx.restore();
+}
+
+/* ---------- BUCLE ---------- */
+let last = performance.now();
+function loop(now){
+  const dt = Math.min(.033, (now - last) / 1000); last = now;
+  if (!document.hidden) { update(dt); draw(); }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* ---------- CONTROLES ---------- */
+cv.addEventListener('pointerdown', e => { e.preventDefault(); flap(); });
+addEventListener('keydown', e => {
+  if (e.code === 'Space' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (document.querySelector('#sk-modal.active')) return;
+    if (g.state === 'menu') start(); else flap();
+  }
+});
+document.addEventListener('visibilitychange', () => { last = performance.now(); });
+function paintMenu(){
+  document.querySelectorAll('#seg-mode button').forEach(b => b.classList.toggle('on', b.dataset.m === mode));
+  const best = SK.store.get(`sk-ajolote-best-${mode}`, 0), medal = MEDALS.find(([n]) => best >= n);
+  $('best').textContent = best ? `🏆 Tu récord: ${best} corales ${medal ? medal[1] : ''}` : 'Ayuda al ajolote a pasar entre los corales';
+}
+document.querySelectorAll('#seg-mode button').forEach(b => b.onclick = () => { sfx.init(); sfx.tap(); mode = b.dataset.m; SK.store.set('sk-ajolote-mode', mode); paintMenu(); });
+$('btn-play').onclick = start;
+SK.soundButton($('btn-sound'));
+paintMenu();
+SK.bannerAd($('ad-bottom'));
+SK.initPWA('Ajolote Volador');
+</script>
+</body>
+</html>

@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a1429">
+<title>SeaKingsGames · Arcada</title>
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SeaKings">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Arcada de juegos clásicos en español: Lotería, Dominó, Solitario, Sudoku, Ahorcado con palabra del día, Batalla Naval, Serpientes y Escaleras, Buscaminas, 2048 y más. Gratis y sin internet.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SeaKingsGames · Juegos clásicos gratis">
+<meta property="og:description" content="Lotería, Dominó, Solitario, Sudoku, Ahorcado con palabra del día, Batalla Naval y más. Gratis, en español y sin internet.">
+<meta property="og:image" content="https://seakingsgames.github.io/SeaKingsClassicGames/og-arcada.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  :root{
+    --bg-0:#050d1f; --bg-1:#0a1429; --bg-2:#142545;
+    --gold:#ffc83a; --gold-deep:#b88300;
+    --cyan:#38e2d0; --coral:#ff6b6b;
+    --text:#fff; --text-dim:#8fa4c8;
+    --line:rgba(143,164,200,.18);
+  }
+  html,body{min-height:100%}
+  body{
+    font-family:'Fredoka',system-ui,sans-serif;
+    background:var(--bg-1); color:var(--text); overflow-x:hidden;
+    padding-bottom:80px; /* espacio para banner fijo */
+  }
+
+  .bg-fx{
+    position:fixed;inset:0;z-index:-1;overflow:hidden;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%,rgba(56,226,208,.12) 0%,transparent 60%),
+      radial-gradient(ellipse 60% 40% at 100% 100%,rgba(255,200,58,.08) 0%,transparent 70%),
+      linear-gradient(180deg,var(--bg-0) 0%,var(--bg-1) 40%,var(--bg-2) 100%);
+  }
+  .bg-fx::before{
+    content:'';position:absolute;inset:0;
+    background-image:
+      radial-gradient(circle at 20% 30%,rgba(255,255,255,.06) 1px,transparent 1.5px),
+      radial-gradient(circle at 70% 60%,rgba(255,255,255,.04) 1px,transparent 1.5px),
+      radial-gradient(circle at 85% 20%,rgba(255,255,255,.05) 1px,transparent 1.5px),
+      radial-gradient(circle at 40% 80%,rgba(255,255,255,.04) 1px,transparent 1.5px);
+    background-size:300px 300px, 400px 400px, 250px 250px, 350px 350px;
+    animation:drift 60s linear infinite;
+  }
+  @keyframes drift{to{background-position:300px 300px, -400px 400px, 250px -250px, -350px 350px}}
+
+  /* HEADER */
+  header{padding:calc(env(safe-area-inset-top) + 28px) 22px 24px;text-align:center;position:relative}
+  .crown{font-size:42px;margin-bottom:6px;display:inline-block;animation:bob 3s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-6px) rotate(3deg)}}
+  h1.brand{
+    font-family:'Bagel Fat One',sans-serif;
+    font-size:clamp(40px,12vw,68px);line-height:.9;
+    background:linear-gradient(180deg,#fff 0%,#ffd864 60%,#b88300 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    text-shadow:0 4px 20px rgba(255,200,58,.25);letter-spacing:1px;
+  }
+  h1.brand .sea{color:#fff;-webkit-text-fill-color:#fff}
+  .tag{margin-top:10px;color:var(--text-dim);font-size:14px;letter-spacing:4px;font-weight:500;text-transform:uppercase}
+  .deco-line{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:16px;color:var(--gold)}
+  .deco-line span{height:1px;width:60px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+
+  /* ---------- AD BANNER 728x90 (solo desktop) ---------- */
+  .ad-leaderboard{
+    display:none;justify-content:center;padding:14px 20px;
+    margin:0 auto;max-width:780px;
+  }
+  @media (min-width:780px){ .ad-leaderboard{display:flex} }
+  .ad-leaderboard iframe{max-width:100%}
+
+  /* SECCIÓN */
+  section{padding:24px 18px 12px;max-width:880px;margin:0 auto}
+  h2.section-title{
+    font-family:'Bagel Fat One',sans-serif;font-size:22px;letter-spacing:1px;
+    margin-bottom:14px;padding-left:6px;display:flex;align-items:center;gap:10px;
+  }
+  h2.section-title::before{
+    content:'';width:6px;height:22px;background:var(--gold);border-radius:3px;box-shadow:0 0 12px var(--gold);
+  }
+
+  /* CARDS */
+  .grid{display:grid;grid-template-columns:1fr;gap:14px}
+  @media (min-width:560px){.grid{grid-template-columns:1fr 1fr}}
+
+  .card{
+    position:relative;display:block;border-radius:22px;overflow:hidden;
+    text-decoration:none;color:inherit;
+    background:linear-gradient(180deg,rgba(255,255,255,.05) 0%,rgba(255,255,255,.02) 100%);
+    border:1px solid var(--line);box-shadow:0 8px 24px rgba(0,0,0,.3);
+    transition:transform .2s ease,box-shadow .2s ease;isolation:isolate;
+  }
+  .card:active{transform:scale(.98)}
+  .card-art{height:160px;display:flex;align-items:center;justify-content:center;font-size:78px;position:relative;overflow:hidden}
+  .card-art::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.5) 100%)}
+  .card-body{padding:16px 18px 18px;position:relative;z-index:1}
+  .card h3{font-size:20px;font-weight:700;margin-bottom:4px}
+  .card p{color:var(--text-dim);font-size:14px;line-height:1.45}
+  .card-meta{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+  .pill{font-size:11px;font-weight:600;letter-spacing:1.5px;padding:5px 10px;border-radius:8px;background:rgba(255,200,58,.15);color:var(--gold)}
+  .pill.soon{background:rgba(143,164,200,.15);color:var(--text-dim)}
+  .play{
+    width:42px;height:42px;border-radius:50%;background:var(--gold);color:#3a2400;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;
+    box-shadow:0 4px 0 var(--gold-deep);transition:transform .15s;
+  }
+  .card:active .play{transform:translateY(2px)}
+
+  .art-tuercas{background:radial-gradient(circle at 50% 40%,#7b3fb8 0%,#2a1855 70%)}
+  .art-verdugo{background:radial-gradient(circle at 50% 40%,#5c8fbf 0%,#1c2a3a 70%)}
+  .art-memoria{background:radial-gradient(circle at 50% 40%,#a070e0 0%,#1e3a5f 70%)}
+  .art-snake  {background:radial-gradient(circle at 50% 40%,#5fc99a 0%,#062813 70%)}
+  .art-numpuz {background:radial-gradient(circle at 50% 40%,#5e9ed8 0%,#1a2c3a 70%)}
+  .art-tower  {background:linear-gradient(180deg,#2a4068 0%,#3a3a5a 50%,#0a0a2a 100%)}
+  .art-smash  {background:linear-gradient(180deg,#e85a6b 0%,#ffc83a 50%,#5fa8e8 100%)}
+  .art-minas  {background:repeating-conic-gradient(#a8d652 0 25%,#9dcc48 0 50%) 0 0/40px 40px}
+  .art-2048   {background:radial-gradient(circle at 50% 40%,#ffb84d 0%,#3a2d5e 75%)}
+  .art-sopa   {background:radial-gradient(circle at 50% 40%,#38e2d0 0%,#123247 72%)}
+  .art-c4     {background:radial-gradient(circle at 50% 40%,#2563eb 0%,#0e1f45 72%)}
+  .art-gato   {background:radial-gradient(circle at 50% 40%,#ff7a8a 0%,#271a40 72%)}
+  .art-loteria{background:radial-gradient(circle at 50% 40%,#ff8a5c 0%,#5a1430 72%)}
+  .art-sol    {background:radial-gradient(circle at 50% 40%,#40c057 0%,#0a3a1f 72%)}
+  .art-sudoku {background:radial-gradient(circle at 50% 40%,#748ffc 0%,#1b2440 72%)}
+  .art-domino {background:radial-gradient(circle at 50% 40%,#3aa572 0%,#14432f 72%)}
+  .dmn{display:inline-flex;flex-direction:column;gap:5px;padding:6px;background:#fffdf5;border-radius:9px;box-shadow:0 4px 10px rgba(0,0,0,.4);transform:rotate(-12deg)}
+  .dmn b{display:grid;grid-template-columns:repeat(3,7px);grid-template-rows:repeat(3,7px);gap:3px}
+  .dmn b + b{border-top:2px solid #c9c2ad;padding-top:5px}
+  .dmn i{border-radius:50%}
+  .dmn i.on{background:#1d1d2b}
+  .recent .dmn{transform:rotate(-12deg) scale(.32);margin:-26px -12px;vertical-align:middle}
+  .art-ajolote{background:linear-gradient(180deg,#37b6d6 0%,#0b4f6c 60%,#062b3d 100%)}
+  .art-naval  {background:radial-gradient(circle at 50% 40%,#3b82c4 0%,#0d2a4a 72%)}
+  .art-serp   {background:radial-gradient(circle at 50% 40%,#69db7c 0%,#1e3a2a 72%)}
+  .art-oca    {background:radial-gradient(circle at 50% 40%,#e64980 0%,#5a2a4a 72%)}
+  .pill.new{background:rgba(255,107,107,.2);color:var(--coral)}
+
+  /* ---------- PALABRA DEL DÍA ---------- */
+  .daily{
+    display:flex;align-items:center;gap:14px;max-width:844px;margin:0 auto 6px;padding:16px 18px;border-radius:22px;text-decoration:none;
+    background:linear-gradient(135deg,#ffd864 0%,#e0a020 100%);color:#3a2400;
+    box-shadow:0 6px 0 var(--gold-deep),0 14px 30px rgba(0,0,0,.35);transition:transform .1s;
+  }
+  .daily:active{transform:translateY(3px)}
+  .daily.done{background:linear-gradient(135deg,#6fd8a9 0%,#2f9e74 100%);color:#062b1b;box-shadow:0 6px 0 #22704f,0 14px 30px rgba(0,0,0,.35)}
+  .daily .d-ico{font-size:40px;line-height:1}
+  .daily .d-tag{font-size:11px;font-weight:700;letter-spacing:2px;opacity:.75}
+  .daily .d-title{font-family:'Bagel Fat One',sans-serif;font-size:22px;line-height:1.15;margin:2px 0}
+  .daily .d-sub{font-size:13px;font-weight:600;opacity:.85}
+  .daily .play{margin-left:auto;flex-shrink:0;background:rgba(255,255,255,.45);color:inherit;box-shadow:none}
+  .daily-wrap{padding:4px 18px 0}
+
+  /* ---------- FILTROS Y RECIENTES ---------- */
+  .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex-shrink:0;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text-dim);font-family:inherit;font-weight:600;font-size:14px;cursor:pointer}
+  .chip.on{background:var(--gold);color:#3a2400;border-color:var(--gold)}
+  .recent{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none}
+  .recent::-webkit-scrollbar{display:none}
+  .recent a{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:10px 14px 10px 10px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid var(--line);text-decoration:none;color:#fff;font-weight:600;font-size:14px}
+  .recent a span{font-size:22px}
+  .card-rec{margin-top:8px;font-size:12px;font-weight:600;color:var(--cyan)}
+  .card.hide{display:none}
+
+  /* ---------- REDES ---------- */
+  .social{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 auto 16px;max-width:600px}
+  .social a,.social button{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:#fff;text-decoration:none;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer}
+
+  /* PWA install prompt */
+  .install-prompt{
+    position:fixed;bottom:80px;left:16px;right:16px;
+    background:linear-gradient(180deg,rgba(255,200,58,.15) 0%,rgba(255,200,58,.05) 100%);
+    backdrop-filter:blur(12px);
+    border:1px solid var(--gold);
+    border-radius:16px;padding:14px 16px;
+    box-shadow:0 8px 24px rgba(0,0,0,.4), 0 0 0 1px rgba(255,200,58,.1);
+    display:none;align-items:center;gap:12px;
+    z-index:60;animation:slideUp .4s cubic-bezier(.34,1.56,.64,1);
+    max-width:420px;margin:0 auto;
+  }
+  .install-prompt.show{display:flex}
+  .install-prompt .ico{font-size:28px;flex-shrink:0}
+  .install-prompt .txt{flex:1;font-size:13px;color:var(--text-dim);line-height:1.3}
+  .install-prompt .txt b{color:#fff;font-size:14px;display:block;margin-bottom:2px}
+  .install-prompt button{padding:8px 14px;border-radius:10px;background:var(--gold);color:#3a2400;font-weight:700;font-size:13px;flex-shrink:0;border:none;cursor:pointer;font-family:inherit}
+  .install-prompt .close{background:transparent;color:var(--text-dim);padding:4px 8px;font-size:18px}
+  @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+  /* Banner "instalado" */
+  .installed-badge{
+    position:fixed;top:calc(env(safe-area-inset-top) + 14px);left:14px;
+    background:rgba(95,201,154,.2);color:var(--cyan);
+    padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:1px;
+    border:1px solid rgba(95,201,154,.3);z-index:30;
+    display:none;
+  }
+  .installed-badge.show{display:block}
+
+  .card.soon{opacity:.7;pointer-events:none}
+  .card.soon .card-art{filter:saturate(.3);font-size:60px}
+
+  .card.feature{grid-column:1/-1}
+  .card.feature .card-art{height:200px;font-size:100px}
+  .card.feature h3{font-size:26px}
+  .card.feature::before{
+    content:'DESTACADO';position:absolute;top:14px;right:14px;z-index:2;
+    background:var(--gold);color:#3a2400;font-size:10px;font-weight:700;letter-spacing:2px;
+    padding:5px 10px;border-radius:8px;box-shadow:0 2px 8px rgba(255,200,58,.4);
+  }
+
+  /* ---------- AD MEDIUM RECTANGLE 300x250 entre cards ---------- */
+  .ad-rectangle{
+    margin:24px auto 8px;padding:18px;
+    background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
+    border:1px solid var(--line);border-radius:18px;
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    max-width:340px;
+  }
+  .ad-label{font-size:10px;color:var(--text-dim);opacity:.7;letter-spacing:2px}
+  .ad-rectangle iframe{max-width:100%;border:0;display:block}
+
+  /* ---------- AD BANNER 320x50 FIJO ABAJO ---------- */
+  .ad-bottom{
+    position:fixed;left:0;right:0;bottom:0;z-index:50;
+    padding:6px 0 calc(env(safe-area-inset-bottom) + 6px);
+    background:rgba(5,13,31,.85);backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);
+    display:flex;justify-content:center;align-items:center;
+    min-height:60px;
+  }
+  .ad-bottom iframe{max-width:100%;border:0;display:block}
+
+  /* FOOTER */
+  footer{text-align:center;padding:24px 20px 12px;color:var(--text-dim);font-size:13px}
+  footer .heart{color:var(--coral)}
+  footer a{color:var(--cyan);text-decoration:none;font-weight:600}
+
+  /* botón sonido flotante */
+  .sound-toggle{
+    position:fixed;top:calc(env(safe-area-inset-top) + 14px);right:14px;
+    width:42px;height:42px;border-radius:50%;
+    background:rgba(255,255,255,.08);backdrop-filter:blur(8px);
+    border:1px solid var(--line);
+    color:#fff;font-size:18px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;z-index:30;
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-fx"></div>
+
+<button class="sound-toggle" id="sound-toggle" title="Audio">🔊</button>
+
+<header>
+  <div class="crown">👑</div>
+  <h1 class="brand"><span class="sea">Sea</span>Kings<br>Games</h1>
+  <div class="tag">Arcada del rey del mar</div>
+  <div class="deco-line"><span></span>⚓<span></span></div>
+</header>
+
+<!-- Banner desktop 728x90 -->
+<div class="ad-leaderboard" id="ad-top"></div>
+
+<div class="daily-wrap">
+  <a class="daily" id="daily" href="ahorcado.html?modo=diaria">
+    <div class="d-ico">📅</div>
+    <div><div class="d-tag" id="d-tag">🪢 AHORCADO DEL DÍA</div><div class="d-title" id="d-title">¡Ya salió la de hoy!</div><div class="d-sub" id="d-sub">La misma para todos y solo un intento. ¿La sacas?</div></div>
+    <div class="play">▶</div>
+  </a>
+</div>
+
+<section id="recent-sec" hidden>
+  <h2 class="section-title">Sigue jugando</h2>
+  <div class="recent" id="recent"></div>
+</section>
+
+<section>
+  <h2 class="section-title">Juegos</h2>
+  <div class="chips" id="filters"></div>
+  <div class="grid" id="games-grid"></div>
+
+  <!-- Medium rectangle entre juegos y footer -->
+  <div class="ad-rectangle">
+    <div class="ad-label">PUBLICIDAD</div>
+    <div id="ad-mid"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="social">
+    <a href="https://www.tiktok.com/@seakingsstudios" target="_blank" rel="noopener">🎵 @seakingsstudios</a>
+    <a href="https://www.tiktok.com/@litoelajolote" target="_blank" rel="noopener">💚 @litoelajolote</a>
+    <a href="https://www.seakingsstudios.com" target="_blank" rel="noopener">🌐 seakingsstudios.com</a>
+    <button id="btn-share-arcade">📤 Compartir la arcada</button>
+  </div>
+  Hecho con <span class="heart">♥</span> por <a href="https://www.seakingsstudios.com" target="_blank" rel="noopener">SeaKingsStudios</a><br>
+  <span style="opacity:.6">© 2026 · Todos los derechos reservados</span>
+</footer>
+
+<!-- PWA install prompt -->
+<div class="install-prompt" id="install-prompt">
+  <div class="ico">📲</div>
+  <div class="txt">
+    <b>Instala SeaKingsGames</b>
+    Juega sin internet, sin anuncios pesados, con un toque
+  </div>
+  <button id="btn-install">Instalar</button>
+  <button class="close" id="btn-install-close">✕</button>
+</div>
+
+<!-- Badge "instalado" cuando se abre como PWA -->
+<div class="installed-badge" id="installed-badge">✓ APP INSTALADA</div>
+
+<!-- Banner fijo 320x50 -->
+<div class="ad-bottom" id="ad-bottom"></div>
+
+<script>
+/* =====================================================
+   SeaKingsGames - Página principal
+   ===================================================== */
+
+/* ---------- AUDIO ---------- */
+const Audio = {
+  ctx:null, enabled:true,
+  init(){ if(this.ctx) return; try{ this.ctx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} },
+  tone(f,d=.08,t='triangle',v=.1){
+    if(!this.enabled||!this.ctx) return;
+    const now=this.ctx.currentTime;
+    const o=this.ctx.createOscillator(), g=this.ctx.createGain();
+    o.type=t; o.frequency.value=f;
+    g.gain.setValueAtTime(0,now);
+    g.gain.linearRampToValueAtTime(v,now+.005);
+    g.gain.exponentialRampToValueAtTime(.0001,now+d);
+    o.connect(g).connect(this.ctx.destination);
+    o.start(now); o.stop(now+d+.02);
+  },
+  hover(){ this.tone(900,.04,'sine',.06); },
+  click(){ this.tone(660,.06,'triangle',.1); setTimeout(()=>this.tone(990,.07,'triangle',.1),40); },
+  toggle(){ this.tone(this.enabled?780:520,.1,'sine',.12); },
+};
+
+const soundBtn = document.getElementById('sound-toggle');
+soundBtn.onclick = () => {
+  Audio.init();
+  Audio.enabled = !Audio.enabled;
+  soundBtn.textContent = Audio.enabled ? '🔊' : '🔇';
+  Audio.toggle();
+};
+
+/* ---------- ADS ---------- */
+const ADS = {
+  banner50:  { key:'787e84f3bdee3100779130afe4802abc', width:320, height:50 },
+  medium250: { key:'c2f164720365b5dc18fae25f1c594072', width:300, height:250 },
+  large90:   { key:'0e595827f5881105adfd4a408fcb9f88', width:728, height:90 },
+};
+function loadAd(containerEl, config) {
+  if (!containerEl || containerEl.dataset.loaded === '1') return;
+  containerEl.dataset.loaded = '1';
+  const html =
+`<!DOCTYPE html><html><head>
+<style>html,body{margin:0;padding:0;background:transparent;overflow:hidden}</style>
+</head><body>
+<script type="text/javascript">var atOptions=${JSON.stringify({
+  key:config.key, format:'iframe', height:config.height, width:config.width, params:{}
+})};<\/script>
+<script type="text/javascript" src="https://www.highperformanceformat.com/${config.key}/invoke.js"><\/script>
+</body></html>`;
+  const ifr = document.createElement('iframe');
+  ifr.srcdoc = html;
+  ifr.width = config.width; ifr.height = config.height;
+  ifr.scrolling = 'no'; ifr.setAttribute('frameborder','0'); ifr.setAttribute('sandbox','allow-scripts allow-same-origin allow-popups-to-escape-sandbox');
+  ifr.style.cssText = 'border:0;display:block;background:transparent;max-width:100%';
+  containerEl.appendChild(ifr);
+}
+
+/* ---------- RÉCORDS GUARDADOS EN ESTE CELULAR ---------- */
+function lsKeys(prefix){ try { return Object.keys(localStorage).filter(k => k.startsWith(prefix) && !k.endsWith('-info')); } catch(e) { return []; } }
+function lsNum(k){ try { const v = parseFloat(localStorage.getItem(k)); return isNaN(v) ? 0 : v; } catch(e) { return 0; } }
+function lsJson(k, d){ try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch(e) { return d; } }
+const maxOf = p => Math.max(0, ...lsKeys(p).map(lsNum));
+const sumOf = p => lsKeys(p).reduce((s, k) => s + lsNum(k), 0);
+const countOf = p => lsKeys(p).length;
+const plural = (n, a, b) => `${n} ${n === 1 ? a : b}`;
+
+/* ---------- CATÁLOGO DE JUEGOS ---------- */
+const FILTERS = [
+  ['todos', '✨ Todos'], ['palabras', '🔤 Palabras'], ['puzzle', '🧩 Puzzles'], ['arcade', '🕹️ Arcade'], ['mesa', '🎲 De mesa y cartas'], ['duelo', '👥 2 jugadores'],
+];
+const PIPS = { 1:[4], 2:[0, 8], 3:[0, 4, 8], 4:[0, 2, 6, 8], 5:[0, 2, 4, 6, 8], 6:[0, 2, 3, 5, 6, 8] };
+const dominoArt = (a, b) => `<span class="dmn">${[a, b].map(n => `<b>${[...Array(9).keys()].map(k => `<i class="${PIPS[n].includes(k) ? 'on' : ''}"></i>`).join('')}</b>`).join('')}</span>`;
+const GAMES = [
+  { id:'tuercas', title:'Tuercas Locas', desc:'Ordena las piezas hexagonales en sus tornillos. 4 dificultades, niveles infinitos.',
+    art:'🔩', artClass:'art-tuercas', href:'tuercas-locas.html', badge:'JUGAR', feature:true, tags:['puzzle'],
+    rec: () => { const n = countOf('sk-tl-rec-'); return n ? `🏆 ${plural(n, 'récord', 'récords')}` : ''; } },
+  { id:'ahorcado', title:'Ahorcado', desc:'Palabra del día, reta a tus amigos con un link, contrarreloj y 34 temas con casi 2,300 palabras con pista.',
+    art:'🪢', artClass:'art-verdugo', href:'ahorcado.html', badge:'POPULAR', tags:['palabras', 'duelo'],
+    rec: () => { const a = lsJson('sk-ah-album', {}); const n = Object.values(a).reduce((s, l) => s + (l.length || 0), 0); return n ? `📚 ${plural(n, 'palabra descubierta', 'palabras descubiertas')}` : ''; } },
+  { id:'loteria', title:'Lotería', desc:'Baraja propia de 54 cartas con versos nuevos. El gritón canta las cartas y compites contra 3 rivales.',
+    art:'🎴', artClass:'art-loteria', href:'loteria.html', badge:'NUEVO', isNew:true, tags:['mesa'],
+    rec: () => { const n = sumOf('sk-lot-wins-'); return n ? `🎉 ${plural(n, 'lotería gritada', 'loterías gritadas')}` : ''; } },
+  { id:'solitario', title:'Solitario', desc:'El Klondike de siempre: robar 1 o robar 3, deshacer, pistas y terminar automático.',
+    art:'🃏', artClass:'art-sol', href:'solitario.html', badge:'NUEVO', isNew:true, tags:['mesa', 'puzzle'],
+    rec: () => { const n = sumOf('sk-sol-wins-'); return n ? `🏆 ${plural(n, 'partida resuelta', 'partidas resueltas')}` : ''; } },
+  { id:'domino', title:'Dominó', desc:'En parejas con la compu, mano a mano con pozo o todos contra todos, a 100 puntos.',
+    art: dominoArt(6, 3), artClass:'art-domino', href:'domino.html', badge:'NUEVO', isNew:true, tags:['mesa'],
+    rec: () => { const n = sumOf('sk-domino-wins-'); return n ? `🏆 ${plural(n, 'partida ganada', 'partidas ganadas')}` : ''; } },
+  { id:'sudoku', title:'Sudoku', desc:'4 dificultades, notas, pistas y deshacer. Cada tablero tiene una sola solución.',
+    art:'🔢', artClass:'art-sudoku', href:'sudoku.html', badge:'NUEVO', isNew:true, tags:['puzzle'],
+    rec: () => { const n = sumOf('sk-sudoku-wins-'); return n ? `✅ ${plural(n, 'sudoku resuelto', 'sudokus resueltos')}` : ''; } },
+  { id:'ajolote', title:'Ajolote Volador', desc:'Toca para nadar entre los corales sin chocar. Gana medallas y supera tu récord.',
+    art:'🦎', artClass:'art-ajolote', href:'ajolote-volador.html', badge:'NUEVO', isNew:true, tags:['arcade'],
+    rec: () => { const n = maxOf('sk-ajolote-best-'); return n ? `🏆 Récord: ${n}` : ''; } },
+  { id:'naval', title:'Batalla Naval', desc:'Acomoda tu flota y hunde los 5 barcos de la compu antes que ella hunda los tuyos.',
+    art:'🚢', artClass:'art-naval', href:'batalla-naval.html', badge:'NUEVO', isNew:true, tags:['mesa', 'puzzle'],
+    rec: () => { const n = sumOf('sk-naval-wins-'); return n ? `🏆 ${plural(n, 'batalla ganada', 'batallas ganadas')}` : ''; } },
+  { id:'serpientes', title:'Serpientes y Escaleras', desc:'Tira el dado, sube escaleras y cuidado con las serpientes. Contra la compu o con amigos.',
+    art:'🪜', artClass:'art-serp', href:'serpientes.html', badge:'NUEVO', isNew:true, tags:['mesa', 'duelo'],
+    rec: () => { const n = lsNum('sk-serpientes-wins'); return n ? `🏆 ${plural(n, 'victoria', 'victorias')}` : ''; } },
+  { id:'juego-ajolote', title:'El Juego del Ajolote', desc:'Tipo Oca pero mexicano: de ajolote a ajolote, trajineras, taquería, cenote y cuidado con La Llorona.',
+    art:'💚', artClass:'art-oca', href:'juego-ajolote.html', badge:'NUEVO', isNew:true, tags:['mesa', 'duelo'],
+    rec: () => { const n = lsNum('sk-juego-ajolote-wins'); return n ? `🏆 ${plural(n, 'victoria', 'victorias')}` : ''; } },
+  { id:'buscaminas', title:'Buscaminas', desc:'El clásico de las minas. Banderas con toque largo, 4 dificultades y el primer toque siempre es seguro.',
+    art:'💣', artClass:'art-minas', href:'buscaminas.html', badge:'JUGAR', tags:['puzzle'],
+    rec: () => { const n = sumOf('sk-bm-wins-'); return n ? `✅ ${plural(n, 'campo despejado', 'campos despejados')}` : ''; } },
+  { id:'2048', title:'2048', desc:'Desliza y une números iguales hasta llegar a 2048. Tableros de 3×3 a 6×6 y deshacer.',
+    art:'🔢', artClass:'art-2048', href:'2048.html', badge:'JUGAR', tags:['puzzle'],
+    rec: () => { const n = maxOf('sk-2048-tile-'); return n ? `🔢 Tu mejor ficha: ${n}` : ''; } },
+  { id:'sopa', title:'Sopa de letras', desc:'Encuentra las palabras escondidas. 33 temas y modo "solo pistas" para retarte de verdad.',
+    art:'🔍', artClass:'art-sopa', href:'sopa-letras.html', badge:'JUGAR', tags:['palabras'],
+    rec: () => { const n = countOf('sk-sopa-rec-'); return n ? `🏆 ${plural(n, 'récord', 'récords')}` : ''; } },
+  { id:'conecta4', title:'Conecta 4', desc:'Junta 4 fichas en línea. Contra la compu en 3 niveles o con un amigo en el mismo celular.',
+    art:'🔴', artClass:'art-c4', href:'conecta4.html', badge:'JUGAR', tags:['duelo', 'puzzle'],
+    rec: () => { const n = sumOf('sk-c4-wins-'); return n ? `🏆 ${plural(n, 'victoria', 'victorias')} contra la compu` : ''; } },
+  { id:'gato', title:'Gato', desc:'El tres en raya de toda la vida. ¿Le puedes sacar un empate a la compu imposible?',
+    art:'❌', artClass:'art-gato', href:'gato.html', badge:'JUGAR', tags:['duelo'],
+    rec: () => { const n = sumOf('sk-gato-wins-'); return n ? `🏆 ${plural(n, 'victoria', 'victorias')} contra la compu` : ''; } },
+  { id:'memoria', title:'Memoria', desc:'Encuentra todos los pares antes de que te ganen los movimientos. 9 temas, 4 dificultades.',
+    art:'🧠', artClass:'art-memoria', href:'memoria.html', badge:'JUGAR', tags:['puzzle'],
+    rec: () => { const n = countOf('sk-mm-rec-'); return n ? `🏆 ${plural(n, 'récord', 'récords')}` : ''; } },
+  { id:'snake', title:'Snake', desc:'El clásico de la serpiente. 4 dificultades, modo con o sin paredes mortales.',
+    art:'🐍', artClass:'art-snake', href:'snake.html', badge:'JUGAR', tags:['arcade'],
+    rec: () => { const n = maxOf('sk-snake-best-'); return n ? `🏆 Récord: ${n} pts` : ''; } },
+  { id:'numpuz', title:'Numpuz', desc:'El puzzle deslizante de números. Ordena del 1 al N en tableros de 3×3 hasta 6×6.',
+    art:'🧩', artClass:'art-numpuz', href:'numpuz.html', badge:'JUGAR', tags:['puzzle'],
+    rec: () => { const n = countOf('sk-numpuz-best-'); return n ? `🏆 ${plural(n, 'tablero resuelto', 'tableros resueltos')}` : ''; } },
+  { id:'tower', title:'Tower', desc:'Apila bloques con timing perfecto. Cada perfecto suma combo. ¿Hasta qué piso llegas?',
+    art:'🗼', artClass:'art-tower', href:'tower.html', badge:'JUGAR', tags:['arcade'],
+    rec: () => { const n = maxOf('sk-tower-best-'); return n ? `🏆 Récord: ${n} pts` : ''; } },
+  { id:'smash', title:'Smash Brick', desc:'Rompe ladrillos con tu pala. 20 niveles diseñados + infinito, 6 power-ups y multi-bola.',
+    art:'🧱', artClass:'art-smash', href:'smash-brick.html', badge:'JUGAR', tags:['arcade'],
+    rec: () => { const n = maxOf('sk-smashbrick-best-'); return n ? `🏆 Récord: ${n} pts` : ''; } },
+];
+
+/* ---------- RENDER ---------- */
+const grid = document.getElementById('games-grid');
+function goTo(g, e){
+  Audio.init(); Audio.click();
+  try {
+    const r = lsJson('sk-recent', []).filter(id => id !== g.id); r.unshift(g.id);
+    localStorage.setItem('sk-recent', JSON.stringify(r.slice(0, 6)));
+  } catch(err) {}
+  if (e) e.preventDefault();
+  setTimeout(() => location.href = g.href, 120);
+}
+GAMES.forEach(g => {
+  const a = document.createElement('a');
+  a.className = 'card' + (g.feature ? ' feature' : '');
+  a.href = g.href; a.dataset.tags = g.tags.join(' ');
+  let rec = ''; try { rec = g.rec(); } catch(e) {}
+  a.innerHTML = `
+    <div class="card-art ${g.artClass}">${g.art}</div>
+    <div class="card-body">
+      <h3>${g.title}</h3>
+      <p>${g.desc}</p>
+      ${rec ? `<div class="card-rec">${rec}</div>` : ''}
+      <div class="card-meta">
+        <span class="pill${g.isNew ? ' new' : ''}">${g.badge}</span>
+        <div class="play">▶</div>
+      </div>
+    </div>`;
+  a.addEventListener('mouseenter', () => { Audio.init(); Audio.hover(); });
+  a.addEventListener('click', e => goTo(g, e));
+  grid.appendChild(a);
+});
+
+/* filtros */
+const filtersEl = document.getElementById('filters');
+let filter = 'todos';
+FILTERS.forEach(([k, label]) => {
+  const b = document.createElement('button'); b.className = 'chip' + (k === filter ? ' on' : ''); b.textContent = label;
+  b.onclick = () => {
+    Audio.init(); Audio.hover(); filter = k;
+    filtersEl.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c === b));
+    grid.querySelectorAll('.card').forEach(c => c.classList.toggle('hide', k !== 'todos' && !c.dataset.tags.split(' ').includes(k)));
+  };
+  filtersEl.appendChild(b);
+});
+
+/* sigue jugando */
+(() => {
+  const ids = lsJson('sk-recent', []).filter(id => GAMES.some(g => g.id === id)).slice(0, 4);
+  if (!ids.length) return;
+  const box = document.getElementById('recent');
+  ids.forEach(id => {
+    const g = GAMES.find(x => x.id === id), a = document.createElement('a');
+    a.href = g.href; a.innerHTML = `<span>${g.art}</span>${g.title}`;
+    a.addEventListener('click', e => goTo(g, e));
+    box.appendChild(a);
+  });
+  document.getElementById('recent-sec').hidden = false;
+})();
+
+/* palabra del día */
+(() => {
+  const ds = new Date().toLocaleDateString('en-CA', { timeZone:'America/Mexico_City' });
+  const [y, m, d] = ds.split('-').map(Number);
+  const n = Math.round((Date.UTC(y, m - 1, d) - Date.UTC(2026, 9, 30)) / 86400000) + 1;
+  const res = lsJson('sk-ah-daily-' + ds, null), streak = lsJson('sk-ah-dstreak', null);
+  document.getElementById('d-tag').textContent = `🪢 AHORCADO DEL DÍA #${n}`;
+  if (res) {
+    document.getElementById('daily').classList.add('done');
+    document.getElementById('d-title').textContent = res.won ? '✅ ¡Ya la resolviste!' : '💀 Hoy no salió';
+    document.getElementById('d-sub').textContent = `Mañana sale otra${streak && streak.cur > 1 && streak.last === ds ? ` · 🔥 llevas ${streak.cur} días` : ''}. Toca para ver tu resultado.`;
+  }
+  document.getElementById('daily').addEventListener('click', () => { Audio.init(); Audio.click(); });
+})();
+
+/* compartir la arcada */
+document.getElementById('btn-share-arcade').onclick = async () => {
+  Audio.init(); Audio.click();
+  const text = '🕹️ Juegos clásicos gratis en español: Ahorcado con palabra del día, Buscaminas, 2048, Sopa de letras y más.';
+  const url = location.href.split('#')[0].split('?')[0];
+  try { if (navigator.share) { await navigator.share({ text, url }); return; } } catch(e) { return; }
+  try { await navigator.clipboard.writeText(text + ' ' + url); alert('Link copiado'); } catch(e) {}
+};
+
+/* ---------- CARGAR ADS ---------- */
+window.addEventListener('load', () => {
+  loadAd(document.getElementById('ad-top'),    ADS.large90);
+  loadAd(document.getElementById('ad-mid'),    ADS.medium250);
+  loadAd(document.getElementById('ad-bottom'), ADS.banner50);
+});
+
+/* =====================================================
+   PWA: registro del service worker + install prompt
+   ===================================================== */
+
+// 1. Registrar service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => {
+        // detectar actualizaciones disponibles
+        reg.addEventListener('updatefound', () => {
+          const nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener('statechange', () => {
+            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+              // hay una versión nueva disponible — opcional: notificar al usuario
+              console.log('Nueva versión disponible. Recarga la app para actualizar.');
+            }
+          });
+        });
+      })
+      .catch(err => console.warn('SW registro falló:', err));
+  });
+}
+
+// 2. Detectar si ya está instalada (standalone)
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                     window.navigator.standalone === true;
+if (isStandalone) {
+  document.getElementById('installed-badge').classList.add('show');
+  // ocultar después de 3 segundos
+  setTimeout(() => {
+    document.getElementById('installed-badge').classList.remove('show');
+  }, 3000);
+}
+
+// 3. Capturar el evento beforeinstallprompt y mostrar prompt personalizado
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  // mostrar solo si no fue descartado antes
+  if (!localStorage.getItem('sk-install-dismissed') && !isStandalone) {
+    // pequeño delay para no abrumar
+    setTimeout(() => {
+      document.getElementById('install-prompt').classList.add('show');
+    }, 2000);
+  }
+});
+
+document.getElementById('btn-install').addEventListener('click', async () => {
+  if (!deferredInstallPrompt) return;
+  document.getElementById('install-prompt').classList.remove('show');
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  if (outcome === 'accepted') {
+    try { localStorage.setItem('sk-install-accepted', '1'); } catch(e) {}
+  }
+  deferredInstallPrompt = null;
+});
+
+document.getElementById('btn-install-close').addEventListener('click', () => {
+  document.getElementById('install-prompt').classList.remove('show');
+  try { localStorage.setItem('sk-install-dismissed', '1'); } catch(e) {}
+});
+
+// 4. Si la app se instala mientras está abierta
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-prompt').classList.remove('show');
+  try { localStorage.setItem('sk-install-accepted', '1'); } catch(e) {}
+});
+</script>
+</body>
+</html>

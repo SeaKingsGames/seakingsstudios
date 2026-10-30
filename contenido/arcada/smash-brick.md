@@ -1,6 +1,6 @@
 ---
 nombre: Smash Brick
-orden: 12
+orden: 20
 archivo: smash-brick
 genero: Rompeladrillos
 lema: Rompe todos los ladrillos con tu pala y tu pelota.

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1e3a2a">
+<title>Serpientes y Escaleras · SeaKingsGames</title>
+<meta name="description" content="Serpientes y escaleras gratis en español: juega contra la compu o con hasta 4 amigos en el mismo celular. Funciona sin internet.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="comun.css">
+<style>
+  :root{ --bg:#1e3a2a; --bg-2:#0e1f16; --panel:#2c5540; --panel-2:#386b51; --accent:#ffd43b; --accent-deep:#c79a00; --accent-ink:#3a2a00; }
+  #game{flex:1}
+</style>
+</head>
+<body>
+
+<section id="menu" class="screen active">
+  <div class="logo-ico">🐍</div>
+  <div class="logo">SERPIENTES<br>Y ESCALERAS<small>SeaKingsGames</small></div>
+  <div class="record-line" id="wins"></div>
+  <div class="section-title">¿CON QUIÉN JUEGAS?</div>
+  <div id="modes"></div>
+  <p class="how">Tira el dado y avanza. Si caes al pie de una escalera, subes; si caes en la cabeza de una serpiente, bajas. Si sacas 6, tiras otra vez. Para ganar hay que llegar exacto a la 100.</p>
+  <a class="back-link" href="index.html">← Volver a la arcada</a>
+  <div class="ad-banner-bottom" id="ad-bottom"></div>
+</section>
+
+<section id="game" class="screen"></section>
+
+<script src="comun.js"></script>
+<script src="tablero.js"></script>
+<script>
+/* =====================================================
+   SERPIENTES Y ESCALERAS · SeaKingsGames
+   ===================================================== */
+const LADDERS = { 4:25, 13:46, 33:49, 42:63, 50:69, 62:81, 74:92 };
+const SNAKES  = { 27:5, 40:3, 43:18, 54:31, 66:45, 76:58, 89:53, 99:41 };
+const SNAKE_COLORS = [['#51cf66', '#2b8a3e'], ['#cc5de8', '#862e9c'], ['#ff922b', '#c25e00'], ['#ff6b6b', '#c92a2a'], ['#22b8cf', '#0b7285'], ['#fcc419', '#b08900']];
+const PALETTE = ['#ffe8a3', '#ffd1dc', '#c8f7dc', '#cde7ff'];
+
+function center(n, W){
+  const s = W / 10;
+  if (n <= 0) return { x: s * .45, y: s * 10.35 };
+  const k = n - 1, row = (k / 10) | 0, col = row % 2 === 0 ? k % 10 : 9 - (k % 10);
+  return { x: (col + .5) * s, y: (9 - row + .5) * s };
+}
+
+function drawBoard(ctx, W, H){
+  const s = W / 10;
+  ctx.clearRect(0, 0, W, H);
+  // casillas
+  for (let n = 1; n <= 100; n++) {
+    const c = center(n, W), x = c.x - s / 2, y = c.y - s / 2, row = ((n - 1) / 10) | 0;
+    ctx.fillStyle = PALETTE[(row + (n - 1)) % 4];
+    ctx.fillRect(x, y, s, s);
+    ctx.fillStyle = 'rgba(0,0,0,.06)'; ctx.fillRect(x, y + s - 2, s, 2);
+    ctx.fillStyle = 'rgba(40,40,60,.55)'; ctx.font = `600 ${Math.round(s * .26)}px Fredoka, system-ui, sans-serif`; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    ctx.fillText(n, x + s * .08, y + s * .06);
+  }
+  // meta
+  const m = center(100, W);
+  ctx.font = `${Math.round(s * .5)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('🏆', m.x, m.y + s * .08);
+  // escaleras
+  Object.entries(LADDERS).forEach(([a, b]) => drawLadder(ctx, center(+a, W), center(+b, W), s));
+  // serpientes
+  Object.entries(SNAKES).forEach(([h, t], i) => drawSnake(ctx, center(+h, W), center(+t, W), s, SNAKE_COLORS[i % SNAKE_COLORS.length]));
+  // franja de salida
+  ctx.fillStyle = '#16301f'; ctx.fillRect(0, s * 10, W, H - s * 10);
+  ctx.fillStyle = '#9be3c2'; ctx.font = `700 ${Math.round(s * .3)}px Fredoka, system-ui, sans-serif`; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  ctx.fillText('◀ SALIDA', s * 2.8, s * 10.35);
+}
+function drawLadder(ctx, a, b, s){
+  const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy), ux = dx / len, uy = dy / len, px = -uy, py = ux, w = s * .17;
+  const A = { x: a.x - ux * s * .15, y: a.y - uy * s * .15 }, B = { x: b.x + ux * s * .1, y: b.y + uy * s * .1 };
+  ctx.lineCap = 'round';
+  // peldaños
+  const steps = Math.max(2, Math.floor(len / (s * .32)));
+  for (let k = 1; k < steps; k++) {
+    const t = k / steps, x = A.x + (B.x - A.x) * t, y = A.y + (B.y - A.y) * t;
+    ctx.strokeStyle = '#a0662f'; ctx.lineWidth = s * .07;
+    ctx.beginPath(); ctx.moveTo(x + px * w, y + py * w); ctx.lineTo(x - px * w, y - py * w); ctx.stroke();
+  }
+  // largueros
+  [1, -1].forEach(sg => {
+    ctx.strokeStyle = '#6b4219'; ctx.lineWidth = s * .1;
+    ctx.beginPath(); ctx.moveTo(A.x + px * w * sg, A.y + py * w * sg); ctx.lineTo(B.x + px * w * sg, B.y + py * w * sg); ctx.stroke();
+    ctx.strokeStyle = '#c98b4c'; ctx.lineWidth = s * .04;
+    ctx.beginPath(); ctx.moveTo(A.x + px * w * sg, A.y + py * w * sg); ctx.lineTo(B.x + px * w * sg, B.y + py * w * sg); ctx.stroke();
+  });
+}
+function drawSnake(ctx, h, t, s, [col, dark]){
+  const dx = t.x - h.x, dy = t.y - h.y, len = Math.hypot(dx, dy), ux = dx / len, uy = dy / len, px = -uy, py = ux;
+  const waves = Math.max(1, Math.round(len / (s * 1.6))), amp = s * .28, pts = [];
+  for (let k = 0; k <= 60; k++) { const t2 = k / 60, off = Math.sin(t2 * Math.PI * 2 * waves) * amp * Math.sin(Math.PI * Math.min(1, t2 * 1.4)); pts.push({ x: h.x + dx * t2 + px * off, y: h.y + dy * t2 + py * off, t: t2 }); }
+  // cuerpo que se adelgaza hacia la cola
+  for (let pass = 0; pass < 2; pass++) for (let k = pts.length - 1; k >= 0; k--) {
+    const p = pts[k], r = s * (.15 - .1 * p.t) + (pass ? 0 : s * .025);
+    ctx.fillStyle = pass ? col : dark; ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
+  }
+  // manchitas
+  ctx.fillStyle = 'rgba(255,255,255,.35)';
+  for (let k = 6; k < pts.length - 4; k += 6) { const p = pts[k]; ctx.beginPath(); ctx.arc(p.x, p.y, s * (.05 - .025 * p.t), 0, Math.PI * 2); ctx.fill(); }
+  // cabeza
+  const hx = h.x, hy = h.y, hr = s * .2, ang = Math.atan2(-uy, -ux);
+  ctx.fillStyle = dark; ctx.beginPath(); ctx.arc(hx, hy, hr + s * .025, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = col; ctx.beginPath(); ctx.arc(hx, hy, hr, 0, Math.PI * 2); ctx.fill();
+  // lengua
+  ctx.strokeStyle = '#e03131'; ctx.lineWidth = s * .035; ctx.lineCap = 'round';
+  const tx = hx + Math.cos(ang) * hr * 1.6, ty = hy + Math.sin(ang) * hr * 1.6;
+  ctx.beginPath(); ctx.moveTo(hx + Math.cos(ang) * hr * .8, hy + Math.sin(ang) * hr * .8); ctx.lineTo(tx, ty); ctx.stroke();
+  [-.5, .5].forEach(a => { ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(tx + Math.cos(ang + a) * hr * .35, ty + Math.sin(ang + a) * hr * .35); ctx.stroke(); });
+  // ojos
+  [-1, 1].forEach(sg => {
+    const ex = hx + Math.cos(ang) * hr * .25 + Math.cos(ang + Math.PI / 2) * hr * .45 * sg, ey = hy + Math.sin(ang) * hr * .25 + Math.sin(ang + Math.PI / 2) * hr * .45 * sg;
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(ex, ey, hr * .3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#111'; ctx.beginPath(); ctx.arc(ex + Math.cos(ang) * hr * .08, ey + Math.sin(ang) * hr * .08, hr * .15, 0, Math.PI * 2); ctx.fill();
+  });
+}
+
+const juego = Tablero({
+  id:'serpientes', title:'Serpientes y Escaleras', emoji:'🐍', maxCell:100, aspect:10 / 10.7,
+  dice:1, exact:true, extraOnSix:true,
+  cellSize: W => W / 10,
+  cellCenter: (n, W) => center(n, W),
+  drawBoard,
+  onLand(p, n){
+    if (LADDERS[n]) return { to: LADDERS[n], sound:'good', ms:800, msg:`🪜 ¡${p.you ? 'Subiste' : p.name + ' subió'} una escalera! De la ${n} a la ${LADDERS[n]}` };
+    if (SNAKES[n]) return { to: SNAKES[n], sound:'bad', ms:1000, msg:`🐍 ¡Ay! Una serpiente ${p.you ? 'te bajó' : 'bajó a ' + p.name} de la ${n} a la ${SNAKES[n]}` };
+    return null;
+  },
+});
+SK.bannerAd(SK.$('ad-bottom'));
+SK.initPWA('Serpientes y Escaleras');
+</script>
+</body>
+</html>

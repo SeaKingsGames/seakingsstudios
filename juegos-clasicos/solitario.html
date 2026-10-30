@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#17663a">
+<title>Solitario · SeaKingsGames</title>
+<meta name="description" content="Solitario Klondike gratis en español: robar 1 o robar 3, deshacer, pistas y terminar automático. Juega sin internet desde el celular.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="comun.css">
+<style>
+  :root{ --bg:#17663a; --bg-2:#0a3a1f; --panel:#1f7a47; --panel-2:#26915a; --accent:#ffd43b; --accent-deep:#c79a00; --accent-ink:#3a2a00; }
+  #game{flex:1}
+  #game > *{flex-shrink:0}
+  .stats{display:flex;justify-content:center;gap:16px;font-size:13px;font-weight:600;color:#c9f2d8;font-variant-numeric:tabular-nums;padding:2px 0 4px}
+  #board{position:relative;margin:2px auto 0;touch-action:none;user-select:none;-webkit-user-select:none}
+  .slot{position:absolute;left:0;top:0;width:var(--cw);height:var(--ch);border-radius:calc(var(--cw) * .12);border:2px dashed rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.28);font-weight:700;font-size:calc(var(--cw) * .38)}
+  .slot[data-s="stock"]{cursor:pointer;border-style:solid;font-size:calc(var(--cw) * .45)}
+  .cd{position:absolute;left:0;top:0;width:var(--cw);height:var(--ch);border-radius:calc(var(--cw) * .12);background:#fffdf7;box-shadow:0 1px 2px rgba(0,0,0,.4);color:#1d1d2b;transition:transform .2s ease;will-change:transform;cursor:pointer;overflow:hidden}
+  .cd.red{color:#d6336c}
+  .cd .tl{position:absolute;top:3%;left:7%;right:6%;font-weight:700;font-size:calc(var(--cw) * .3);line-height:1;display:flex;justify-content:space-between;align-items:center;letter-spacing:-1px}
+  .cd .tl i{font-style:normal;font-size:calc(var(--cw) * .26)}
+  .cd .ls{position:absolute;top:30%;left:9%;font-size:calc(var(--cw) * .22);line-height:1}
+  .cd .mid{position:absolute;left:0;right:0;bottom:9%;text-align:center;font-size:calc(var(--cw) * .58);line-height:1}
+  .cd.face .mid{font-family:'Bagel Fat One','Fredoka',system-ui,sans-serif;font-size:calc(var(--cw) * .46);left:28%;right:10%;bottom:9%;padding:4% 0;border-radius:6px;background:rgba(255,212,59,.28);box-shadow:inset 0 0 0 2px currentColor}
+  .cd.down{background:radial-gradient(circle at 50% 50%,#ffd43b 0 11%,transparent 12%),repeating-linear-gradient(45deg,#c92a2a 0 5px,#a61e1e 5px 10px);box-shadow:inset 0 0 0 3px #fffdf7,0 1px 2px rgba(0,0,0,.4)}
+  .cd.down > *{display:none}
+  .cd.drag{transition:none !important;box-shadow:0 10px 20px rgba(0,0,0,.45)}
+  .cd.hint{animation:hintGlow .4s 4 alternate}
+  @keyframes hintGlow{to{box-shadow:0 0 0 4px var(--accent),0 0 18px var(--accent)}}
+  .slot.hint{animation:hintGlow .4s 4 alternate}
+  .cd.nudge{animation:nudge .32s}
+  @keyframes nudge{20%{left:-6px}40%{left:5px}60%{left:-3px}80%{left:2px}}
+  .acts{display:flex;justify-content:center;gap:8px;padding:6px 10px 14px}
+  .acts button{min-width:0;flex:1;max-width:150px;padding:12px 6px;font-size:15px}
+  #btn-auto{display:none}
+  #btn-auto.show{display:block;animation:pulse 1s infinite}
+  @keyframes pulse{50%{transform:scale(1.05)}}
+</style>
+</head>
+<body>
+
+<section id="menu" class="screen active">
+  <div class="logo-ico">🃏</div>
+  <div class="logo">SOLITARIO<small>Klondike · SeaKingsGames</small></div>
+  <div class="record-line" id="rec"></div>
+  <div class="section-title">MODO</div>
+  <div class="seg" id="seg-mode"><button data-m="1">🙂 Robar 1</button><button data-m="3">🧠 Robar 3</button></div>
+  <button class="btn-primary" id="btn-continue" style="width:min(380px,94vw);font-size:19px;display:none">▶ Continuar partida</button>
+  <button class="btn-primary" id="btn-new" style="width:min(380px,94vw);font-size:19px">🃏 Repartir cartas</button>
+  <p class="how">Sube las 52 cartas a las 4 bases, del As al Rey de cada palo. En las columnas acomoda de mayor a menor alternando rojo y negro; solo un Rey puede ir en un hueco vacío. Toca una carta para que se mueva sola, o arrástrala.</p>
+  <a class="back-link" href="index.html">← Volver a la arcada</a>
+  <div class="ad-banner-bottom" id="ad-bottom"></div>
+</section>
+
+<section id="game" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" id="btn-back">‹</button>
+    <div class="level-title"><div class="badge" id="badge">ROBAR 1</div><h1>Solitario</h1></div>
+    <button class="icon-btn small" id="btn-sound">🔊</button>
+    <button class="icon-btn" id="btn-redeal" title="Repartir de nuevo">🔄</button>
+  </div>
+  <div class="stats"><span>⏱ <span id="time">0:00</span></span><span>🃏 <span id="moves">0</span> movimientos</span></div>
+  <div id="board"></div>
+  <div class="acts">
+    <button class="btn-secondary" id="btn-undo">↩ Deshacer</button>
+    <button class="btn-secondary" id="btn-hint">💡 Pista</button>
+    <button class="btn-primary" id="btn-auto">⚡ Terminar</button>
+  </div>
+</section>
+
+<script src="comun.js"></script>
+<script>
+/* =====================================================
+   SOLITARIO (KLONDIKE) · SeaKingsGames
+   ===================================================== */
+const { $, sfx } = SK;
+const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+const SUITS = ['♠', '♥', '♣', '♦'];
+const suit = id => (id / 13) | 0, rank = id => id % 13 + 1, red = id => suit(id) % 2 === 1;
+const board = $('board');
+let mode = SK.store.get('sk-sol-mode', 1);
+let S = null, hist = [], moves = 0, elapsed = 0, timing = false, won = false, busy = false, counted = false;
+const els = [], slots = {}, L = { colY: [] };
+
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+/* ---------- CARTAS (52 elementos fijos que se mueven con transform) ---------- */
+function buildBoard(){
+  board.innerHTML = '';
+  const mk = (key, txt) => { const d = document.createElement('div'); d.className = 'slot'; d.dataset.s = key; d.textContent = txt; board.appendChild(d); slots[key] = d; };
+  mk('stock', '↻'); mk('waste', '');
+  for (let i = 0; i < 4; i++) mk('f' + i, 'A');
+  for (let i = 0; i < 7; i++) mk('t' + i, 'K');
+  for (let id = 0; id < 52; id++) {
+    const e = document.createElement('div'), r = rank(id), face = r > 10;
+    e.className = 'cd' + (red(id) ? ' red' : '') + (face ? ' face' : '');
+    e.dataset.id = id;
+    e.innerHTML = `<span class="tl"><b>${RANKS[r - 1]}</b><i>${SUITS[suit(id)]}</i></span><span class="ls">${SUITS[suit(id)]}</span><span class="mid">${face ? RANKS[r - 1] : SUITS[suit(id)]}</span>`;
+    e._x = 0; e._y = 0;
+    board.appendChild(e); els[id] = e;
+  }
+}
+const colX = i => L.g + i * (L.cw + L.g);
+function layout(){
+  const W = Math.min(innerWidth - 8, 620), g = Math.max(3, Math.round(W * .012));
+  const cw = Math.floor((W - 8 * g) / 7), ch = Math.round(cw * 1.4);
+  const top = board.getBoundingClientRect().top;
+  const H = Math.max(ch * 4, innerHeight - top - 76);
+  Object.assign(L, { W, g, cw, ch, H, tabY: ch + g * 3 });
+  board.style.width = W + 'px'; board.style.height = H + 'px';
+  board.style.setProperty('--cw', cw + 'px'); board.style.setProperty('--ch', ch + 'px');
+  const at = (key, x, y) => slots[key].style.transform = `translate(${x}px,${y}px)`;
+  at('stock', colX(0), 0); at('waste', colX(1), 0);
+  for (let i = 0; i < 4; i++) at('f' + i, colX(3 + i), 0);
+  for (let i = 0; i < 7; i++) at('t' + i, colX(i), L.tabY);
+}
+
+/* ---------- DIBUJAR ---------- */
+function render(){
+  let z = 1;
+  const put = (id, x, y, up) => {
+    const e = els[id], moved = Math.abs(e._x - x) > .5 || Math.abs(e._y - y) > .5;
+    e._x = x; e._y = y; e._z = z++;
+    e.classList.toggle('down', !up);
+    e.style.transform = `translate(${x}px,${y}px)`;
+    if (moved) { e.style.zIndex = 400 + e._z; clearTimeout(e._t); e._t = setTimeout(() => e.style.zIndex = e._z, 230); }
+    else e.style.zIndex = e._z;
+  };
+  S.stock.forEach((id, k) => put(id, colX(0) + Math.min(k, 20) * .15, -Math.min(k, 20) * .15, false));
+  const wl = S.waste.length, fan = mode === 3 ? Math.min(3, wl) : 1;
+  S.waste.forEach((id, k) => { const f = k - (wl - fan); put(id, colX(1) + (f > 0 ? f * L.cw * .34 : 0), 0, true); });
+  S.found.forEach((f, i) => f.forEach(id => put(id, colX(3 + i), 0, true)));
+  const tabH = L.H - L.tabY;
+  S.tab.forEach((col, i) => {
+    const d = col.filter(id => !S.up[id]).length, u = col.length - d;
+    let dOff = L.ch * .12, uOff = L.ch * .28;
+    const need = () => L.ch + d * dOff + Math.max(0, u - 1) * uOff;
+    if (need() > tabH && u > 1) uOff = Math.max(L.ch * .15, (tabH - L.ch - d * dOff) / (u - 1));
+    if (need() > tabH && d > 0) dOff = Math.max(L.ch * .05, (tabH - L.ch - Math.max(0, u - 1) * uOff) / d);
+    let y = L.tabY;
+    col.forEach((id, k) => { put(id, colX(i), y, S.up[id]); if (k < col.length - 1) y += S.up[id] ? uOff : dOff; });
+    L.colY[i] = y;
+  });
+  slots.stock.textContent = S.waste.length ? '↻' : '·';
+  $('moves').textContent = moves;
+  $('btn-auto').classList.toggle('show', canAuto() && !won);
+}
+
+/* ---------- REGLAS ---------- */
+function where(id){
+  if (S.stock.includes(id)) return { p:'s' };
+  let k = S.waste.indexOf(id); if (k >= 0) return { p:'w', k };
+  for (let i = 0; i < 4; i++) { k = S.found[i].indexOf(id); if (k >= 0) return { p:'f', i, k }; }
+  for (let i = 0; i < 7; i++) { k = S.tab[i].indexOf(id); if (k >= 0) return { p:'t', i, k }; }
+  return null;
+}
+const pile = w => w.p === 'w' ? S.waste : w.p === 'f' ? S.found[w.i] : S.tab[w.i];
+function canFound(id, i){
+  const f = S.found[i];
+  if (!f.length) return rank(id) === 1;
+  const t = f[f.length - 1];
+  return suit(t) === suit(id) && rank(id) === rank(t) + 1;
+}
+function canTab(id, i){
+  const col = S.tab[i];
+  if (!col.length) return rank(id) === 13;
+  const t = col[col.length - 1];
+  return S.up[t] && red(t) !== red(id) && rank(t) === rank(id) + 1;
+}
+const canAuto = () => S && !S.stock.length && !S.waste.length && S.tab.every(c => c.every(id => S.up[id])) && S.found.some(f => f.length < 13);
+
+/* ---------- MOVIMIENTOS ---------- */
+function remember(){ hist.push(JSON.stringify({ S, moves })); if (hist.length > 400) hist.shift(); }
+function startClock(){
+  timing = true;
+  if (!counted) { counted = true; const k = `sk-sol-played-${mode}`; SK.store.set(k, SK.store.get(k, 0) + 1); }
+}
+function doMove(src, k, dst, quiet){
+  remember();
+  const cards = pile(src).splice(k);
+  (dst.p === 'f' ? S.found[dst.i] : S.tab[dst.i]).push(...cards);
+  let flipped = false;
+  if (src.p === 't' && S.tab[src.i].length) { const t = S.tab[src.i][S.tab[src.i].length - 1]; if (!S.up[t]) { S.up[t] = true; flipped = true; } }
+  moves++; startClock();
+  if (!quiet) { if (dst.p === 'f') sfx.tone(660 + S.found[dst.i].length * 30, .07, 'triangle', .1); else sfx.tone(340, .05, 'triangle', .09); }
+  if (flipped) sfx.tone(520, .04, 'square', .05, .05);
+  after();
+  return true;
+}
+function drawStock(){
+  if (busy || won || (!S.stock.length && !S.waste.length)) return;
+  remember();
+  if (S.stock.length) {
+    for (let n = 0; n < mode && S.stock.length; n++) { const id = S.stock.pop(); S.up[id] = true; S.waste.push(id); }
+    sfx.tone(420, .04, 'triangle', .08);
+  } else {
+    S.stock = S.waste.reverse(); S.waste = [];
+    S.stock.forEach(id => S.up[id] = false);
+    sfx.tone(300, .08, 'triangle', .08); sfx.tone(240, .08, 'triangle', .08, .06);
+  }
+  moves++; startClock(); after();
+}
+function autoMove(id){
+  let w = where(id);
+  if (!w || w.p === 's') return false;
+  if (w.p === 'w') { id = S.waste[S.waste.length - 1]; w = where(id); }
+  if (w.p === 't' && !S.up[id]) return false;
+  const arr = pile(w);
+  if (w.p === 'f' && w.k !== arr.length - 1) return false;
+  const single = w.k === arr.length - 1;
+  if (single && w.p !== 'f') for (let i = 0; i < 4; i++) if (canFound(id, i)) return doMove(w, w.k, { p:'f', i });
+  let empty = -1;
+  for (let j = 0; j < 7; j++) {
+    const i = w.p === 't' ? (w.i + 1 + j) % 7 : j;
+    if (w.p === 't' && i === w.i) continue;
+    if (!canTab(id, i)) continue;
+    if (S.tab[i].length) return doMove(w, w.k, { p:'t', i });
+    if (empty < 0) empty = i;
+  }
+  if (empty >= 0 && !(w.p === 't' && w.k === 0)) return doMove(w, w.k, { p:'t', i: empty });
+  return false;
+}
+function after(){
+  render(); save();
+  if (S.found.every(f => f.length === 13)) win();
+}
+function undo(){
+  if (busy || won || !hist.length) { if (!hist.length) SK.toast('No hay nada que deshacer'); return; }
+  const h = JSON.parse(hist.pop()); S = h.S; moves = h.moves;
+  sfx.tap(); render(); save();
+}
+
+/* ---------- PISTA ---------- */
+function findHint(){
+  const tops = [];
+  if (S.waste.length) tops.push(S.waste[S.waste.length - 1]);
+  S.tab.forEach(c => c.length && tops.push(c[c.length - 1]));
+  for (const id of tops) for (let i = 0; i < 4; i++) if (canFound(id, i)) return [id];
+  for (let s = 0; s < 7; s++) {
+    const col = S.tab[s], k = col.findIndex(id => S.up[id]);
+    if (k < 0) continue;
+    const id = col[k];
+    if (k === 0 && rank(id) === 13) continue;
+    for (let i = 0; i < 7; i++) if (i !== s && canTab(id, i) && (S.tab[i].length || k > 0)) return col.slice(k);
+  }
+  if (S.waste.length) { const id = S.waste[S.waste.length - 1]; for (let i = 0; i < 7; i++) if (canTab(id, i)) return [id]; }
+  if (S.stock.length || S.waste.length) return 'stock';
+  return null;
+}
+function hint(){
+  if (busy || won) return;
+  sfx.tap();
+  const h = findHint();
+  document.querySelectorAll('.hint').forEach(e => e.classList.remove('hint'));
+  if (!h) { SK.toast('No veo más jugadas 😕 Deshaz o reparte de nuevo'); return; }
+  const list = h === 'stock' ? [S.stock.length ? els[S.stock[S.stock.length - 1]] : slots.stock] : h.map(id => els[id]);
+  if (h === 'stock') SK.toast(S.stock.length ? 'Saca otra carta del mazo' : 'Voltea el mazo para volver a empezar');
+  list.forEach(e => { void e.offsetWidth; e.classList.add('hint'); setTimeout(() => e.classList.remove('hint'), 1700); });
+}
+
+/* ---------- TERMINAR AUTOMÁTICO ---------- */
+function autoFinish(){
+  if (busy || !canAuto()) return;
+  busy = true; $('btn-auto').classList.remove('show');
+  const step = () => {
+    if (S.found.every(f => f.length === 13)) { busy = false; return; }
+    let best = null;
+    S.tab.forEach((c, s) => {
+      if (!c.length) return;
+      const id = c[c.length - 1];
+      for (let i = 0; i < 4; i++) if (canFound(id, i) && (!best || rank(id) < rank(best.id))) best = { id, s, i };
+    });
+    if (!best) { busy = false; return; }
+    busy = false; doMove({ p:'t', i: best.s, k: S.tab[best.s].length - 1 }, S.tab[best.s].length - 1, { p:'f', i: best.i }, true);
+    sfx.tone(600 + rank(best.id) * 40, .05, 'triangle', .08);
+    if (!won) { busy = true; setTimeout(step, 85); }
+  };
+  step();
+}
+
+/* ---------- ARRASTRAR Y TOCAR ---------- */
+let drag = null;
+board.addEventListener('pointerdown', e => {
+  if (won && cascadeSkip) { cascadeSkip(); return; }
+  if (busy || won || drag) return;
+  sfx.init();
+  const el = e.target.closest('.cd'), slot = e.target.closest('.slot');
+  if (el) {
+    let id = +el.dataset.id, w = where(id);
+    if (w.p === 's') { drag = { stock:true }; return; }
+    let ids = [];
+    if (w.p === 't') { if (!S.up[id]) return; ids = S.tab[w.i].slice(w.k); }
+    else if (w.p === 'w') { id = S.waste[S.waste.length - 1]; ids = [id]; w = where(id); }
+    else if (w.p === 'f') { if (w.k !== S.found[w.i].length - 1) return; ids = [id]; }
+    drag = { id, ids, w, x: e.clientX, y: e.clientY, moved: false };
+    try { board.setPointerCapture(e.pointerId); } catch(err) {}
+  } else if (slot && slot.dataset.s === 'stock') drag = { stock:true };
+});
+board.addEventListener('pointermove', e => {
+  if (!drag || !drag.ids) return;
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  if (!drag.moved) {
+    if (Math.hypot(dx, dy) < 7) return;
+    drag.moved = true;
+    drag.ids.forEach((id, k) => { els[id].classList.add('drag'); els[id].style.zIndex = 1000 + k; });
+  }
+  drag.ids.forEach(id => els[id].style.transform = `translate(${els[id]._x + dx}px,${els[id]._y + dy}px)`);
+  drag.dx = dx; drag.dy = dy;
+});
+board.addEventListener('pointerup', () => {
+  if (!drag) return;
+  const d = drag; drag = null;
+  if (d.stock) { drawStock(); return; }
+  d.ids.forEach(id => els[id].classList.remove('drag'));
+  if (!d.moved) {
+    if (!autoMove(d.id)) { d.ids.forEach(id => { const e = els[id]; e.classList.remove('nudge'); void e.offsetWidth; e.classList.add('nudge'); }); sfx.tone(160, .08, 'sawtooth', .06); }
+    return;
+  }
+  const t = dropTarget(d);
+  if (t) doMove(d.w, d.w.k, t); else render();
+});
+board.addEventListener('pointercancel', () => { if (drag && drag.ids) { drag.ids.forEach(id => els[id].classList.remove('drag')); render(); } drag = null; });
+function dropTarget(d){
+  const x = els[d.id]._x + d.dx, y = els[d.id]._y + d.dy, { cw, ch } = L;
+  const overlap = (rx, ry, rw, rh) => Math.max(0, Math.min(x + cw, rx + rw) - Math.max(x, rx)) * Math.max(0, Math.min(y + ch, ry + rh) - Math.max(y, ry));
+  let best = null, bestA = 0;
+  if (d.ids.length === 1 && d.w.p !== 'f') for (let i = 0; i < 4; i++) {
+    const a = overlap(colX(3 + i), 0, cw, ch);
+    if (a > bestA && canFound(d.id, i)) { best = { p:'f', i }; bestA = a; }
+  }
+  for (let i = 0; i < 7; i++) {
+    if (d.w.p === 't' && d.w.i === i) continue;
+    const bottom = S.tab[i].length ? L.colY[i] + ch : L.tabY + ch;
+    const a = overlap(colX(i), L.tabY, cw, bottom - L.tabY);
+    if (a > bestA && canTab(d.id, i)) { best = { p:'t', i }; bestA = a; }
+  }
+  return best;
+}
+
+/* ---------- RELOJ Y GUARDADO ---------- */
+let lastT = performance.now();
+setInterval(() => {
+  const now = performance.now(), dt = (now - lastT) / 1000; lastT = now;
+  if (timing && !won && !document.hidden && $('game').classList.contains('active') && !document.querySelector('.modal-overlay.active')) {
+    elapsed += dt; $('time').textContent = SK.fmtTime(elapsed);
+  }
+}, 250);
+function save(){ if (!won && S) SK.store.set('sk-sol-save', { mode, S, moves, elapsed, counted }); }
+document.addEventListener('visibilitychange', () => { if (document.hidden) save(); });
+
+/* ---------- PARTIDA ---------- */
+function begin(state){
+  SK.closeModal();
+  SK.showScreen('game'); layout();
+  $('badge').textContent = mode === 1 ? 'ROBAR 1' : 'ROBAR 3';
+  hist = []; won = false; drag = null;
+  if (state) {
+    ({ S, moves, elapsed, counted } = state); timing = moves > 0;
+    $('time').textContent = SK.fmtTime(elapsed);
+    els.forEach(e => e.classList.add('drag')); render(); void board.offsetWidth; els.forEach(e => e.classList.remove('drag'));
+    return;
+  }
+  const deck = shuffle([...Array(52).keys()]);
+  S = { stock:[], waste:[], found:[[], [], [], []], tab:[[], [], [], [], [], [], []], up: Array(52).fill(false) };
+  const order = [];
+  for (let r = 0; r < 7; r++) for (let c = r; c < 7; c++) { const id = deck.pop(); S.tab[c].push(id); order.push(id); }
+  S.tab.forEach(c => S.up[c[c.length - 1]] = true);
+  S.stock = deck;
+  moves = 0; elapsed = 0; timing = false; counted = false;
+  $('time').textContent = '0:00';
+  // reparto animado: todas salen del mazo
+  els.forEach(e => { e.classList.add('drag'); e.classList.add('down'); e._x = colX(0); e._y = 0; e.style.transform = `translate(${colX(0)}px,0px)`; });
+  void board.offsetWidth;
+  els.forEach(e => e.classList.remove('drag'));
+  order.forEach((id, k) => els[id].style.transitionDelay = `${k * 28}ms`);
+  busy = true; render();
+  order.forEach((id, k) => setTimeout(() => sfx.tone(380 + (k % 7) * 30, .025, 'triangle', .05), k * 28));
+  setTimeout(() => { els.forEach(e => e.style.transitionDelay = ''); busy = false; }, order.length * 28 + 250);
+  save();
+}
+function newGame(){ sfx.init(); sfx.tap(); SK.store.set('sk-sol-save', null); begin(null); }
+
+/* ---------- VICTORIA ---------- */
+let cascadeSkip = null;
+function win(){
+  won = true; timing = false; busy = false;
+  SK.store.set('sk-sol-save', null);
+  $('btn-auto').classList.remove('show');
+  const kw = `sk-sol-wins-${mode}`, kt = `sk-sol-best-${mode}`, km = `sk-sol-bestmoves-${mode}`;
+  const wins = SK.store.get(kw, 0) + 1; SK.store.set(kw, wins);
+  const t = Math.round(elapsed), prevT = SK.store.get(kt, null), prevM = SK.store.get(km, null);
+  const newRecord = prevT === null || t < prevT;
+  if (newRecord) SK.store.set(kt, t);
+  if (prevM === null || moves < prevM) SK.store.set(km, moves);
+  sfx.win(); if (newRecord && prevT !== null) sfx.newRec();
+  const time = SK.fmtTime(t), modeTxt = mode === 1 ? 'Robar 1' : 'Robar 3';
+  const show = () => SK.result({
+    emoji:'🏆', title:'¡Lo resolviste!', newRecord: newRecord && prevT !== null,
+    text:`Solitario (${modeTxt}) en ${time} y ${moves} movimientos`,
+    stats:[[time, 'TIEMPO'], [moves, 'MOVIMIENTOS'], [wins, 'VICTORIAS']],
+    share:{ emoji:'🃏', title:'¡Solitario resuelto!', game:'Solitario', sub: modeTxt, big: time, stats:[[time, 'TIEMPO'], [moves, 'MOVIMIENTOS'], [wins, 'VICTORIAS']], text:`🃏 Resolví el Solitario (${modeTxt}) en ${time} y ${moves} movimientos\n¿Me ganas? SeaKingsGames`, file:'logro-solitario' },
+    buttons:[{ label:'Otra partida →', onClick: newGame }, { label:'Menú', kind:'ghost', onClick: toMenu }],
+  });
+  cascade(show);
+}
+// las cartas brincan fuera de las bases, como en el solitario de siempre
+function cascade(done){
+  const list = [];
+  for (let r = 12; r >= 0; r--) for (let i = 0; i < 4; i++) list.push(S.found[i][r]);
+  const fly = []; let launched = 0, raf = 0, ended = false, last = performance.now(), acc = 0;
+  const floor = L.H - L.ch;
+  const finish = () => { if (ended) return; ended = true; cancelAnimationFrame(raf); cascadeSkip = null; els.forEach(e => { e.classList.remove('drag'); e.style.opacity = 0; }); setTimeout(() => { els.forEach(e => e.style.opacity = ''); done(); }, 150); };
+  cascadeSkip = finish;
+  const tick = now => {
+    const dt = Math.min(40, now - last) / 16.7; last = now; acc += dt * 16.7;
+    while (acc > 45 && launched < list.length) {
+      acc -= 45;
+      const e = els[list[launched++]];
+      e.classList.add('drag'); e.style.zIndex = 2000 + launched;
+      fly.push({ e, x: e._x, y: e._y, vx: (3.2 + Math.random() * 4) * (Math.random() < .5 ? -1 : 1), vy: -Math.random() * 5 });
+    }
+    fly.forEach(f => {
+      if (f.gone) return;
+      f.vy += .55 * dt; f.x += f.vx * dt; f.y += f.vy * dt;
+      if (f.y > floor) { f.y = floor; f.vy = -Math.abs(f.vy) * .72; }
+      if (f.x < -L.cw - 10 || f.x > L.W + 10) { f.gone = true; f.e.style.opacity = 0; }
+      f.e.style.transform = `translate(${f.x}px,${f.y}px)`;
+    });
+    if (launched >= list.length && fly.every(f => f.gone)) return finish();
+    raf = requestAnimationFrame(tick);
+  };
+  raf = requestAnimationFrame(tick);
+  setTimeout(finish, 5200);
+}
+
+/* ---------- MENÚ ---------- */
+function buildMenu(){
+  document.querySelectorAll('#seg-mode button').forEach(b => {
+    b.classList.toggle('on', +b.dataset.m === mode);
+    b.onclick = () => { sfx.tap(); mode = +b.dataset.m; SK.store.set('sk-sol-mode', mode); buildMenu(); };
+  });
+  const w = SK.store.get(`sk-sol-wins-${mode}`, 0), p = SK.store.get(`sk-sol-played-${mode}`, 0), t = SK.store.get(`sk-sol-best-${mode}`, null);
+  $('rec').textContent = p ? `🏆 ${w} de ${p} ganadas (${Math.round(w / p * 100)}%)` + (t !== null ? ` · ⏱ Mejor: ${SK.fmtTime(t)}` : '') : '';
+  const sv = SK.store.get('sk-sol-save', null);
+  $('btn-continue').style.display = sv && sv.moves > 0 ? 'block' : 'none';
+  if (sv && sv.moves > 0) $('btn-continue').textContent = `▶ Continuar partida (${sv.mode === 1 ? 'Robar 1' : 'Robar 3'})`;
+}
+function toMenu(){ save(); SK.closeModal(); buildMenu(); SK.showScreen('menu'); }
+$('btn-new').onclick = newGame;
+$('btn-continue').onclick = () => { const sv = SK.store.get('sk-sol-save', null); if (!sv) return; sfx.init(); sfx.tap(); mode = sv.mode; SK.store.set('sk-sol-mode', mode); begin(sv); };
+$('btn-back').onclick = () => { sfx.tap(); if (busy) return; if (moves > 0 && !won) SK.toast('Tu partida quedó guardada'); toMenu(); };
+$('btn-redeal').onclick = () => {
+  sfx.tap(); if (busy) return;
+  if (moves === 0 || won) return newGame();
+  SK.result({ emoji:'🔄', title:'¿Repartir de nuevo?', text:'Esta partida contará como no ganada', buttons:[{ label:'Sí, repartir', onClick: newGame }, { label:'Seguir con esta', kind:'secondary' }] });
+};
+$('btn-undo').onclick = undo;
+$('btn-hint').onclick = hint;
+$('btn-auto').onclick = autoFinish;
+addEventListener('keydown', e => {
+  if (!$('game').classList.contains('active')) return;
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
+  else if (e.key === ' ') { e.preventDefault(); drawStock(); }
+  else if (e.key.toLowerCase() === 'h') hint();
+});
+addEventListener('resize', () => { if (S && $('game').classList.contains('active') && !won) { layout(); els.forEach(e => e.classList.add('drag')); render(); void board.offsetWidth; els.forEach(e => e.classList.remove('drag')); } });
+
+buildBoard();
+SK.soundButton($('btn-sound'));
+buildMenu();
+SK.bannerAd($('ad-bottom'));
+SK.initPWA('Solitario');
+</script>
+</body>
+</html>

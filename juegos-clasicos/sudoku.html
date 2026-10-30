@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1b2440">
+<title>Sudoku · SeaKingsGames</title>
+<meta name="description" content="Sudoku gratis en español: 4 dificultades, notas, pistas, deshacer y récords. Siempre con una sola solución. Funciona sin internet.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="comun.css">
+<style>
+  :root{
+    --bg:#1b2440; --bg-2:#0c1226; --panel:#2a3766; --panel-2:#36468a;
+    --accent:#8ab4ff; --accent-deep:#4f74c9; --accent-ink:#0b1a3d;
+    --cell:#f5f8ff; --cell-alt:#e8eefc; --given:#16224a; --user:#2f6fe4; --bad:#e5484d;
+  }
+  #game{flex:1}
+  #game > *{flex-shrink:0}
+  .board-wrap{display:flex;justify-content:center;padding:8px 10px}
+  .board{
+    display:grid;grid-template-columns:repeat(9,1fr);width:var(--bw);height:var(--bw);
+    background:var(--given);border:3px solid var(--given);border-radius:10px;overflow:hidden;gap:1px;
+    box-shadow:0 12px 30px rgba(0,0,0,.45);
+  }
+  .c{position:relative;background:var(--cell);display:flex;align-items:center;justify-content:center;
+    font-weight:600;font-size:calc(var(--bw) / 15);color:var(--user);cursor:pointer;line-height:1}
+  .c.br{margin-right:2px} .c.bb{margin-bottom:2px}
+  .c.given{color:var(--given);font-weight:700}
+  .c.peer{background:var(--cell-alt)}
+  .c.same{background:#c9d8ff}
+  .c.sel{background:#9fbcff}
+  .c.bad{color:var(--bad)}
+  .c.bad.sel{background:#ffc9cb}
+  .c.pop{animation:cellPop .25s ease-out}
+  .c.done{animation:cellDone .6s ease-out}
+  @keyframes cellPop{50%{transform:scale(1.18)}}
+  @keyframes cellDone{40%{background:#ffe48a}}
+  .notes{position:absolute;inset:2px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr)}
+  .notes span{display:flex;align-items:center;justify-content:center;font-size:calc(var(--bw) / 36);color:#5b6b93;font-weight:600}
+  .notes span.hl{color:var(--user);font-weight:700}
+
+  .pad{display:grid;grid-template-columns:repeat(9,1fr);gap:5px;width:var(--bw);margin:6px auto 0}
+  .num{height:58px;border-radius:12px;background:var(--panel);box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff}
+  .num small{font-size:10px;color:var(--text-dim);font-weight:600}
+  .num:active{transform:translateY(2px)}
+  .num.off{opacity:.3;pointer-events:none}
+  .tools{display:flex;justify-content:center;gap:8px;padding:10px 10px 14px;width:var(--bw);margin:0 auto}
+  .tool{flex:1;padding:8px 4px;border-radius:12px;background:rgba(255,255,255,.07);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:20px}
+  .tool small{font-size:11px;font-weight:600;color:var(--text-dim)}
+  .tool.on{background:var(--accent);color:var(--accent-ink)}
+  .tool.on small{color:var(--accent-ink)}
+  .tool:disabled{opacity:.35}
+  .gen{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);z-index:90;font-weight:700;font-size:18px}
+  .gen.on{display:flex}
+  .chk{display:flex;align-items:center;gap:8px;color:var(--text-dim);font-size:14px;font-weight:500}
+  .chk input{width:18px;height:18px;accent-color:var(--accent)}
+</style>
+</head>
+<body>
+
+<section id="menu" class="screen active">
+  <div class="logo-ico">🔢</div>
+  <div class="logo">SUDOKU<small>SeaKingsGames</small></div>
+  <button class="diff-btn" id="btn-continue" style="width:min(380px,94vw);display:none;background:var(--accent);color:var(--accent-ink)"></button>
+  <div class="section-title">NUEVO SUDOKU</div>
+  <div class="diff-list" id="diff-list"></div>
+  <label class="chk"><input type="checkbox" id="chk-limit"> Perder con 3 errores</label>
+  <p class="how">Llena cada fila, columna y cuadro de 3×3 con los números del 1 al 9 sin repetir. Usa ✏️ Notas para apuntar posibles números.</p>
+  <a class="back-link" href="index.html">← Volver a la arcada</a>
+  <div class="ad-banner-bottom" id="ad-bottom"></div>
+</section>
+
+<section id="game" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" id="btn-back">‹</button>
+    <div class="level-title"><div class="badge" id="badge">FÁCIL</div><h1>Sudoku</h1></div>
+    <button class="icon-btn small" id="btn-sound">🔊</button>
+    <button class="icon-btn" id="btn-restart">↻</button>
+  </div>
+  <div class="stats">
+    <span>⏱️ <span class="val" id="st-time">0:00</span></span>
+    <span>❌ <span class="val" id="st-err">0</span></span>
+    <span>💡 <span class="val" id="st-hint">3</span></span>
+  </div>
+  <div class="board-wrap"><div class="board" id="board"></div></div>
+  <div class="tools">
+    <button class="tool" id="t-undo">↶<small>Deshacer</small></button>
+    <button class="tool" id="t-erase">⌫<small>Borrar</small></button>
+    <button class="tool" id="t-notes">✏️<small>Notas</small></button>
+    <button class="tool" id="t-hint">💡<small>Pista</small></button>
+  </div>
+  <div class="pad" id="pad"></div>
+  <div style="height:16px"></div>
+</section>
+<div class="gen" id="gen">🧠 Armando tu sudoku…</div>
+
+<script src="comun.js"></script>
+<script>
+/* =====================================================
+   SUDOKU · SeaKingsGames
+   Siempre se genera con una sola solución.
+   ===================================================== */
+const { $, sfx } = SK;
+const DIFFS = {
+  facil:   { label:'FÁCIL',   clues:38, cls:'d0' },
+  medio:   { label:'MEDIO',   clues:32, cls:'d1' },
+  dificil: { label:'DIFÍCIL', clues:27, cls:'d2' },
+  experto: { label:'EXPERTO', clues:23, cls:'d3' },
+};
+const ROW = [], COL = [], BOX = [], PEERS = [];
+for (let i = 0; i < 81; i++) { ROW[i] = (i / 9) | 0; COL[i] = i % 9; BOX[i] = ((ROW[i] / 3) | 0) * 3 + ((COL[i] / 3) | 0); }
+for (let i = 0; i < 81; i++) { PEERS[i] = []; for (let j = 0; j < 81; j++) if (j !== i && (ROW[j] === ROW[i] || COL[j] === COL[i] || BOX[j] === BOX[i])) PEERS[i].push(j); }
+const popcnt = m => { let n = 0; while (m) { m &= m - 1; n++; } return n; };
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+/* ---------- GENERADOR ---------- */
+function solve(grid, limit, randomize){
+  const g = grid.slice(), r = Array(9).fill(0), c = Array(9).fill(0), b = Array(9).fill(0);
+  for (let i = 0; i < 81; i++) {
+    const v = g[i]; if (!v) continue;
+    const bit = 1 << v;
+    if ((r[ROW[i]] | c[COL[i]] | b[BOX[i]]) & bit) return { count:0, sol:null };
+    r[ROW[i]] |= bit; c[COL[i]] |= bit; b[BOX[i]] |= bit;
+  }
+  let count = 0, sol = null;
+  (function rec(){
+    let best = -1, bestMask = 0, bestCnt = 10;
+    for (let i = 0; i < 81; i++) {
+      if (g[i]) continue;
+      const m = ~(r[ROW[i]] | c[COL[i]] | b[BOX[i]]) & 0x3FE, n = popcnt(m);
+      if (n < bestCnt) { best = i; bestMask = m; bestCnt = n; if (n <= 1) break; }
+    }
+    if (best < 0) { count++; if (!sol) sol = g.slice(); return; }
+    if (!bestCnt) return;
+    const digits = []; for (let v = 1; v <= 9; v++) if (bestMask & (1 << v)) digits.push(v);
+    if (randomize) shuffle(digits);
+    const R = ROW[best], C = COL[best], B = BOX[best];
+    for (const v of digits) {
+      const bit = 1 << v;
+      g[best] = v; r[R] |= bit; c[C] |= bit; b[B] |= bit;
+      rec();
+      r[R] &= ~bit; c[C] &= ~bit; b[B] &= ~bit; g[best] = 0;
+      if (count >= limit) return;
+    }
+  })();
+  return { count, sol };
+}
+function generate(target){
+  const solution = solve(Array(81).fill(0), 1, true).sol;
+  const puzzle = solution.slice();
+  let clues = 81;
+  // primero quita en pares simétricos (se ve más bonito), luego sueltos
+  for (const i of shuffle([...Array(41).keys()])) {
+    if (clues <= target) break;
+    const j = 80 - i, a = puzzle[i], b2 = puzzle[j];
+    puzzle[i] = 0; puzzle[j] = 0;
+    if (solve(puzzle, 2).count !== 1) { puzzle[i] = a; puzzle[j] = b2; }
+    else clues -= i === j ? 1 : 2;
+  }
+  if (clues > target) for (const i of shuffle([...Array(81).keys()])) {
+    if (clues <= target) break;
+    if (!puzzle[i]) continue;
+    const a = puzzle[i]; puzzle[i] = 0;
+    if (solve(puzzle, 2).count !== 1) puzzle[i] = a; else clues--;
+  }
+  return { puzzle, solution };
+}
+
+/* ---------- ESTADO ---------- */
+const st = { diff:'facil', puzzle:[], solution:[], values:[], notes:[], errors:0, hints:3, elapsed:0, sel:-1, notesMode:false, history:[], over:false, t0:0, timer:null };
+let limitErrors = SK.store.get('sk-sudoku-limit', true);
+
+function save(){
+  if (st.over) { SK.store.set('sk-sudoku-save', null); return; }
+  SK.store.set('sk-sudoku-save', { diff: st.diff, puzzle: st.puzzle, solution: st.solution, values: st.values, notes: st.notes, errors: st.errors, hints: st.hints, elapsed: st.elapsed });
+}
+function startTimer(){
+  clearInterval(st.timer); st.t0 = Date.now() - st.elapsed * 1000;
+  st.timer = setInterval(() => {
+    if (document.hidden || !$('game').classList.contains('active') || document.querySelector('#sk-modal.active')) { st.t0 = Date.now() - st.elapsed * 1000; return; }
+    st.elapsed = (Date.now() - st.t0) / 1000; $('st-time').textContent = SK.fmtTime(st.elapsed);
+  }, 500);
+}
+function begin(data){
+  Object.assign(st, data, { sel:-1, notesMode:false, history:[], over:false });
+  $('badge').textContent = DIFFS[st.diff].label;
+  $('st-time').textContent = SK.fmtTime(st.elapsed); $('st-err').textContent = limitErrors ? `${st.errors}/3` : st.errors; $('st-hint').textContent = st.hints;
+  setNotes(false);
+  SK.showScreen('game'); layout(); buildBoard(); render(); startTimer(); save();
+}
+function newGame(diff){
+  $('gen').classList.add('on');
+  setTimeout(() => {
+    const { puzzle, solution } = generate(DIFFS[diff].clues);
+    $('gen').classList.remove('on');
+    begin({ diff, puzzle, solution, values: puzzle.slice(), notes: Array(81).fill(0), errors:0, hints:3, elapsed:0 });
+  }, 30);
+}
+
+/* ---------- TABLERO ---------- */
+let cells = [];
+function layout(){
+  const bw = Math.max(260, Math.min(innerWidth - 20, 470, innerHeight - 300));
+  document.documentElement.style.setProperty('--bw', bw + 'px');
+}
+addEventListener('resize', () => { if ($('game').classList.contains('active')) layout(); });
+function buildBoard(){
+  const b = $('board'); b.innerHTML = ''; cells = [];
+  for (let i = 0; i < 81; i++) {
+    const d = document.createElement('div'); d.className = 'c';
+    if (COL[i] % 3 === 2 && COL[i] < 8) d.classList.add('br');
+    if (ROW[i] % 3 === 2 && ROW[i] < 8) d.classList.add('bb');
+    d.addEventListener('pointerdown', () => { sfx.init(); select(i); });
+    b.appendChild(d); cells.push(d);
+  }
+  const pad = $('pad'); pad.innerHTML = '';
+  for (let v = 1; v <= 9; v++) {
+    const n = document.createElement('button'); n.className = 'num'; n.dataset.v = v;
+    n.innerHTML = `${v}<small></small>`;
+    n.onclick = () => input(v);
+    pad.appendChild(n);
+  }
+}
+function render(){
+  const selVal = st.sel >= 0 ? st.values[st.sel] : 0;
+  for (let i = 0; i < 81; i++) {
+    const d = cells[i], v = st.values[i], given = !!st.puzzle[i];
+    d.classList.toggle('given', given);
+    d.classList.toggle('bad', !!v && v !== st.solution[i]);
+    d.classList.toggle('sel', i === st.sel);
+    d.classList.toggle('peer', st.sel >= 0 && i !== st.sel && PEERS[st.sel].includes(i));
+    d.classList.toggle('same', !!selVal && i !== st.sel && v === selVal);
+    if (v) { d.textContent = v; }
+    else if (st.notes[i]) {
+      let h = '<div class="notes">';
+      for (let k = 1; k <= 9; k++) h += `<span class="${selVal === k ? 'hl' : ''}">${st.notes[i] & (1 << k) ? k : ''}</span>`;
+      d.innerHTML = h + '</div>';
+    } else d.textContent = '';
+  }
+  // cuántos faltan de cada número
+  const done = Array(10).fill(0);
+  for (let i = 0; i < 81; i++) if (st.values[i] && st.values[i] === st.solution[i]) done[st.values[i]]++;
+  $('pad').querySelectorAll('.num').forEach(n => { const v = +n.dataset.v, left = 9 - done[v]; n.classList.toggle('off', left === 0); n.querySelector('small').textContent = left; });
+  $('t-undo').disabled = !st.history.length;
+  $('t-hint').disabled = !st.hints;
+}
+function select(i){ st.sel = i; render(); }
+function setNotes(on){ st.notesMode = on; $('t-notes').classList.toggle('on', on); }
+
+/* ---------- JUGADAS ---------- */
+function snapshot(idx){ return idx.map(i => ({ i, v: st.values[i], n: st.notes[i] })); }
+function input(v){
+  if (st.over || st.sel < 0 || st.puzzle[st.sel]) { if (st.sel < 0) SK.toast('Primero toca una casilla'); return; }
+  sfx.init();
+  const i = st.sel;
+  if (st.values[i] === st.solution[i]) return; // ya está bien
+  if (st.notesMode) {
+    if (st.values[i]) return;
+    st.history.push(snapshot([i]));
+    st.notes[i] ^= 1 << v; sfx.tap();
+    render(); save(); return;
+  }
+  if (st.values[i] === v) return;
+  st.history.push(snapshot([i, ...PEERS[i]]));
+  st.values[i] = v; st.notes[i] = 0;
+  cells[i].classList.remove('pop'); void cells[i].offsetWidth; cells[i].classList.add('pop');
+  if (v !== st.solution[i]) {
+    st.errors++; sfx.bad(); if (navigator.vibrate) navigator.vibrate(60);
+    $('st-err').textContent = limitErrors ? `${st.errors}/3` : st.errors;
+    render(); save();
+    if (limitErrors && st.errors >= 3) lose();
+    return;
+  }
+  // quita esa nota de las casillas relacionadas
+  PEERS[i].forEach(j => st.notes[j] &= ~(1 << v));
+  sfx.good();
+  render(); celebrate(i); save(); checkWin();
+}
+function erase(){
+  const i = st.sel;
+  if (st.over || i < 0 || st.puzzle[i] || (!st.values[i] && !st.notes[i])) return;
+  if (st.values[i] && st.values[i] === st.solution[i]) return;
+  st.history.push(snapshot([i]));
+  st.values[i] = 0; st.notes[i] = 0; sfx.tap(); render(); save();
+}
+function undo(){
+  if (st.over || !st.history.length) return;
+  st.history.pop().forEach(x => { st.values[x.i] = x.v; st.notes[x.i] = x.n; });
+  sfx.tap(); render(); save();
+}
+function hint(){
+  if (st.over || !st.hints) return;
+  let i = st.sel;
+  if (i < 0 || st.values[i] === st.solution[i]) {
+    const empty = []; for (let k = 0; k < 81; k++) if (st.values[k] !== st.solution[k]) empty.push(k);
+    if (!empty.length) return;
+    i = empty[(Math.random() * empty.length) | 0];
+  }
+  st.hints--; $('st-hint').textContent = st.hints;
+  st.history.push(snapshot([i, ...PEERS[i]]));
+  st.values[i] = st.solution[i]; st.notes[i] = 0; st.sel = i;
+  PEERS[i].forEach(j => st.notes[j] &= ~(1 << st.solution[i]));
+  sfx.good(); render(); celebrate(i); save(); checkWin();
+}
+// brillo cuando completas una fila, columna o cuadro
+function celebrate(i){
+  const groups = [[...Array(9).keys()].map(k => ROW[i] * 9 + k), [...Array(9).keys()].map(k => k * 9 + COL[i]), [...Array(81).keys()].filter(k => BOX[k] === BOX[i])];
+  let any = false;
+  groups.forEach(g => {
+    if (g.every(k => st.values[k] === st.solution[k])) {
+      any = true;
+      g.forEach((k, n) => setTimeout(() => { cells[k].classList.remove('done'); void cells[k].offsetWidth; cells[k].classList.add('done'); }, n * 35));
+    }
+  });
+  if (any) sfx.tone(880, .12, 'triangle', .1, .05);
+}
+function checkWin(){
+  if (!st.values.every((v, i) => v === st.solution[i])) return;
+  st.over = true; clearInterval(st.timer); save();
+  const key = `sk-sudoku-rec-${st.diff}`, rec = SK.store.get(key), isRec = !rec || st.elapsed < rec;
+  if (isRec) { SK.store.set(key, st.elapsed); sfx.newRec(); }
+  SK.store.set(`sk-sudoku-wins-${st.diff}`, SK.store.get(`sk-sudoku-wins-${st.diff}`, 0) + 1);
+  sfx.win();
+  const d = DIFFS[st.diff];
+  setTimeout(() => SK.result({
+    emoji:'🏆', title:'¡Sudoku resuelto!', newRecord: isRec,
+    stats:[[SK.fmtTime(st.elapsed), 'TIEMPO'], [st.errors, 'ERRORES'], [3 - st.hints, 'PISTAS']],
+    share:{ emoji:'🔢', title:'¡SUDOKU RESUELTO!', game:'Sudoku', sub:`Nivel ${d.label}`, big: SK.fmtTime(st.elapsed), stats:[[st.errors, 'ERRORES'], [3 - st.hints, 'PISTAS']], text:`🔢 Resolví un Sudoku ${d.label} en ${SK.fmtTime(st.elapsed)}\nJuega: SeaKingsGames`, file:'logro-sudoku' },
+    buttons:[{ label:'Otro sudoku →', onClick: () => newGame(st.diff) }, { label:'Cambiar dificultad', kind:'ghost', onClick: toMenu }],
+  }), 800);
+}
+function lose(){
+  st.over = true; clearInterval(st.timer);
+  const keep = { diff: st.diff, puzzle: st.puzzle, solution: st.solution };
+  SK.store.set('sk-sudoku-save', null);
+  sfx.lose();
+  setTimeout(() => SK.result({
+    emoji:'😵', lose:true, title:'Tres errores', text:'Se acabó esta partida. ¿Lo intentas de nuevo?',
+    buttons:[
+      { label:'Reintentar este mismo', onClick: () => begin({ ...keep, values: keep.puzzle.slice(), notes: Array(81).fill(0), errors:0, hints:3, elapsed:0 }) },
+      { label:'Sudoku nuevo', kind:'secondary', onClick: () => newGame(st.diff) },
+      { label:'Cambiar dificultad', kind:'ghost', onClick: toMenu },
+    ],
+  }), 500);
+}
+
+/* ---------- CONTROLES ---------- */
+$('t-undo').onclick = undo;
+$('t-erase').onclick = erase;
+$('t-notes').onclick = () => { sfx.tap(); setNotes(!st.notesMode); };
+$('t-hint').onclick = hint;
+document.addEventListener('keydown', e => {
+  if (!$('game').classList.contains('active') || document.querySelector('#sk-modal.active')) return;
+  if (e.key >= '1' && e.key <= '9') { input(+e.key); return; }
+  if (e.key === 'Backspace' || e.key === 'Delete' || e.key === '0') { erase(); return; }
+  if (e.key === 'n' || e.key === 'N') { setNotes(!st.notesMode); return; }
+  if ((e.key === 'z' || e.key === 'Z') && (e.ctrlKey || e.metaKey)) { undo(); return; }
+  const mv = { ArrowUp:-9, ArrowDown:9, ArrowLeft:-1, ArrowRight:1 }[e.key];
+  if (mv) { e.preventDefault(); const i = st.sel < 0 ? 40 : st.sel, n = i + mv; if (n >= 0 && n < 81 && !(mv === -1 && COL[i] === 0) && !(mv === 1 && COL[i] === 8)) select(n); }
+});
+
+/* ---------- MENÚ ---------- */
+function buildMenu(){
+  const list = $('diff-list'); list.innerHTML = '';
+  Object.entries(DIFFS).forEach(([k, d]) => {
+    const rec = SK.store.get(`sk-sudoku-rec-${k}`), wins = SK.store.get(`sk-sudoku-wins-${k}`, 0);
+    const parts = []; if (rec) parts.push(`🏆 ${SK.fmtTime(rec)}`); if (wins) parts.push(`✅ ${wins}`);
+    const b = document.createElement('button'); b.className = 'diff-btn';
+    b.innerHTML = `<div><div>${d.label}</div>${parts.length ? `<div class="record-line">${parts.join(' · ')}</div>` : ''}</div><span class="tag ${d.cls}">${d.clues === 23 ? '≈24' : d.clues} pistas</span>`;
+    b.onclick = () => { sfx.init(); sfx.tap(); newGame(k); };
+    list.appendChild(b);
+  });
+  const saved = SK.store.get('sk-sudoku-save');
+  const c = $('btn-continue');
+  if (saved && saved.puzzle) {
+    const filled = saved.values.filter((v, i) => v && v === saved.solution[i]).length;
+    c.style.display = 'flex';
+    c.innerHTML = `<div><div>▶ Continuar partida</div><div class="record-line" style="color:inherit;opacity:.75">${DIFFS[saved.diff].label} · ${SK.fmtTime(saved.elapsed)} · ${Math.round(100 * filled / 81)}% lleno</div></div><span class="tag" style="color:inherit">${saved.errors} ❌</span>`;
+    c.onclick = () => { sfx.init(); sfx.tap(); begin(saved); };
+  } else c.style.display = 'none';
+  $('chk-limit').checked = limitErrors;
+}
+$('chk-limit').onchange = e => { limitErrors = e.target.checked; SK.store.set('sk-sudoku-limit', limitErrors); };
+function toMenu(){ clearInterval(st.timer); SK.closeModal(); buildMenu(); SK.showScreen('menu'); }
+$('btn-back').onclick = () => { sfx.tap(); toMenu(); };
+$('btn-restart').onclick = () => {
+  sfx.tap();
+  SK.result({ emoji:'🔄', title:'¿Qué quieres hacer?', text:'Puedes empezar este mismo desde cero o pedir uno nuevo', buttons:[
+    { label:'Sudoku nuevo', onClick: () => newGame(st.diff) },
+    { label:'Borrar y empezar este', kind:'secondary', onClick: () => begin({ diff: st.diff, puzzle: st.puzzle, solution: st.solution, values: st.puzzle.slice(), notes: Array(81).fill(0), errors:0, hints:3, elapsed:0 }) },
+    { label:'Cancelar', kind:'ghost' },
+  ] });
+};
+SK.soundButton($('btn-sound'));
+buildMenu();
+SK.bannerAd($('ad-bottom'));
+SK.initPWA('Sudoku');
+</script>
+</body>
+</html>

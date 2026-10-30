@@ -57,6 +57,15 @@ Este repositorio genera **www.seakingsstudios.com**. Las páginas no se escriben
 2. Copia `contenido/arcada/snake.md` como `mi-juego.md` y pon `archivo: mi-juego`.
 3. Agrega una captura en `publico/img/arcada/`.
 
+## La arcada como app
+
+La arcada se puede instalar en el celular. El generador arma solo:
+
+- `/arcada/app.webmanifest`, a partir del `manifest.json` de `juegos-clasicos/` (nombre, colores, íconos y accesos directos).
+- `/arcada-sw.js`, el service worker que guarda los juegos para jugar sin internet.
+
+El botón «Instalar la arcada en tu celular» aparece en la página de la arcada y en la de cada juego, solo si la abren desde un navegador. La app abre en el menú de juegos (`/arcada/jugar`).
+
 ## Anuncios de AdSense
 
 - El código de verificación de AdSense ya va en todas las páginas, con tu ID `ca-pub-7210216260904848`.

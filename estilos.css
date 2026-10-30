@@ -380,3 +380,9 @@ a.carta:nth-child(even):hover { transform: rotate(1.2deg) translateY(-4px); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* ---------- Instalar la arcada ---------- */
+.instalar-app { display: grid; gap: 10px; justify-items: start; }
+.instalar-app[hidden] { display: none; }
+.instalar-ayuda { max-width: 34rem; padding: 12px 14px; border-radius: 10px; background: var(--agua-2); border: 1px solid var(--linea); font-size: .95rem; line-height: 1.5; }
+.btn:disabled { opacity: .75; cursor: default; transform: none; }

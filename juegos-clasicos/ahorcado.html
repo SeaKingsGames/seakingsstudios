@@ -5,596 +5,524 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#2d3e50">
 <title>Ahorcado · SeaKingsGames</title>
+<meta name="description" content="Ahorcado gratis en español: palabra del día, reta a tus amigos con un link, contrarreloj y 34 temas con más de 2,000 palabras con pista. Funciona sin internet.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ahorcado · SeaKingsGames">
+<meta property="og:description" content="Palabra del día, reta a tus amigos y más de 2,000 palabras con pista. ¿La sacas?">
+<meta property="og:image" content="https://seakingsgames.github.io/SeaKingsClassicGames/og-ahorcado.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="comun.css">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
-  :root{
-    --bg:#2d3e50; --bg-2:#1c2a3a;
-    --panel:#3d4e60; --panel-2:#4d5e70;
-    --gold:#f4cf3a; --gold-deep:#b89800;
-    --green:#5fc99a; --red:#e85a6b; --blue:#5fa8e8;
-    --text:#fff; --text-dim:#9fb0c4;
-    --line:rgba(159,176,196,.2);
-    --shadow:0 4px 0 rgba(0,0,0,.25), 0 8px 20px rgba(0,0,0,.3);
-  }
-  html,body{height:100%}
-  body{
-    font-family:'Fredoka',system-ui,sans-serif;
-    background:radial-gradient(ellipse at top,#3d4e60 0%,var(--bg) 40%,var(--bg-2) 100%);
-    background-attachment:fixed;
-    color:var(--text); display:flex;flex-direction:column;min-height:100vh;
-    overscroll-behavior:none;touch-action:manipulation;
-  }
-  button{font-family:inherit;border:none;cursor:pointer;color:inherit;background:none}
-
-  .screen{display:none;flex-direction:column;min-height:100vh;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
-  .screen.active{display:flex}
-
   /* ---------- MENÚ ---------- */
-  #menu{align-items:center;justify-content:flex-start;gap:14px;padding:28px 24px 100px;flex:1;overflow-y:auto}
-  .logo{
-    font-family:'Bagel Fat One',sans-serif;
-    font-size:clamp(38px,11vw,64px);line-height:.95;text-align:center;
-    color:var(--gold);
-    text-shadow:0 4px 0 #8a6f00, 0 8px 24px rgba(244,207,58,.35);
-    letter-spacing:.5px;
+  .daily-card{
+    width:min(420px,94vw);display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:20px;text-align:left;
+    background:linear-gradient(135deg,#f4cf3a 0%,#e0a020 100%);color:#3a2400;
+    box-shadow:0 6px 0 #b89800,0 12px 24px rgba(0,0,0,.3);transition:transform .1s;
   }
-  .logo small{display:block;font-family:'Fredoka',sans-serif;font-weight:600;font-size:.28em;color:var(--text-dim);letter-spacing:3px;margin-top:8px;text-shadow:none}
-  .rope-deco{font-size:48px;margin-bottom:-4px;display:inline-block}
+  .daily-card:active{transform:translateY(3px)}
+  .daily-card.done{background:linear-gradient(135deg,#6fd8a9 0%,#2f9e74 100%);color:#062b1b;box-shadow:0 6px 0 #22704f,0 12px 24px rgba(0,0,0,.3)}
+  .dc-tag{font-size:11px;font-weight:700;letter-spacing:2px;opacity:.75}
+  .dc-title{font-family:'Bagel Fat One','Fredoka',system-ui,sans-serif;font-size:22px;line-height:1.15;margin:2px 0}
+  .dc-sub{font-size:13px;font-weight:600;opacity:.85;line-height:1.3}
+  .dc-go{margin-left:auto;flex-shrink:0;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700}
 
-  .section-title{font-size:13px;letter-spacing:3px;color:var(--text-dim);font-weight:600;margin-top:4px}
-
-  /* Categorías (grid 3 cols en móvil) */
   .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(420px,94vw)}
   @media(min-width:480px){.cat-grid{grid-template-columns:repeat(4,1fr)}}
   .cat-btn{
-    padding:11px 8px;border-radius:12px;
-    background:var(--panel);color:#fff;
-    box-shadow:var(--shadow);
-    display:flex;flex-direction:column;align-items:center;gap:3px;
-    font-size:12px;font-weight:600;transition:transform .1s;
-    border:2px solid transparent;
+    position:relative;padding:10px 6px 8px;border-radius:12px;background:var(--panel);color:#fff;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;font-weight:600;line-height:1.15;
+    border:2px solid transparent;transition:transform .1s;text-align:center;
   }
   .cat-btn:active{transform:translateY(2px)}
-  .cat-btn.selected{border-color:var(--gold);background:var(--panel-2)}
+  .cat-btn.selected{border-color:var(--accent);background:var(--panel-2)}
   .cat-btn .ico{font-size:22px;line-height:1}
+  .cat-btn .prog{font-size:10px;color:var(--text-dim);font-weight:500;font-variant-numeric:tabular-nums}
+  .cat-btn .tmp{position:absolute;top:-7px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:1px;font-weight:700;background:#ff9f43;color:#3a1a00;padding:2px 6px;border-radius:6px;white-space:nowrap}
+  .cat-btn.season{border-color:#ff9f43}
+  .cat-more{font-size:13px;font-weight:600;color:var(--accent);padding:4px 10px}
 
-  /* Dificultades */
-  .diff-list{display:flex;flex-direction:column;gap:10px;width:min(380px,94vw);margin-top:4px}
-  .diff-btn{
-    padding:14px 20px;border-radius:16px;background:var(--panel);
-    box-shadow:var(--shadow);
-    display:flex;justify-content:space-between;align-items:center;
-    font-size:17px;font-weight:600;transition:transform .1s;
+  .mode-box{display:flex;flex-direction:column;align-items:center;gap:8px;width:min(420px,94vw)}
+  .big-start{
+    width:min(380px,94vw);padding:16px;border-radius:18px;font-size:20px;font-weight:700;
+    background:linear-gradient(180deg,var(--accent) 0%,#e0a020 100%);color:var(--accent-ink);box-shadow:0 5px 0 var(--accent-deep);
   }
-  .diff-btn:active{transform:translateY(2px)}
-  .diff-btn .tag{font-size:12px;font-weight:600;padding:4px 10px;border-radius:8px;background:rgba(255,255,255,.12);color:var(--text-dim);letter-spacing:.5px}
-  .diff-btn[data-d="facil"] .tag{color:#9be37d;background:rgba(155,227,125,.15)}
-  .diff-btn[data-d="medio"] .tag{color:#7ec8ff;background:rgba(126,200,255,.15)}
-  .diff-btn[data-d="dificil"] .tag{color:#ffa84a;background:rgba(255,168,74,.15)}
-  .diff-btn[data-d="extraDificil"] .tag{color:#ff5e7a;background:rgba(255,94,122,.15)}
-
-  .record-line{font-size:12px;color:var(--text-dim);font-weight:500;margin-top:3px;font-variant-numeric:tabular-nums}
-
-  /* Banner ad menú */
-  .ad-banner-bottom{
-    position:fixed;left:0;right:0;bottom:env(safe-area-inset-bottom);
-    display:flex;justify-content:center;align-items:center;padding:8px 0;
-    background:rgba(28,42,58,.85);backdrop-filter:blur(8px);
-    z-index:20;min-height:50px;border-top:1px solid var(--line);
-  }
-  .ad-banner-bottom iframe{max-width:100%}
+  .big-start:active{transform:translateY(3px)}
+  .big-start small{display:block;font-size:13px;font-weight:600;opacity:.75}
+  .menu-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:min(420px,94vw)}
+  .menu-row .tool-btn{flex:1;justify-content:center;min-width:150px}
 
   /* ---------- JUEGO ---------- */
   #game{flex:1}
-  #game .topbar{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 4px;flex-shrink:0;gap:8px}
-  .icon-btn{
-    width:46px;height:46px;border-radius:50%;background:#fff;color:var(--bg-2);
-    display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);
-    font-size:22px;font-weight:700;transition:transform .1s;flex-shrink:0;
-  }
-  .icon-btn:active{transform:translateY(2px)}
-  .icon-btn.small{width:38px;height:38px;font-size:16px}
-  .level-title{text-align:center;flex:1;min-width:0}
-  .level-title .badge{
-    display:inline-block;font-size:10px;font-weight:600;letter-spacing:2px;
-    padding:3px 10px;border-radius:10px;background:rgba(255,255,255,.12);color:var(--text-dim);
-  }
-  .level-title h1{font-size:18px;font-weight:700;color:#fff}
-
-  .stats{display:flex;justify-content:center;gap:22px;padding:6px 16px 2px;font-size:13px;font-weight:600;color:var(--text-dim);font-variant-numeric:tabular-nums}
-  .stats .val{color:#fff;font-weight:700;font-size:17px}
-  .stats .val.danger{color:var(--red)}
-
-  /* Pista */
+  #game > *{flex-shrink:0}
+  #st1.danger{color:var(--red)}
   .hint-bar{text-align:center;padding:4px 16px;font-size:13px;color:var(--text-dim);min-height:22px;display:flex;flex-direction:column;align-items:center;gap:6px}
   .hint-text{font-size:15px;color:#fff;font-weight:600;background:rgba(244,207,58,.12);border:1px solid rgba(244,207,58,.35);padding:6px 12px;border-radius:12px;max-width:440px;line-height:1.3}
-  .hint-btn{font-size:13px;font-weight:600;color:var(--gold);padding:6px 12px;border-radius:12px;border:1px dashed rgba(244,207,58,.5)}
+  .hint-btn{font-size:13px;font-weight:600;color:var(--accent);padding:6px 12px;border-radius:12px;border:1px dashed rgba(244,207,58,.5)}
   .hint-btn:disabled{opacity:.4}
-  .modal-hint{font-size:14px!important;color:#fff!important;opacity:.85;margin:-6px 0 10px!important}
-
-  /* ---------- CANVAS ---------- */
-  .gallows-wrap{display:flex;justify-content:center;align-items:center;padding:10px;flex-shrink:0}
+  .gallows-wrap{position:relative;display:flex;justify-content:center;align-items:center;padding:6px;flex-shrink:0}
   canvas#gallows{display:block;max-width:100%}
+  .float-time{position:absolute;left:50%;top:40%;transform:translateX(-50%);font-family:'Bagel Fat One','Fredoka',system-ui,sans-serif;font-size:34px;pointer-events:none;opacity:0}
+  .float-time.good{color:var(--green)} .float-time.bad{color:var(--red)}
+  .float-time.go{animation:floatT .9s ease-out}
+  @keyframes floatT{0%{opacity:0;transform:translate(-50%,10px)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-40px)}}
 
-  /* ---------- PALABRA ---------- */
-  .word{
-    display:flex;justify-content:center;column-gap:22px;row-gap:10px;flex-wrap:wrap;
-    padding:14px 16px;font-family:'Bagel Fat One',sans-serif;
-    font-variant-numeric:tabular-nums;
-  }
-  .letter-slot{
-    min-width:var(--slot,28px);height:calc(var(--slot,28px) * 1.45);
-    border-bottom:3px solid var(--gold);
-    display:flex;align-items:center;justify-content:center;
-    font-size:var(--slot,28px);color:#fff;
-    transition:transform .3s, color .3s;
-  }
-  .letter-slot.revealed{animation:revealLetter .35s cubic-bezier(.34,1.56,.64,1)}
+  .word{display:flex;justify-content:center;column-gap:22px;row-gap:10px;flex-wrap:wrap;padding:12px 16px;font-family:'Bagel Fat One','Fredoka',system-ui,sans-serif}
   .word-group{display:flex;gap:var(--gap,6px)}
+  .letter-slot{
+    min-width:var(--slot,28px);height:calc(var(--slot,28px) * 1.45);border-bottom:3px solid var(--accent);
+    display:flex;align-items:center;justify-content:center;font-size:var(--slot,28px);color:#fff;
+  }
+  .letter-slot.pop{animation:revealLetter .35s cubic-bezier(.34,1.56,.64,1)}
   .letter-slot.symbol{border-bottom:none;min-width:12px}
   .letter-slot.missed{color:var(--red)}
-  @keyframes revealLetter{0%{transform:translateY(20px) scale(.8);opacity:0}100%{transform:translateY(0) scale(1);opacity:1}}
-
-  /* letras erróneas */
-  .wrong-letters{
-    text-align:center;font-size:13px;color:var(--text-dim);font-weight:600;
-    padding:0 16px;min-height:24px;letter-spacing:2px;
-  }
+  @keyframes revealLetter{0%{transform:translateY(20px) scale(.8);opacity:0}100%{transform:none;opacity:1}}
+  .wrong-letters{text-align:center;font-size:13px;color:var(--text-dim);font-weight:600;padding:0 16px;min-height:24px;letter-spacing:2px}
   .wrong-letters span{color:var(--red);font-size:18px;margin:0 3px;font-weight:700}
 
-  /* ---------- TECLADO ---------- */
-  .keyboard{
-    padding:8px 6px 12px;display:flex;flex-direction:column;gap:6px;
-    flex-shrink:0;margin-top:auto;
-  }
+  .keyboard{padding:8px 6px 12px;display:flex;flex-direction:column;gap:6px;flex-shrink:0;margin-top:auto}
   .kb-row{display:flex;justify-content:center;gap:5px}
   .key{
-    flex:1;max-width:42px;height:46px;
-    background:linear-gradient(180deg,var(--panel-2) 0%,var(--panel) 100%);
-    border-radius:8px;font-size:16px;font-weight:700;
-    box-shadow:0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.1);
-    display:flex;align-items:center;justify-content:center;
-    transition:transform .08s;color:#fff;
+    flex:1;max-width:42px;height:46px;background:linear-gradient(180deg,var(--panel-2) 0%,var(--panel) 100%);
+    border-radius:8px;font-size:16px;font-weight:700;box-shadow:0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.1);
+    display:flex;align-items:center;justify-content:center;transition:transform .08s;color:#fff;
   }
   .key:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.3)}
-  .key.correct{background:var(--green);color:#fff;box-shadow:0 3px 0 #3a9a70;animation:keyPop .3s}
-  .key.wrong{background:var(--red);color:#fff;box-shadow:0 3px 0 #a83040;animation:keyShake .3s}
+  .key.correct{background:var(--green);box-shadow:0 3px 0 #3a9a70;animation:keyPop .3s}
+  .key.wrong{background:var(--red);box-shadow:0 3px 0 #a83040;animation:shakeX .3s}
   .key.disabled{opacity:.5;pointer-events:none}
-  @keyframes keyPop{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
-  @keyframes keyShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+  @keyframes keyPop{50%{transform:scale(1.2)}}
 
   /* ---------- MODALES ---------- */
-  .modal-overlay{
-    position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
-    z-index:100;display:none;align-items:center;justify-content:center;padding:20px;
-    animation:fadeIn .2s;
-  }
-  .modal-overlay.active{display:flex}
-  .modal{
-    background:linear-gradient(180deg,var(--panel) 0%,var(--bg-2) 100%);
-    border:1px solid var(--line);
-    border-radius:24px;padding:24px 20px;width:min(380px,100%);max-height:90vh;overflow-y:auto;
-    text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5);
-    animation:popIn .3s cubic-bezier(.34,1.56,.64,1);
-  }
-  .modal .emoji{font-size:60px;margin-bottom:4px;display:inline-block}
-  .modal h2{font-family:'Bagel Fat One',sans-serif;color:var(--gold);font-size:28px;line-height:1;margin-bottom:6px}
-  .modal h2.lose{color:var(--red)}
-  .modal p{color:var(--text-dim);font-size:15px;margin-bottom:14px}
-  .modal .answer{color:#fff;font-family:'Bagel Fat One',sans-serif;font-size:22px;letter-spacing:2px;margin:6px 0 14px}
+  .modal .answer{color:#fff;font-family:'Bagel Fat One','Fredoka',system-ui,sans-serif;font-size:22px;letter-spacing:2px;margin:6px 0 10px;line-height:1.2}
+  .modal .modal-hint{font-size:14px!important;color:#fff!important;opacity:.85;margin:-4px 0 10px!important}
+  .modal .album-new{font-size:13px;font-weight:600;color:var(--green);margin-bottom:6px}
+  .modal .seq{font-size:20px;letter-spacing:2px;margin:6px 0;word-break:break-all}
+  .modal .next-in{font-size:13px!important}
+  .cr-words{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:8px 0}
+  .cr-words span{padding:4px 9px;border-radius:9px;font-size:12px;font-weight:600}
+  .cr-words .ok{background:rgba(95,201,154,.2);color:var(--green)}
+  .cr-words .no{background:rgba(232,90,107,.18);color:var(--red);text-decoration:line-through}
 
-  .achievement-card{
-    background:linear-gradient(135deg,var(--gold) 0%,#e0a020 100%);
-    border-radius:18px;padding:18px;margin:12px 0;color:#3a2400;
-    box-shadow:0 8px 0 var(--gold-deep), inset 0 -2px 0 rgba(255,255,255,.3);
-  }
-  .ach-title{font-size:11px;letter-spacing:3px;font-weight:700;opacity:.7;margin-bottom:8px}
-  .ach-stats{display:flex;justify-content:space-around;gap:8px}
-  .ach-stat{flex:1}
-  .ach-num{font-family:'Bagel Fat One',sans-serif;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
-  .ach-lbl{font-size:10px;font-weight:600;opacity:.7;letter-spacing:1px;margin-top:4px}
-  .new-record{display:inline-block;background:#e91e63;color:#fff;padding:4px 12px;border-radius:8px;font-size:11px;font-weight:700;letter-spacing:1.5px;margin-bottom:6px;animation:wobble .6s ease-in-out infinite}
-  @keyframes wobble{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+  /* ---------- RETO ---------- */
+  .form{width:min(420px,94vw);margin:8px auto 40px;display:flex;flex-direction:column;gap:8px;padding:0 4px}
+  .form label{font-size:12px;letter-spacing:2px;color:var(--text-dim);font-weight:600;margin-top:6px}
+  .form input{width:100%;padding:14px;border-radius:14px;border:2px solid var(--line);background:rgba(0,0,0,.25);color:#fff;font-size:17px;font-family:inherit;user-select:text;-webkit-user-select:text}
+  .form input:focus{outline:none;border-color:var(--accent)}
+  .form .seg{width:100%}
+  .r-err{color:var(--red);font-size:13px;font-weight:600;min-height:16px}
+  .r-out{margin-top:10px;padding:14px;border-radius:16px;background:rgba(0,0,0,.25);border:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+  .r-link{font-size:12px;color:var(--text-dim);word-break:break-all;user-select:text;-webkit-user-select:text;background:rgba(0,0,0,.25);padding:8px 10px;border-radius:10px}
+  .r-ok{font-weight:700;color:var(--green);text-align:center}
 
-  .ad-label{font-size:10px;color:var(--text-dim);opacity:.6;letter-spacing:2px;margin:8px 0 4px}
-  .ad-slot{display:flex;justify-content:center;align-items:center;min-height:250px;background:rgba(0,0,0,.2);border-radius:12px;overflow:hidden}
-  .ad-slot iframe{max-width:100%;border:0}
-
-  .modal-btns{display:flex;flex-direction:column;gap:10px;margin-top:14px}
-  .btn-row{display:flex;gap:8px}
-  .btn-row .btn-secondary{flex:1}
-  .btn-primary{padding:14px 22px;border-radius:14px;background:linear-gradient(180deg,var(--gold) 0%,#e0a020 100%);color:#3a2400;font-weight:700;font-size:17px;box-shadow:0 4px 0 var(--gold-deep)}
-  .btn-secondary{padding:13px 18px;border-radius:14px;background:rgba(255,255,255,.1);color:#fff;font-weight:600;font-size:15px;box-shadow:0 4px 0 rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;gap:6px}
-  .btn-ghost{padding:10px;color:var(--text-dim);font-size:14px;font-weight:500}
-
-  /* PWA install prompt */
-  .install-prompt{
-    position:fixed;bottom:80px;left:16px;right:16px;
-    background:linear-gradient(180deg,var(--panel) 0%,var(--bg-2) 100%);
-    border:1px solid var(--gold);
-    border-radius:16px;padding:14px 16px;
-    box-shadow:0 8px 20px rgba(0,0,0,.4);
-    display:none;align-items:center;gap:12px;
-    z-index:30;animation:slideUp .4s cubic-bezier(.34,1.56,.64,1);
-  }
-  .install-prompt.show{display:flex}
-  .install-prompt .ico{font-size:28px}
-  .install-prompt .txt{flex:1;font-size:13px;color:var(--text-dim);line-height:1.3}
-  .install-prompt .txt b{color:#fff;font-size:14px}
-  .install-prompt button{padding:8px 14px;border-radius:10px;background:var(--gold);color:#3a2400;font-weight:700;font-size:13px;flex-shrink:0}
-  .install-prompt .close{background:transparent;color:var(--text-dim);padding:4px 8px;font-size:18px}
-  @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-
-  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  @keyframes popIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
-  .bounce{animation:bounce 1.2s infinite}
-  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  /* ---------- ÁLBUM ---------- */
+  .album-wrap{width:min(440px,94vw);margin:6px auto 40px;display:flex;flex-direction:column;gap:12px}
+  .stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .stat-card{background:var(--panel);border-radius:14px;padding:10px 6px;text-align:center;box-shadow:var(--shadow)}
+  .stat-card b{display:block;font-family:'Bagel Fat One','Fredoka',system-ui,sans-serif;font-size:22px;line-height:1.1}
+  .stat-card small{font-size:10px;color:var(--text-dim);font-weight:600;letter-spacing:.5px}
+  .bar{height:10px;border-radius:5px;background:rgba(0,0,0,.3);overflow:hidden}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--accent));border-radius:5px}
+  .album-total{background:var(--panel);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+  .album-total .row{display:flex;justify-content:space-between;font-weight:700;margin-bottom:8px}
+  .album-row{background:rgba(255,255,255,.05);border-radius:14px;padding:10px 12px;text-align:left;width:100%;display:block}
+  .album-row .top{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px;margin-bottom:6px}
+  .album-row .top .n{margin-left:auto;font-size:12px;color:var(--text-dim);font-variant-numeric:tabular-nums}
+  .album-row .chips{display:none;flex-wrap:wrap;gap:5px;margin-top:8px}
+  .album-row.open .chips{display:flex}
+  .album-row .chips span{font-size:11px;padding:3px 8px;border-radius:8px;background:rgba(95,201,154,.18);color:#bdf3dc;font-weight:600}
+  .album-row .chips .lock{background:rgba(255,255,255,.08);color:var(--text-dim)}
 </style>
 </head>
 <body>
 
 <!-- ====================== MENÚ ====================== -->
 <section id="menu" class="screen active">
-  <div class="rope-deco">🪢</div>
-  <div class="logo">AHORCADO<small>SeaKingsGames · v3</small></div>
+  <div class="logo-ico">🪢</div>
+  <div class="logo">AHORCADO<small>SeaKingsGames · v4</small></div>
+
+  <button class="daily-card" id="daily-card">
+    <div><div class="dc-tag">📅 PALABRA DEL DÍA</div><div class="dc-title" id="dc-title">#1</div><div class="dc-sub" id="dc-sub"></div></div>
+    <div class="dc-go">▶</div>
+  </button>
+
+  <div class="section-title">MODO</div>
+  <div class="seg" id="seg-mode"><button data-m="clasico">🎯 Clásico</button><button data-m="cr">⏱️ Contrarreloj</button></div>
 
   <div class="section-title">CATEGORÍA</div>
   <div class="cat-grid" id="cat-grid"></div>
+  <button class="cat-more" id="cat-more"></button>
 
-  <div class="section-title">DIFICULTAD</div>
-  <div class="diff-list" id="diff-list"></div>
+  <div class="mode-box" id="mode-clasico">
+    <div class="section-title">DIFICULTAD</div>
+    <div class="diff-list" id="diff-list"></div>
+  </div>
+  <div class="mode-box" id="mode-cr">
+    <button class="big-start" id="btn-cr">⏱️ ¡Empezar!<small>2 minutos · cada palabra suma 10 s</small></button>
+    <div class="record-line" id="cr-rec"></div>
+    <p class="how">Adivina todas las palabras que puedas. Cada palabra te da 10 segundos más y cada letra equivocada te quita 3.</p>
+  </div>
 
-  <a href="index.html" style="color:var(--text-dim);font-size:14px;text-decoration:none;margin-top:8px;margin-bottom:16px">← Volver al inicio</a>
-  <div class="ad-banner-bottom" id="ad-bottom-menu"></div>
+  <div class="menu-row">
+    <button class="tool-btn" id="btn-reto">🤝 Reta a un amigo</button>
+    <button class="tool-btn" id="btn-album">📚 Álbum y stats</button>
+  </div>
+
+  <div class="section-title">PERSONAJE</div>
+  <div class="seg" id="seg-char"><button data-c="clasico">🧍 Monito</button><button data-c="ajolote">💚 Ajolote</button></div>
+
+  <a class="back-link" href="index.html">← Volver a la arcada</a>
+  <div class="ad-banner-bottom" id="ad-bottom"></div>
 </section>
 
 <!-- ====================== JUEGO ====================== -->
 <section id="game" class="screen">
   <div class="topbar">
     <button class="icon-btn" id="btn-back">‹</button>
-    <div class="level-title">
-      <div class="badge" id="diff-badge">FÁCIL · ANIMALES</div>
-      <h1>Partida <span id="level-num">1</span></h1>
-    </div>
+    <div class="level-title"><div class="badge" id="badge">FÁCIL · ANIMALES</div><h1 id="title">Partida 1</h1></div>
     <button class="icon-btn small" id="btn-sound">🔊</button>
     <button class="icon-btn" id="btn-restart">↻</button>
   </div>
   <div class="stats">
-    <span>⏱️ <span class="val" id="stat-time">0:00</span></span>
-    <span>❤️ <span class="val" id="stat-lives">6</span></span>
-    <span>🔥 <span class="val" id="stat-streak">0</span></span>
+    <span><span id="st1-ico">⏱️</span> <span class="val" id="st1">0:00</span></span>
+    <span>❤️ <span class="val" id="st-lives">6</span></span>
+    <span id="st3-wrap"><span id="st3-ico">🔥</span> <span class="val" id="st3">0</span></span>
   </div>
   <div class="hint-bar" id="hint-bar"></div>
-
-  <div class="gallows-wrap"><canvas id="gallows"></canvas></div>
+  <div class="gallows-wrap"><canvas id="gallows"></canvas><div class="float-time" id="float-time"></div></div>
   <div class="word" id="word"></div>
   <div class="wrong-letters" id="wrong-letters"></div>
   <div class="keyboard" id="keyboard"></div>
 </section>
 
-<!-- ====================== MODAL: VICTORIA ====================== -->
-<div class="modal-overlay" id="modal-win">
-  <div class="modal">
-    <div class="emoji bounce">🎉</div>
-    <div id="new-record-tag" style="display:none"><span class="new-record">¡NUEVO RÉCORD!</span></div>
-    <h2>¡Lo adivinaste!</h2>
-    <p>La palabra era</p>
-    <div class="answer" id="win-answer"></div>
-    <p class="modal-hint" id="win-hint"></p>
-    <div class="achievement-card">
-      <div class="ach-title">TU LOGRO</div>
-      <div class="ach-stats">
-        <div class="ach-stat"><div class="ach-num" id="win-time">0:00</div><div class="ach-lbl">TIEMPO</div></div>
-        <div class="ach-stat"><div class="ach-num" id="win-lives">6</div><div class="ach-lbl">VIDAS</div></div>
-        <div class="ach-stat"><div class="ach-num" id="win-streak">1</div><div class="ach-lbl">RACHA</div></div>
-      </div>
-    </div>
-    <div class="ad-label">PUBLICIDAD</div>
-    <div class="ad-slot" id="ad-win"></div>
-    <div class="modal-btns">
-      <button class="btn-primary" id="btn-next">Siguiente palabra →</button>
-      <div class="btn-row">
-        <button class="btn-secondary" id="btn-share">📤 Compartir</button>
-        <button class="btn-secondary" id="btn-save">💾 Guardar</button>
-      </div>
-      <button class="btn-ghost" id="btn-menu-win">Cambiar dificultad</button>
+<!-- ====================== RETO ====================== -->
+<section id="reto" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" id="btn-reto-back">‹</button>
+    <div class="level-title"><div class="badge">RETA A UN AMIGO</div><h1>Tu palabra secreta</h1></div>
+    <span style="width:46px"></span>
+  </div>
+  <div class="form">
+    <p class="how" style="width:auto;margin-bottom:4px">Escribe una palabra o frase, comparte el link y tu amigo la tendrá que adivinar. La palabra no se ve en el link.</p>
+    <label for="r-word">PALABRA O FRASE SECRETA</label>
+    <input id="r-word" maxlength="40" autocomplete="off" placeholder="Ej. ajolote">
+    <div class="r-err" id="r-err"></div>
+    <label for="r-hint">PISTA (OPCIONAL)</label>
+    <input id="r-hint" maxlength="80" autocomplete="off" placeholder="Ej. Anfibio mexicano que siempre sonríe">
+    <label for="r-name">TU NOMBRE (OPCIONAL)</label>
+    <input id="r-name" maxlength="24" autocomplete="off" placeholder="Para que sepan quién los retó">
+    <label>VIDAS</label>
+    <div class="seg" id="r-lives"><button data-l="5">5 ❤️</button><button data-l="6">6 ❤️</button><button data-l="7">7 ❤️</button></div>
+    <button class="btn-primary" id="r-create" style="margin-top:10px">Crear link del reto</button>
+    <div class="r-out" id="r-out" hidden>
+      <div class="r-ok">✅ ¡Reto listo! Mándalo:</div>
+      <div class="r-link" id="r-link"></div>
+      <div class="btn-row"><button class="btn-secondary" id="r-wa">💬 WhatsApp</button><button class="btn-secondary" id="r-copy">📋 Copiar</button></div>
+      <button class="btn-secondary" id="r-share">📤 Compartir en otra app</button>
     </div>
   </div>
-</div>
+</section>
 
-<!-- ====================== MODAL: DERROTA ====================== -->
-<div class="modal-overlay" id="modal-lose">
-  <div class="modal">
-    <div class="emoji">💀</div>
-    <h2 class="lose">¡Game Over!</h2>
-    <p>La palabra era</p>
-    <div class="answer" id="lose-answer"></div>
-    <p class="modal-hint" id="lose-hint"></p>
-    <p style="margin-top:6px;font-size:14px">Racha final: <b id="lose-streak" style="color:#fff">0</b></p>
-    <div class="ad-label">PUBLICIDAD</div>
-    <div class="ad-slot" id="ad-lose"></div>
-    <div class="modal-btns">
-      <button class="btn-primary" id="btn-retry">Probar otra palabra</button>
-      <button class="btn-ghost" id="btn-menu-lose">Cambiar dificultad</button>
-    </div>
+<!-- ====================== ÁLBUM ====================== -->
+<section id="album" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" id="btn-album-back">‹</button>
+    <div class="level-title"><div class="badge">TU PROGRESO</div><h1>Álbum de palabras</h1></div>
+    <span style="width:46px"></span>
   </div>
-</div>
-
-<!-- ====================== MODAL: REINICIAR ====================== -->
-<div class="modal-overlay" id="modal-restart">
-  <div class="modal">
-    <div class="emoji">🔄</div>
-    <h2>¿Reiniciar partida?</h2>
-    <p>Perderás tu racha actual</p>
-    <div class="ad-label">PUBLICIDAD</div>
-    <div class="ad-slot" id="ad-restart"></div>
-    <div class="modal-btns">
-      <button class="btn-primary" id="btn-confirm-restart">Sí, reiniciar</button>
-      <button class="btn-secondary" id="btn-cancel-restart">Cancelar</button>
-      <button class="btn-ghost" id="btn-menu-restart">Volver al menú</button>
-    </div>
+  <div class="album-wrap">
+    <div class="stat-cards" id="stat-cards"></div>
+    <div class="album-total" id="album-total"></div>
+    <p class="how" style="width:auto">Cada palabra que adivinas se guarda aquí. Toca una categoría para ver las que llevas.</p>
+    <div id="album-list" style="display:flex;flex-direction:column;gap:8px"></div>
   </div>
-</div>
-
-<!-- PWA install -->
-<div class="install-prompt" id="install-prompt">
-  <div class="ico">📲</div>
-  <div class="txt"><b>Instala Ahorcado</b><br>Juega sin internet</div>
-  <button id="btn-install">Instalar</button>
-  <button class="close" id="btn-install-close">✕</button>
-</div>
+</section>
 
 <script src="palabras.js"></script>
+<script src="comun.js"></script>
 <script>
 /* =====================================================
-   AHORCADO v3 · SeaKingsGames
-   25 temas · ~1,500 palabras con pista · 4 dificultades
+   AHORCADO v4 · SeaKingsGames
+   Clásico · Palabra del día · Contrarreloj · Reto por link
    ===================================================== */
+const { $, sfx } = SK;
+const normalize = SK_normalizar; // quita acentos pero respeta la Ñ
+const ALPHABET = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ';
+const DIFFICULTIES = {
+  facil:        { minLen:3,  maxLen:5,  lives:7, label:'FÁCIL',         cls:'d0' },
+  medio:        { minLen:6,  maxLen:7,  lives:6, label:'MEDIO',         cls:'d1' },
+  dificil:      { minLen:8,  maxLen:9,  lives:5, label:'DIFÍCIL',       cls:'d2' },
+  extraDificil: { minLen:10, maxLen:60, lives:5, label:'EXTRA DIFÍCIL', cls:'d3' },
+};
+const CR_SECONDS = 120, CR_BONUS = 10, CR_PENALTY = 3;
 
-/* ---------- AUDIO ---------- */
-const SFX = {
-  ctx:null, enabled: localStorage.getItem('sk-sound') !== '0',
-  init(){ if(this.ctx) return; try{ this.ctx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} },
-  tone(f,d=.1,t='sine',v=.15,attack=.005){
-    if(!this.enabled||!this.ctx) return;
-    const now=this.ctx.currentTime, o=this.ctx.createOscillator(), g=this.ctx.createGain();
-    o.type=t; o.frequency.value=f;
-    g.gain.setValueAtTime(0,now);
-    g.gain.linearRampToValueAtTime(v,now+attack);
-    g.gain.exponentialRampToValueAtTime(.0001,now+d);
-    o.connect(g).connect(this.ctx.destination);
-    o.start(now); o.stop(now+d+.02);
+/* ---------- PALABRAS ---------- */
+Object.entries(SK_PALABRAS).forEach(([k, c]) => c.list.forEach(w => { w.cat = k; w.id = normalize(w.word); }));
+const SEASON = (() => {
+  const d = new Date(), m = d.getMonth() + 1, day = d.getDate();
+  if ((m === 10 && day >= 15) || (m === 11 && day <= 5)) return 'muertos';
+  if (m === 12 || (m === 1 && day <= 7)) return 'navidad';
+  return null;
+})();
+const WORDS = { aleatorio: { ico:'🎲', label:'Aleatorio', list: Object.values(SK_PALABRAS).flatMap(c => c.list) }, ...SK_PALABRAS };
+const CAT_ORDER = ['aleatorio', ...(SEASON && SK_PALABRAS[SEASON] ? [SEASON] : []), ...Object.keys(SK_PALABRAS).filter(k => k !== SEASON)];
+const TOTAL_WORDS = WORDS.aleatorio.list.length;
+
+/* ---------- ÁLBUM Y ESTADÍSTICAS ---------- */
+const album = {
+  data: SK.store.get('sk-ah-album', {}),
+  has(w){ return !!w.cat && (this.data[w.cat] || []).includes(w.id); },
+  add(w){
+    if (!w || !w.cat || !SK_PALABRAS[w.cat]) return false;
+    const a = this.data[w.cat] || (this.data[w.cat] = []);
+    if (a.includes(w.id)) return false;
+    a.push(w.id); SK.store.set('sk-ah-album', this.data); return true;
   },
-  correct(){ this.tone(660,.08,'sine',.14); setTimeout(()=>this.tone(880,.1,'sine',.14),60); },
-  wrong()  { this.tone(180,.15,'sawtooth',.12); },
-  tap()    { this.tone(800,.03,'triangle',.08); },
-  victory(){ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>this.tone(f,i===3?.3:.12,'sine',.16),i*100)); },
-  defeat() { [392,349,294,247].forEach((f,i)=>setTimeout(()=>this.tone(f,i===3?.4:.15,'sawtooth',.14),i*150)); },
-  newRec() { [659,784,1047,1319].forEach((f,i)=>setTimeout(()=>this.tone(f,.14,'triangle',.15),i*70)); },
+  count(cat){
+    if (cat === 'aleatorio') return Object.keys(SK_PALABRAS).reduce((s, k) => s + this.count(k), 0);
+    const set = new Set(this.data[cat] || []);
+    return SK_PALABRAS[cat].list.filter(w => set.has(w.id)).length;
+  },
 };
-
-/* ---------- ADS (con sandbox para bloquear popups) ---------- */
-const ADS = {
-  banner50:  { key:'787e84f3bdee3100779130afe4802abc', width:320, height:50 },
-  medium250: { key:'c2f164720365b5dc18fae25f1c594072', width:300, height:250 },
-};
-function loadAd(el, cfg){
-  if(!el || el.dataset.loaded === '1') return;
-  el.dataset.loaded = '1';
-  const html =
-`<!DOCTYPE html><html><head><style>html,body{margin:0;padding:0;background:transparent;overflow:hidden}</style></head><body>
-<script type="text/javascript">var atOptions=${JSON.stringify({key:cfg.key,format:'iframe',height:cfg.height,width:cfg.width,params:{}})};<\/script>
-<script type="text/javascript" src="https://www.highperformanceformat.com/${cfg.key}/invoke.js"><\/script>
-</body></html>`;
-  const ifr = document.createElement('iframe');
-  ifr.srcdoc = html; ifr.width = cfg.width; ifr.height = cfg.height;
-  ifr.scrolling = 'no'; ifr.setAttribute('frameborder','0');
-  // sandbox bloquea window.open, top.location y otros métodos de popup/redirect
-  ifr.setAttribute('sandbox','allow-scripts allow-same-origin');
-  ifr.style.cssText = 'border:0;display:block;background:transparent;max-width:100%';
-  el.appendChild(ifr);
+const stats = SK.store.get('sk-ah-stats', null) || (() => {
+  // toma la mejor racha que ya tenías guardada de la versión anterior
+  const best = Math.max(0, ...Object.keys(DIFFICULTIES).map(k => +SK.store.get(`sk-ah-streak-${k}`, 0) || 0));
+  return { played:0, won:0, best };
+})();
+function recordResult(won, streakNow){
+  stats.played++; if (won) stats.won++;
+  if (streakNow > stats.best) stats.best = streakNow;
+  SK.store.set('sk-ah-stats', stats);
 }
 
-/* ---------- DICCIONARIO (viene de palabras.js) ---------- */
-const WORDS = {
-  aleatorio: { ico:'🎲', label:'Aleatorio', list:[] },
-  ...SK_PALABRAS,
-};
-WORDS.aleatorio.list = Object.entries(SK_PALABRAS).flatMap(([k,c]) => c.list.map(w => ({...w, cat:k})));
+/* ---------- PALABRA DEL DÍA ---------- */
+// La fecha se toma en hora del centro de México para que todos tengan la misma palabra
+const mxDate = (d = new Date()) => d.toLocaleDateString('en-CA', { timeZone:'America/Mexico_City' });
+const DAILY_START = Date.UTC(2026, 9, 30); // #1 = 30 de octubre de 2026
+function dayIndex(ds){ const [y, m, d] = ds.split('-').map(Number); return Math.round((Date.UTC(y, m - 1, d) - DAILY_START) / 86400000); }
+const dailyNum = ds => dayIndex(ds) + 1;
+function prevDate(ds){ const [y, m, d] = ds.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d) - 86400000).toISOString().slice(0, 10); }
+const DAILY_POOL = Object.entries(SK_PALABRAS)
+  .filter(([k]) => k !== 'dichos')
+  .flatMap(([, c]) => c.list)
+  .filter(w => !/\s/.test(w.word) && w.len >= 5 && w.len <= 9 && w.word[0] === w.word[0].toLowerCase());
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+function dailyEntry(ds){
+  // recorre la lista "salteado" para que no se repita hasta acabarla
+  const L = DAILY_POOL.length; let step = 7919 % L; while (gcd(step, L) !== 1) step++;
+  const i = ((dayIndex(ds) * step + 1234) % L + L) % L;
+  return DAILY_POOL[i];
+}
+function timeToNext(){
+  const now = Date.now(), DAY = 86400000, OFF = 6 * 3600000; // CDMX = UTC-6 todo el año
+  const next = Math.floor((now - OFF) / DAY) * DAY + DAY + OFF;
+  const mins = Math.max(1, Math.round((next - now) / 60000));
+  return mins >= 60 ? `${Math.floor(mins / 60)} h ${mins % 60} min` : `${mins} min`;
+}
+function dailyStreak(){
+  const k = SK.store.get('sk-ah-dstreak', { cur:0, best:0, last:null }), today = mxDate();
+  if (k.last !== today && k.last !== prevDate(today)) k.cur = 0;
+  return k;
+}
 
-const DIFFICULTIES = {
-  facil:        { minLen:3,  maxLen:5,  lives:7, label:'FÁCIL'         },
-  medio:        { minLen:6,  maxLen:7,  lives:6, label:'MEDIO'         },
-  dificil:      { minLen:8,  maxLen:9,  lives:5, label:'DIFÍCIL'       },
-  extraDificil: { minLen:10, maxLen:30, lives:5, label:'EXTRA DIFÍCIL' },
-};
+/* ---------- LINK PARA COMPARTIR ---------- */
+function gameUrl(q = ''){
+  const base = /^https?:/.test(location.protocol) ? location.origin + location.pathname : 'https://seakingsgames.github.io/SeaKingsClassicGames/ahorcado.html';
+  return base + q;
+}
 
-const ALPHABET = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ';
+/* ---------- RETO: codifica la palabra para que no se lea en el link ---------- */
+const RKEY = 'seakings';
+function b64urlEnc(bytes){ let s = ''; bytes.forEach(b => s += String.fromCharCode(b)); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+function b64urlDec(str){ str = str.replace(/-/g, '+').replace(/_/g, '/'); while (str.length % 4) str += '='; const s = atob(str); return Uint8Array.from(s, c => c.charCodeAt(0)); }
+function encodeReto(o){
+  const bytes = new TextEncoder().encode(JSON.stringify(o));
+  return b64urlEnc(bytes.map((b, i) => b ^ RKEY.charCodeAt(i % RKEY.length)));
+}
+function cleanWord(raw){ return String(raw || '').trim().replace(/\s+/g, ' '); }
+function wordProblem(w){
+  if (normalize(w).replace(/[A-ZÑ ]/g, '')) return 'Solo letras y espacios (sin números ni signos).';
+  const n = SK_contarLetras(w);
+  if (n < 3) return 'Escribe al menos 3 letras.';
+  if (n > 30) return 'Máximo 30 letras.';
+  return '';
+}
+function decodeReto(code){
+  try {
+    const x = b64urlDec(code);
+    const o = JSON.parse(new TextDecoder().decode(x.map((b, i) => b ^ RKEY.charCodeAt(i % RKEY.length))));
+    const w = cleanWord(o.w);
+    if (wordProblem(w)) return null;
+    const l = Math.min(10, Math.max(3, parseInt(o.l, 10) || 6));
+    return { w, h: String(o.h || '').slice(0, 80), n: String(o.n || '').slice(0, 24), l };
+  } catch(e) { return null; }
+}
 
 /* ---------- ESTADO ---------- */
-const state = {
-  category: 'animales',
-  difficulty: 'facil',
-  level: 1,
-  streak: 0,
-  word: '', entry: null, chars: [], catText: '', hintShown: false,
-  wrongLetters: [], rightLetters: [],
-  livesMax: 6, livesLeft: 6,
-  startTime:0, elapsed:0, ticking:false, timerId:null,
-  finished: false,
-  shake: 0,
-  recentWords: [],
+const st = {
+  mode:'clasico', category: SK.store.get('sk-ah-cat', 'aleatorio'), difficulty:'facil', level:1, streak:0,
+  entry:null, word:'', chars:[], wrongLetters:[], rightLetters:[], seq:[],
+  livesMax:6, livesLeft:6, hintShown:false, catText:'',
+  startTime:0, elapsed:0, ticking:false, timerId:null, finished:false, shake:0, recentWords:[],
+  crTimer:null, crEnd:0, crScore:0, crWords:[], crOver:true, crBeep:0,
+  dailyDate:null, reto:null, retoCode:'',
 };
-const $ = id => document.getElementById(id);
-const canvas = $('gallows');
-const ctx = canvas.getContext('2d');
+if (!WORDS[st.category]) st.category = 'aleatorio';
+let menuMode = SK.store.get('sk-ah-mode', 'clasico');
+let character = SK.store.get('sk-ah-char', 'clasico');
+let showAllCats = false;
+const canvas = $('gallows'), ctx = canvas.getContext('2d');
 
-/* ---------- UTILIDADES ---------- */
-function fmtTime(s){ const m=Math.floor(s/60), sec=Math.floor(s%60); return `${m}:${sec.toString().padStart(2,'0')}`; }
-const normalize = SK_normalizar; // quita acentos pero respeta la Ñ
-function startTimer(){
-  if(state.timerId) clearInterval(state.timerId);
-  state.timerId = setInterval(() => {
-    if(!state.ticking) return;
-    state.elapsed = (Date.now() - state.startTime)/1000;
-    $('stat-time').textContent = fmtTime(state.elapsed);
-  }, 250);
+/* ---------- RELOJ ---------- */
+function startClock(){
+  stopClock(); st.startTime = Date.now() - st.elapsed * 1000; st.ticking = true;
+  st.timerId = setInterval(() => { st.elapsed = (Date.now() - st.startTime) / 1000; $('st1').textContent = SK.fmtTime(st.elapsed); }, 250);
 }
-function stopTimer(){ if(state.timerId){clearInterval(state.timerId);state.timerId=null;} state.ticking=false; }
+function stopClock(){ if (st.timerId) { clearInterval(st.timerId); st.timerId = null; } if (st.ticking) st.elapsed = (Date.now() - st.startTime) / 1000; st.ticking = false; }
 
 /* ---------- ELEGIR PALABRA ----------
-   Si la categoría no tiene palabras de ese largo, toma las más cercanas
-   (antes el juego se congelaba, p. ej. Cuerpo + Extra difícil). */
-function pickWord(){
-  const cfg = DIFFICULTIES[state.difficulty];
-  const all = WORDS[state.category].list;
-  const dist = w => w.len < cfg.minLen ? cfg.minLen - w.len : (w.len > cfg.maxLen ? w.len - cfg.maxLen : 0);
-  let best = Infinity;
-  all.forEach(w => { best = Math.min(best, dist(w)); });
-  // si hay pocas palabras exactas, deja entrar las que están a 1 letra
+   Si la categoría no tiene palabras de ese largo toma las más cercanas,
+   y prefiere las que todavía no están en tu álbum. */
+function pickWord(cat, minLen, maxLen){
+  const all = WORDS[cat].list;
+  const dist = w => w.len < minLen ? minLen - w.len : (w.len > maxLen ? w.len - maxLen : 0);
+  let best = Infinity; all.forEach(w => { best = Math.min(best, dist(w)); });
   let pool = all.filter(w => dist(w) <= best);
   if (pool.length < 4) pool = all.filter(w => dist(w) <= best + 1);
-  let fresh = pool.filter(w => !state.recentWords.includes(w.word));
-  if (fresh.length === 0) { state.recentWords = []; fresh = pool; }
-  const w = fresh[(Math.random()*fresh.length)|0];
-  state.recentWords.push(w.word);
-  if (state.recentWords.length > Math.min(30, Math.floor(pool.length*0.7))) state.recentWords.shift();
+  let use = pool.filter(w => !st.recentWords.includes(w.id));
+  if (!use.length) { st.recentWords = []; use = pool; }
+  const fresh = use.filter(w => !album.has(w));
+  if (fresh.length && Math.random() < .7) use = fresh;
+  const w = use[(Math.random() * use.length) | 0];
+  st.recentWords.push(w.id);
+  if (st.recentWords.length > Math.min(40, Math.floor(pool.length * .7))) st.recentWords.shift();
   return w;
 }
 
-/* ---------- NUEVA PARTIDA ---------- */
-function newGame(keepStreak=false){
-  const cfg = DIFFICULTIES[state.difficulty];
-  if (!keepStreak) state.streak = 0;
-  const entry = pickWord();
-  state.entry = entry;
-  state.word = entry.word;
-  state.chars = [...entry.word].map(ch => {
-    const base = normalize(ch);
-    return { orig: ch.toUpperCase(), base, isLetter: /^[A-ZÑ]$/.test(base) };
-  });
-  state.wrongLetters = [];
-  state.rightLetters = [];
-  state.livesMax = cfg.lives;
-  state.livesLeft = cfg.lives;
-  state.elapsed = 0; state.startTime = 0; state.ticking = false;
-  state.finished = false;
-  state.shake = 0;
-  // En Fácil la pista se ve desde el inicio; en las demás cuesta 1 vida
-  state.hintShown = state.difficulty === 'facil';
-  stopTimer();
-
-  const catKey = entry.cat || state.category;
-  const cat = WORDS[catKey];
-  $('level-num').textContent = state.level;
-  $('diff-badge').textContent = `${cfg.label} · ${WORDS[state.category].label.toUpperCase()}`;
-  $('stat-time').textContent = '0:00';
-  $('stat-lives').textContent = state.livesLeft;
-  $('stat-lives').classList.remove('danger');
-  $('stat-streak').textContent = state.streak;
-  $('wrong-letters').innerHTML = '';
-  state.catText = `${cat.ico} ${cat.label} · ${entry.len} letras`;
-  renderHint();
-
-  renderWord();
-  renderKeyboard();
+/* ---------- PREPARAR UNA PALABRA ---------- */
+function setupWord(entry, lives, hintShown){
+  st.entry = entry; st.word = entry.word;
+  st.chars = [...entry.word].map(ch => { const base = normalize(ch); return { orig: ch.toUpperCase(), base, isLetter: /^[A-ZÑ]$/.test(base) }; });
+  st.wrongLetters = []; st.rightLetters = []; st.seq = [];
+  st.livesMax = lives; st.livesLeft = lives; st.hintShown = hintShown;
+  st.finished = false; st.shake = 0;
+  const cat = entry.cat && WORDS[entry.cat];
+  st.catText = cat ? `${cat.ico} ${cat.label} · ${entry.len} letras` : `🤝 Palabra secreta · ${entry.len} letras`;
+  renderLives(); renderWrong(); renderHint(); renderWord(); renderKeyboard();
   requestAnimationFrame(() => { resizeCanvas(); drawGallows(); });
+}
+function setHeader(badge, title){ $('badge').textContent = badge; $('title').textContent = title; }
+function setStats(ico1, v1, ico3, v3){
+  $('st1-ico').textContent = ico1; $('st1').textContent = v1; $('st1').classList.remove('danger');
+  $('st3-wrap').style.display = ico3 ? '' : 'none';
+  if (ico3) { $('st3-ico').textContent = ico3; $('st3').textContent = v3; }
+}
+function renderLives(){ $('st-lives').textContent = st.livesLeft; $('st-lives').classList.toggle('danger', st.livesLeft <= 2); }
+
+/* ---------- MODOS ---------- */
+function newClasico(keepStreak){
+  st.mode = 'clasico'; if (!keepStreak) st.streak = 0;
+  const cfg = DIFFICULTIES[st.difficulty];
+  stopClock(); st.elapsed = 0;
+  setHeader(`${cfg.label} · ${WORDS[st.category].label.toUpperCase()}`, `Partida ${st.level}`);
+  setStats('⏱️', '0:00', '🔥', st.streak);
+  setupWord(pickWord(st.category, cfg.minLen, cfg.maxLen), cfg.lives, st.difficulty === 'facil');
+  showScreen('game');
+}
+function startDaily(){
+  const ds = mxDate(), saved = SK.store.get('sk-ah-daily-' + ds);
+  if (saved) { showScreen('menu'); showDailyResult(ds, saved); return; }
+  st.mode = 'diaria'; st.dailyDate = ds; stopClock(); st.elapsed = 0;
+  setHeader('📅 PALABRA DEL DÍA', `#${dailyNum(ds)}`);
+  setStats('⏱️', '0:00', '📅', dailyStreak().cur);
+  setupWord(dailyEntry(ds), 6, false);
+  showScreen('game');
+}
+function startCR(){
+  st.mode = 'cr'; st.crScore = 0; st.crWords = []; st.crOver = false; st.crBeep = 0;
+  st.crEnd = Date.now() + CR_SECONDS * 1000;
+  setHeader(`⏱️ CONTRARRELOJ · ${WORDS[st.category].label.toUpperCase()}`, 'Palabras: 0');
+  setStats('⏳', SK.fmtTime(CR_SECONDS), '✅', 0);
+  crNext(); showScreen('game');
+  clearInterval(st.crTimer); st.crTimer = setInterval(crTick, 200);
+}
+function startReto(r){
+  st.mode = 'reto'; st.reto = r; stopClock(); st.elapsed = 0;
+  setHeader('🤝 RETO', r.n ? `Reto de ${r.n}` : 'Reto de un amigo');
+  setStats('⏱️', '0:00', null);
+  setupWord({ word: r.w, hint: r.h, len: SK_contarLetras(r.w), cat: null }, r.l, !!r.h);
+  showScreen('game');
 }
 
 /* ---------- PISTA ---------- */
 function renderHint(){
-  const el = $('hint-bar');
-  el.innerHTML = '';
-  const cat = document.createElement('div');
-  cat.textContent = state.catText;
-  el.appendChild(cat);
-  if (!state.entry.hint) return;
-  if (state.hintShown) {
-    const h = document.createElement('div');
-    h.className = 'hint-text';
-    h.textContent = '💡 ' + state.entry.hint;
-    el.appendChild(h);
+  const el = $('hint-bar'); el.innerHTML = '';
+  const cat = document.createElement('div'); cat.textContent = st.catText; el.appendChild(cat);
+  if (!st.entry || !st.entry.hint) return;
+  if (st.hintShown) {
+    const h = document.createElement('div'); h.className = 'hint-text'; h.textContent = '💡 ' + st.entry.hint; el.appendChild(h);
   } else {
-    const b = document.createElement('button');
-    b.className = 'hint-btn';
+    const b = document.createElement('button'); b.className = 'hint-btn';
     b.textContent = '💡 Ver pista (cuesta 1 ❤️)';
-    b.disabled = state.livesLeft <= 1 || state.finished;
-    b.onclick = useHint;
-    el.appendChild(b);
+    b.disabled = st.livesLeft <= 1 || st.finished;
+    b.onclick = useHint; el.appendChild(b);
   }
 }
 function useHint(){
-  if (state.hintShown || state.finished || state.livesLeft <= 1) return;
-  SFX.init(); SFX.tap();
-  state.hintShown = true;
-  state.livesLeft--;
-  $('stat-lives').textContent = state.livesLeft;
-  if (state.livesLeft <= 2) $('stat-lives').classList.add('danger');
-  // la pista cuenta como un error para el dibujo
-  state.wrongLetters.push('💡');
-  renderWrong();
-  drawGallows();
-  renderHint();
+  if (st.hintShown || st.finished || st.livesLeft <= 1) return;
+  sfx.init(); sfx.tap();
+  st.hintShown = true; st.livesLeft--;
+  st.wrongLetters.push('💡'); st.seq.push('💡');
+  renderLives(); renderWrong(); renderHint(); resizeCanvas(); drawGallows();
 }
-function renderWrong(){
-  $('wrong-letters').innerHTML = state.wrongLetters.map(l => `<span>${l}</span>`).join(' ');
-}
+function renderWrong(){ $('wrong-letters').innerHTML = st.wrongLetters.map(l => `<span>${l}</span>`).join(' '); }
 
-/* ---------- RENDER PALABRA ---------- */
-function renderWord(revealAll=false){
-  const el = $('word');
-  el.innerHTML = '';
-  // agrupa por palabra para que no se corten a la mitad
+/* ---------- PALABRA EN PANTALLA ---------- */
+function renderWord(popLetter = null, revealAll = false){
+  const el = $('word'); el.innerHTML = '';
   let group = null;
   const newGroup = () => { group = document.createElement('div'); group.className = 'word-group'; el.appendChild(group); };
   newGroup();
-  state.chars.forEach(c => {
+  st.chars.forEach(c => {
     if (c.orig === ' ') { newGroup(); return; }
     const slot = document.createElement('div');
-    if (!c.isLetter) {
-      slot.className = 'letter-slot symbol';
-      slot.textContent = c.orig;
-    } else {
-      const shown = revealAll || state.rightLetters.includes(c.base);
-      slot.className = 'letter-slot' + (shown ? '' : ' empty') + (revealAll && !state.rightLetters.includes(c.base) ? ' missed' : '');
+    if (!c.isLetter) { slot.className = 'letter-slot symbol'; slot.textContent = c.orig; }
+    else {
+      const known = st.rightLetters.includes(c.base), shown = known || revealAll;
+      slot.className = 'letter-slot' + (popLetter === c.base ? ' pop' : '') + (revealAll && !known ? ' missed' : '');
       slot.textContent = shown ? c.orig : '';
     }
     group.appendChild(slot);
   });
   // ajusta el tamaño para que la palabra más larga quepa en pantalla
-  const longest = Math.max(...el.querySelectorAll('.word-group').length ? [...el.querySelectorAll('.word-group')].map(g => g.children.length) : [1]);
-  const avail = Math.min(el.clientWidth || window.innerWidth, 640) - 32;
-  const slot = Math.max(16, Math.min(28, Math.floor(avail / longest) - 6));
-  el.style.setProperty('--slot', slot + 'px');
-  el.style.setProperty('--gap', (slot < 22 ? 3 : 6) + 'px');
+  const groups = [...el.querySelectorAll('.word-group')];
+  const longest = Math.max(1, ...groups.map(g => g.children.length));
+  const total = groups.reduce((s, g) => s + g.children.length, 0);
+  const avail = Math.min(el.clientWidth || innerWidth, 640) - 32;
+  const byRows = Math.floor((3 * avail - groups.length * 22) / Math.max(1, total)) - 4; // que quepa en ~3 filas
+  const size = Math.max(16, Math.min(28, Math.floor(avail / longest) - 6, byRows));
+  el.style.setProperty('--slot', size + 'px');
+  el.style.setProperty('--gap', (size < 22 ? 3 : 6) + 'px');
 }
 
-/* ---------- RENDER TECLADO ---------- */
+/* ---------- TECLADO ---------- */
 function renderKeyboard(){
-  const layouts = [
-    ['Q','W','E','R','T','Y','U','I','O','P'],
-    ['A','S','D','F','G','H','J','K','L','Ñ'],
-    ['Z','X','C','V','B','N','M']
-  ];
-  const kb = $('keyboard');
-  kb.innerHTML = '';
-  layouts.forEach(row => {
-    const r = document.createElement('div');
-    r.className = 'kb-row';
+  const rows = [['Q','W','E','R','T','Y','U','I','O','P'], ['A','S','D','F','G','H','J','K','L','Ñ'], ['Z','X','C','V','B','N','M']];
+  const kb = $('keyboard'); kb.innerHTML = '';
+  rows.forEach(row => {
+    const r = document.createElement('div'); r.className = 'kb-row';
     row.forEach(ch => {
-      const k = document.createElement('button');
-      k.className = 'key';
-      k.textContent = ch;
-      k.dataset.letter = ch;
-      if (state.rightLetters.includes(ch)) k.classList.add('correct','disabled');
-      else if (state.wrongLetters.includes(ch)) k.classList.add('wrong','disabled');
+      const k = document.createElement('button'); k.className = 'key'; k.textContent = ch;
+      if (st.rightLetters.includes(ch)) k.classList.add('correct', 'disabled');
+      else if (st.wrongLetters.includes(ch)) k.classList.add('wrong', 'disabled');
       k.addEventListener('click', () => onLetter(ch));
       r.appendChild(k);
     });
@@ -602,265 +530,436 @@ function renderKeyboard(){
   });
 }
 
-/* ---------- GUESS ---------- */
+/* ---------- JUGAR UNA LETRA ---------- */
 function onLetter(letter){
-  if (state.finished) return;
-  if (state.rightLetters.includes(letter) || state.wrongLetters.includes(letter)) return;
-  SFX.init();
-  if (!state.ticking){
-    state.ticking = true;
-    state.startTime = Date.now();
-    startTimer();
-  }
-  const found = state.chars.some(c => c.isLetter && c.base === letter);
-  if (found) {
-    state.rightLetters.push(letter);
-    SFX.correct();
-    renderWord();
-    renderKeyboard();
-    if (checkWin()) setTimeout(onWin, 600);
+  if (st.finished || !$('game').classList.contains('active')) return;
+  if (st.rightLetters.includes(letter) || st.wrongLetters.includes(letter)) return;
+  sfx.init();
+  if (!st.ticking && st.mode !== 'cr') startClock();
+  if (st.chars.some(c => c.isLetter && c.base === letter)) {
+    st.rightLetters.push(letter); st.seq.push('🟩');
+    sfx.good(); renderWord(letter); renderKeyboard();
+    if (checkWin()) { st.finished = true; setTimeout(onWordWin, st.mode === 'cr' ? 300 : 600); }
   } else {
-    state.wrongLetters.push(letter);
-    state.livesLeft--;
-    SFX.wrong();
-    $('stat-lives').textContent = state.livesLeft;
-    if (state.livesLeft <= 2) $('stat-lives').classList.add('danger');
-    renderWrong();
-    state.shake = 10;
-    animateGallowsShake();
-    renderKeyboard();
-    renderHint();
-    if (state.livesLeft <= 0) { state.finished = true; setTimeout(onLose, 700); }
+    st.wrongLetters.push(letter); st.seq.push('🟥'); st.livesLeft--;
+    sfx.bad();
+    if (st.mode === 'cr') { st.crEnd -= CR_PENALTY * 1000; floatTime(`−${CR_PENALTY}s`, 'bad'); }
+    renderLives(); renderWrong(); renderKeyboard(); renderHint();
+    st.shake = 10; animateGallowsShake();
+    if (st.livesLeft <= 0) { st.finished = true; setTimeout(onWordLose, st.mode === 'cr' ? 300 : 700); }
   }
 }
+const checkWin = () => st.chars.every(c => !c.isLetter || st.rightLetters.includes(c.base));
 
-function checkWin(){ return state.chars.every(c => !c.isLetter || state.rightLetters.includes(c.base)); }
-
-/* ---------- CANVAS GALLOWS ---------- */
-function resizeCanvas(){
-  const wrap = canvas.parentElement;
-  const dpr = devicePixelRatio || 1;
-  const aw = wrap.clientWidth - 20;
-  const size = Math.min(aw, 320);
-  canvas.style.width = size + 'px';
-  canvas.style.height = (size * 0.85) + 'px';
-  canvas.width = size * dpr;
-  canvas.height = size * 0.85 * dpr;
-  ctx.setTransform(dpr,0,0,dpr,0,0);
+function onWordWin(){
+  stopClock();
+  if (st.mode === 'cr' && st.crOver) return;
+  const isNew = album.add(st.entry);
+  if (st.mode === 'cr') return crWordWon();
+  sfx.win();
+  if (st.mode === 'clasico') return clasicoWin(isNew);
+  if (st.mode === 'diaria') return dailyEnd(true);
+  if (st.mode === 'reto') return retoEnd(true);
+}
+function onWordLose(){
+  stopClock();
+  if (st.mode === 'cr' && st.crOver) return;
+  renderWord(null, true); drawGallows();
+  if (st.mode === 'cr') return crWordLost();
+  sfx.lose();
+  if (st.mode === 'clasico') return clasicoLose();
+  if (st.mode === 'diaria') return dailyEnd(false);
+  if (st.mode === 'reto') return retoEnd(false);
 }
 
+/* ---------- RESULTADOS ---------- */
+function answerBox(isNew, note){
+  const d = document.createElement('div');
+  d.innerHTML = '<p>La palabra era</p><div class="answer"></div><p class="modal-hint"></p><div class="album-new"></div>';
+  d.querySelector('.answer').textContent = st.word.toUpperCase();
+  d.querySelector('.modal-hint').textContent = st.entry.hint ? '💡 ' + st.entry.hint : '';
+  const extra = d.querySelector('.album-new');
+  if (isNew && st.entry.cat) { const c = WORDS[st.entry.cat]; extra.textContent = `📚 ¡Nueva en tu álbum! ${c.ico} ${c.label}: ${album.count(st.entry.cat)}/${c.list.length}`; }
+  else if (note) { extra.textContent = note; extra.style.color = 'var(--text-dim)'; }
+  return d;
+}
+function clasicoWin(isNew){
+  st.streak++;
+  const recKey = `sk-ah-rec-${st.difficulty}`, rec = SK.store.get(recKey), isRec = !rec || st.elapsed < rec.time;
+  if (isRec) { SK.store.set(recKey, { time: st.elapsed, lives: st.livesLeft, date: Date.now() }); sfx.newRec(); }
+  const sKey = `sk-ah-streak-${st.difficulty}`;
+  if (st.streak > (+SK.store.get(sKey, 0) || 0)) SK.store.set(sKey, st.streak);
+  recordResult(true, st.streak);
+  const d = DIFFICULTIES[st.difficulty], catLabel = WORDS[st.entry.cat].label;
+  SK.result({
+    emoji:'🎉', title:'¡Lo adivinaste!', newRecord: isRec, extra: answerBox(isNew),
+    stats:[[SK.fmtTime(st.elapsed), 'TIEMPO'], [st.livesLeft, 'VIDAS'], [st.streak, 'RACHA']],
+    share:{ emoji:'🪢', title:'¡PALABRA ADIVINADA!', game:'Ahorcado', sub:`${d.label} · ${catLabel}`, big: st.word.toUpperCase(),
+      stats:[[SK.fmtTime(st.elapsed), 'TIEMPO'], [st.livesLeft + '❤', 'VIDAS'], [st.streak + '🔥', 'RACHA']],
+      text:`🪢 Ahorcado · ${d.label}\n"${st.word.toUpperCase()}" en ${SK.fmtTime(st.elapsed)} · Racha ${st.streak}🔥\nJuega: ${gameUrl()}`, file:'logro-ahorcado' },
+    buttons:[{ label:'Siguiente palabra →', onClick: () => { st.level++; newClasico(true); } }, { label:'Cambiar categoría o dificultad', kind:'ghost', onClick: toMenu }],
+  });
+}
+function clasicoLose(){
+  const was = st.streak; st.streak = 0; recordResult(false, 0);
+  setTimeout(() => SK.result({
+    emoji:'💀', lose:true, title:'¡Game Over!', extra: answerBox(false, was ? `Racha final: ${was} 🔥` : ''),
+    buttons:[{ label:'Probar otra palabra', onClick: () => { st.level = 1; newClasico(false); } }, { label:'Cambiar categoría o dificultad', kind:'ghost', onClick: toMenu }],
+  }), 500);
+}
+function dailyEnd(won){
+  const ds = st.dailyDate;
+  const res = { won, errors: st.livesMax - st.livesLeft, time: st.elapsed, seq: st.seq.join(''), word: st.word, num: dailyNum(ds) };
+  SK.store.set('sk-ah-daily-' + ds, res);
+  const k = SK.store.get('sk-ah-dstreak', { cur:0, best:0, last:null });
+  if (won) { k.cur = k.last === prevDate(ds) ? k.cur + 1 : 1; k.best = Math.max(k.best || 0, k.cur); } else k.cur = 0;
+  k.last = ds; SK.store.set('sk-ah-dstreak', k);
+  recordResult(won, 0);
+  setTimeout(() => showDailyResult(ds, res), won ? 400 : 700);
+}
+function showDailyResult(ds, res){
+  const k = dailyStreak(), entry = dailyEntry(ds);
+  const extra = document.createElement('div');
+  extra.innerHTML = '<p>La palabra del día era</p><div class="answer"></div><p class="modal-hint"></p><div class="seq"></div><p class="next-in"></p>';
+  extra.querySelector('.answer').textContent = res.word.toUpperCase();
+  extra.querySelector('.modal-hint').textContent = entry.hint && normalize(entry.word) === normalize(res.word) ? '💡 ' + entry.hint : '';
+  extra.querySelector('.seq').textContent = res.seq;
+  extra.querySelector('.next-in').textContent = `⏳ La siguiente sale en ${timeToNext()}`;
+  const errTxt = `${res.errors} error${res.errors === 1 ? '' : 'es'}`;
+  const text = `🪢 Ahorcado del día #${res.num}\n${res.won ? `✅ La adiviné con ${errTxt} en ${SK.fmtTime(res.time)}` : '💀 Hoy no la saqué'}\n${res.seq}\n${k.cur > 1 ? `🔥 Racha: ${k.cur} días\n` : ''}¿Tú la sacas? ${gameUrl('?modo=diaria')}`;
+  SK.result({
+    emoji: res.won ? '🎉' : '💀', lose: !res.won, title: res.won ? '¡Palabra del día resuelta!' : 'Hoy no se pudo', extra,
+    stats:[[res.won ? SK.fmtTime(res.time) : '—', 'TIEMPO'], [res.errors, 'ERRORES'], [k.cur, 'RACHA DIARIA']],
+    buttons:[
+      { label:'📤 Compartir mi resultado', keep:true, onClick: () => SK.shareText(text) },
+      { label:'Jugar modo clásico', kind:'secondary', onClick: toMenu },
+    ],
+  });
+  paintDailyCard();
+}
+function crNext(){ if (!st.crOver) setupWord(pickWord(st.category, 4, 9), 6, true); }
+function crTick(){
+  const left = Math.max(0, (st.crEnd - Date.now()) / 1000), shown = Math.ceil(left);
+  $('st1').textContent = SK.fmtTime(shown);
+  $('st1').classList.toggle('danger', left <= 15);
+  if (left <= 10 && left > 0 && shown !== st.crBeep) { st.crBeep = shown; sfx.tone(1200, .04, 'sine', .06); }
+  if (left <= 0) crFinish();
+}
+function crWordWon(){
+  st.crScore++; st.crWords.push({ w: st.word, ok: true }); recordResult(true, 0);
+  st.crEnd += CR_BONUS * 1000; floatTime(`+${CR_BONUS}s`, 'good'); sfx.good();
+  $('st3').textContent = st.crScore; $('title').textContent = `Palabras: ${st.crScore}`;
+  setTimeout(crNext, 450);
+}
+function crWordLost(){ st.crWords.push({ w: st.word, ok: false }); recordResult(false, 0); sfx.bad(); setTimeout(crNext, 1100); }
+function crFinish(){
+  if (st.crOver) return;
+  st.crOver = true; st.finished = true; clearInterval(st.crTimer);
+  const key = `sk-ah-cr-${st.category}`, rec = +SK.store.get(key, 0) || 0, isRec = st.crScore > rec;
+  if (isRec) { SK.store.set(key, st.crScore); sfx.newRec(); } else sfx.lose();
+  const best = Math.max(rec, st.crScore), cat = WORDS[st.category];
+  const extra = document.createElement('div'); extra.className = 'cr-words';
+  if (!st.crWords.length) extra.innerHTML = '<span class="no">Ninguna palabra esta vez</span>';
+  st.crWords.forEach(x => { const s = document.createElement('span'); s.className = x.ok ? 'ok' : 'no'; s.textContent = x.w.toUpperCase(); extra.appendChild(s); });
+  SK.result({
+    emoji:'⏱️', title:'¡Se acabó el tiempo!', newRecord: isRec && st.crScore > 0, extra,
+    stats:[[st.crScore, 'PALABRAS'], [best, 'RÉCORD']],
+    share:{ emoji:'⏱️', title:'CONTRARRELOJ', game:'Ahorcado', sub: cat.label, big:`${st.crScore} palabras en 2 minutos`, stats:[[st.crScore, 'PALABRAS'], [best, 'RÉCORD']],
+      text:`⏱️ Adiviné ${st.crScore} palabras en el contrarreloj del Ahorcado (${cat.label}). ¿Me superas?\n${gameUrl()}`, file:'logro-contrarreloj' },
+    buttons:[{ label:'Otra vez →', onClick: startCR }, { label:'Volver al menú', kind:'ghost', onClick: toMenu }],
+  });
+}
+function retoEnd(won){
+  recordResult(won, 0);
+  const who = st.reto.n || 'tu amigo', errors = st.livesMax - st.livesLeft;
+  const text = won
+    ? `🪢 ¡Adiviné el reto de ${who} en el Ahorcado con ${errors} error${errors === 1 ? '' : 'es'}! ${st.seq.join('')}\nCrea el tuyo: ${gameUrl('?modo=reto')}`
+    : `💀 ${who} me ganó en el Ahorcado. ¿Tú la adivinas?\n${gameUrl('?reto=' + st.retoCode)}`;
+  setTimeout(() => SK.result({
+    emoji: won ? '🏆' : '💀', lose: !won, title: won ? '¡Ganaste el reto!' : `${who.charAt(0).toUpperCase() + who.slice(1)} te ganó`,
+    extra: answerBox(false), stats:[[SK.fmtTime(st.elapsed), 'TIEMPO'], [errors, 'ERRORES']],
+    buttons:[
+      { label:'🤝 Crear mi propio reto', onClick: openReto },
+      { label: won ? '📤 Presumir resultado' : '📤 Pasarle el reto a alguien más', kind:'secondary', keep:true, onClick: () => SK.shareText(text) },
+      { label:'Jugar Ahorcado', kind:'ghost', onClick: toMenu },
+    ],
+  }), won ? 400 : 700);
+}
+function floatTime(txt, kind){
+  const f = $('float-time'); f.textContent = txt; f.className = 'float-time ' + kind;
+  void f.offsetWidth; f.classList.add('go');
+}
+
+/* ---------- DIBUJO (monito o ajolote) ---------- */
+function resizeCanvas(){
+  const dpr = devicePixelRatio || 1, wrap = canvas.parentElement, game = $('game');
+  const aw = wrap.clientWidth - 12;
+  const others = [...game.children].filter(e => e !== wrap).reduce((s, e) => s + e.getBoundingClientRect().height, 0);
+  const availH = innerHeight - others - 28;
+  const size = Math.max(140, Math.min(aw, 300, availH / .85));
+  canvas.style.width = size + 'px'; canvas.style.height = (size * .85) + 'px';
+  canvas.width = size * dpr; canvas.height = size * .85 * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+function line(a, b, c, d){ ctx.beginPath(); ctx.moveTo(a, b); ctx.lineTo(c, d); ctx.stroke(); }
 function drawGallows(){
-  const w = canvas.width / (devicePixelRatio||1);
-  const h = canvas.height / (devicePixelRatio||1);
+  const dpr = devicePixelRatio || 1, w = canvas.width / dpr, h = canvas.height / dpr;
   ctx.clearRect(0, 0, w, h);
   ctx.save();
-  if (state.shake > 0) ctx.translate((Math.random()-.5)*state.shake, (Math.random()-.5)*state.shake);
-
-  const errors = state.livesMax - state.livesLeft;
+  if (st.shake > 0) ctx.translate((Math.random() - .5) * st.shake, (Math.random() - .5) * st.shake);
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-
-  // Base
-  ctx.strokeStyle = '#d4af6a'; ctx.lineWidth = Math.max(4, w*.018);
-  ctx.beginPath(); ctx.moveTo(w*.1,h*.92); ctx.lineTo(w*.55,h*.92); ctx.stroke();
-  // Punteado
-  ctx.fillStyle = 'rgba(212,175,106,.4)';
-  for(let i=0;i<5;i++){ctx.beginPath();ctx.arc(w*.12+i*w*.05,h*.93,2,0,Math.PI*2);ctx.fill();}
-  // Poste
-  ctx.strokeStyle='#a48851';
-  ctx.beginPath();ctx.moveTo(w*.2,h*.92);ctx.lineTo(w*.2,h*.08);ctx.stroke();
-  // Travesaño
-  ctx.beginPath();ctx.moveTo(w*.2,h*.08);ctx.lineTo(w*.68,h*.08);ctx.stroke();
-  // Diagonal
-  ctx.beginPath();ctx.moveTo(w*.2,h*.20);ctx.lineTo(w*.35,h*.08);ctx.stroke();
-  // Cuerda
-  ctx.strokeStyle='#8d6e2f';
-  ctx.beginPath();ctx.moveTo(w*.68,h*.08);ctx.lineTo(w*.68,h*.20);ctx.stroke();
-
-  if(errors===0){ctx.restore();return;}
-  if(errors>=1) drawHead(w,h,errors);
-  if(errors>=2) drawBody(w,h);
-  if(errors>=3) drawArm(w,h,-1);
-  if(errors>=4) drawArm(w,h,1);
-  if(errors>=5) drawLeg(w,h,-1);
-  if(errors>=6) drawLeg(w,h,1);
+  const lw = Math.max(4, w * .018);
+  ctx.strokeStyle = '#d4af6a'; ctx.lineWidth = lw; line(w * .1, h * .92, w * .55, h * .92);
+  ctx.strokeStyle = '#a48851'; line(w * .2, h * .92, w * .2, h * .08); line(w * .2, h * .08, w * .68, h * .08); line(w * .2, h * .2, w * .35, h * .08);
+  ctx.strokeStyle = '#8d6e2f'; line(w * .68, h * .08, w * .68, h * .22);
+  // las partes se reparten según las vidas de la dificultad
+  const errors = st.livesMax - st.livesLeft;
+  const parts = errors <= 0 ? 0 : Math.min(6, Math.ceil(errors * 6 / st.livesMax));
+  const dead = st.livesLeft <= 0, worried = st.livesLeft <= 2;
+  if (parts) (character === 'ajolote' ? drawAjolote : drawMonito)(w, h, parts, dead, worried, lw);
   ctx.restore();
 }
-function drawHead(w,h,errors){
-  const cx=w*.68, cy=h*.30, r=h*.08;
-  ctx.strokeStyle='#e8c98a'; ctx.fillStyle='#fae5b3';
-  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();ctx.stroke();
-  ctx.fillStyle='#3a2820';
-  if(errors>=state.livesMax){
-    ctx.strokeStyle='#3a2820'; ctx.lineWidth=2.5;
-    [-1,1].forEach(s=>{const ex=cx+s*r*.4,ey=cy-r*.15;ctx.beginPath();ctx.moveTo(ex-3,ey-3);ctx.lineTo(ex+3,ey+3);ctx.moveTo(ex+3,ey-3);ctx.lineTo(ex-3,ey+3);ctx.stroke();});
-    ctx.lineWidth=Math.max(4,w*.018);
-    ctx.beginPath();ctx.arc(cx,cy+r*.55,r*.3,Math.PI*1.1,Math.PI*1.9);ctx.stroke();
+function drawMonito(w, h, parts, dead, worried, lw){
+  const cx = w * .68;
+  ctx.lineWidth = lw;
+  if (parts >= 2) { ctx.strokeStyle = '#5c8fbf'; line(cx, h * .38, cx, h * .62); }
+  if (parts >= 3) { ctx.strokeStyle = '#5c8fbf'; line(cx, h * .43, cx - w * .12, h * .55); }
+  if (parts >= 4) { ctx.strokeStyle = '#5c8fbf'; line(cx, h * .43, cx + w * .12, h * .55); }
+  if (parts >= 5) { ctx.strokeStyle = '#1c2a3a'; line(cx, h * .62, cx - w * .1, h * .78); }
+  if (parts >= 6) { ctx.strokeStyle = '#1c2a3a'; line(cx, h * .62, cx + w * .1, h * .78); }
+  const cy = h * .30, r = h * .08;
+  ctx.strokeStyle = '#e8c98a'; ctx.fillStyle = '#fae5b3';
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle = '#3a2820'; ctx.fillStyle = '#3a2820'; ctx.lineWidth = 2.5;
+  drawFace(cx, cy, r, dead, worried);
+}
+function drawAjolote(w, h, parts, dead, worried){
+  const cx = w * .68, mint = '#8fe3c6', mintD = '#3fae8c', pink = '#ff8fb1', pinkD = '#e0607f', belly = '#c9f5e6';
+  ctx.lineWidth = 2.5;
+  if (parts >= 2) {
+    // cola
+    ctx.fillStyle = mint; ctx.strokeStyle = mintD;
+    ctx.beginPath(); ctx.moveTo(cx + w * .03, h * .56);
+    ctx.quadraticCurveTo(cx + w * .17, h * .6, cx + w * .19, h * .75);
+    ctx.quadraticCurveTo(cx + w * .1, h * .67, cx - w * .01, h * .63);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    // cuerpo y panza
+    ctx.beginPath(); ctx.ellipse(cx, h * .5, w * .075, h * .125, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = belly; ctx.beginPath(); ctx.ellipse(cx, h * .53, w * .045, h * .08, 0, 0, Math.PI * 2); ctx.fill();
+  }
+  const limb = (x1, y1, x2, y2) => {
+    ctx.strokeStyle = mintD; ctx.lineWidth = Math.max(7, w * .034); line(x1, y1, x2, y2);
+    ctx.strokeStyle = mint; ctx.lineWidth = Math.max(4, w * .022); line(x1, y1, x2, y2);
+    ctx.fillStyle = pink; ctx.beginPath(); ctx.arc(x2, y2, Math.max(3, w * .014), 0, Math.PI * 2); ctx.fill();
+  };
+  if (parts >= 3) limb(cx - w * .06, h * .45, cx - w * .14, h * .54);
+  if (parts >= 4) limb(cx + w * .06, h * .45, cx + w * .14, h * .54);
+  if (parts >= 5) limb(cx - w * .04, h * .6, cx - w * .08, h * .72);
+  if (parts >= 6) limb(cx + w * .02, h * .61, cx + w * .05, h * .73);
+  // branquias (3 de cada lado) y cabeza
+  const hy = h * .31, rx = w * .125, ry = h * .088;
+  ctx.lineWidth = 2;
+  [-1, 1].forEach(s => [0, 1, 2].forEach(i => {
+    const ang = s > 0 ? (-.75 + i * .6) : (Math.PI + .75 - i * .6);
+    const bx = cx + s * rx * .78, by = hy - ry * .15;
+    const ex = bx + Math.cos(ang) * rx * .4, ey = by + Math.sin(ang) * rx * .4;
+    ctx.fillStyle = pink; ctx.strokeStyle = pinkD;
+    ctx.beginPath(); ctx.ellipse(ex, ey, rx * .3, ry * .17, ang, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  }));
+  ctx.fillStyle = mint; ctx.strokeStyle = mintD; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.ellipse(cx, hy, rx, ry, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.globalAlpha = .55; ctx.fillStyle = pink;
+  [-1, 1].forEach(s => { ctx.beginPath(); ctx.arc(cx + s * rx * .62, hy + ry * .32, rx * .12, 0, Math.PI * 2); ctx.fill(); });
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = '#173d33'; ctx.fillStyle = '#173d33'; ctx.lineWidth = 2.5;
+  drawFace(cx, hy, ry, dead, worried, rx * .42);
+}
+function drawFace(cx, cy, r, dead, worried, eyeDx){
+  const ex = eyeDx || r * .4;
+  if (dead) {
+    [-1, 1].forEach(s => { const x = cx + s * ex, y = cy - r * .15, k = r * .17; line(x - k, y - k, x + k, y + k); line(x + k, y - k, x - k, y + k); });
   } else {
-    [-1,1].forEach(s=>{ctx.beginPath();ctx.arc(cx+s*r*.35,cy-r*.1,r*.12,0,Math.PI*2);ctx.fill();});
-    ctx.strokeStyle='#3a2820';
-    if(state.livesLeft<=2){ctx.beginPath();ctx.arc(cx,cy+r*.55,r*.3,Math.PI*1.1,Math.PI*1.9);ctx.stroke();}
-    else{ctx.beginPath();ctx.moveTo(cx-r*.25,cy+r*.4);ctx.lineTo(cx+r*.25,cy+r*.4);ctx.stroke();}
+    [-1, 1].forEach(s => { ctx.beginPath(); ctx.arc(cx + s * ex, cy - r * .12, r * .13, 0, Math.PI * 2); ctx.fill(); });
   }
-  ctx.strokeStyle='#a48851'; ctx.lineWidth=Math.max(4,w*.018);
+  ctx.beginPath();
+  if (dead || worried) ctx.arc(cx, cy + r * .6, r * .3, Math.PI * 1.15, Math.PI * 1.85);
+  else ctx.arc(cx, cy + r * .1, r * .32, Math.PI * .2, Math.PI * .8);
+  ctx.stroke();
 }
-function drawBody(w,h){ctx.strokeStyle='#5c8fbf';ctx.beginPath();ctx.moveTo(w*.68,h*.38);ctx.lineTo(w*.68,h*.62);ctx.stroke();}
-function drawArm(w,h,side){ctx.strokeStyle='#5c8fbf';ctx.beginPath();ctx.moveTo(w*.68,h*.43);ctx.lineTo(w*.68+side*w*.12,h*.55);ctx.stroke();}
-function drawLeg(w,h,side){ctx.strokeStyle='#2d3e50';ctx.beginPath();ctx.moveTo(w*.68,h*.62);ctx.lineTo(w*.68+side*w*.10,h*.78);ctx.stroke();}
 function animateGallowsShake(){
-  const dec=setInterval(()=>{state.shake=Math.max(0,state.shake-1);drawGallows();if(state.shake<=0)clearInterval(dec);},30);
+  const t = setInterval(() => { st.shake = Math.max(0, st.shake - 1); drawGallows(); if (st.shake <= 0) clearInterval(t); }, 30);
 }
-
-window.addEventListener('resize',()=>{if($('game').classList.contains('active')){resizeCanvas();drawGallows();}});
-
-/* ---------- VICTORIA / DERROTA ---------- */
-function onWin(){
-  state.finished=true; stopTimer(); SFX.victory(); state.streak++;
-  const recKey=`sk-ah-rec-${state.difficulty}`;
-  let rec=null;
-  try{rec=JSON.parse(localStorage.getItem(recKey)||'null');}catch(e){}
-  const isNewRec=!rec||state.elapsed<rec.time;
-  if(isNewRec){
-    try{localStorage.setItem(recKey,JSON.stringify({time:state.elapsed,lives:state.livesLeft,date:Date.now()}));}catch(e){}
-    setTimeout(()=>SFX.newRec(),600);
-  }
-  const streakKey=`sk-ah-streak-${state.difficulty}`;
-  let best=parseInt(localStorage.getItem(streakKey)||'0',10);
-  if(state.streak>best){try{localStorage.setItem(streakKey,String(state.streak));}catch(e){}}
-  $('win-answer').textContent=state.word.toUpperCase();
-  $('win-hint').textContent=state.entry.hint ? '💡 '+state.entry.hint : '';
-  $('win-time').textContent=fmtTime(state.elapsed);
-  $('win-lives').textContent=state.livesLeft;
-  $('win-streak').textContent=state.streak;
-  $('new-record-tag').style.display=isNewRec?'block':'none';
-  openModal('modal-win','ad-win',ADS.medium250);
-}
-function onLose(){
-  state.finished=true; stopTimer(); SFX.defeat();
-  $('lose-hint').textContent = state.entry.hint ? '💡 ' + state.entry.hint : '';
-  renderWord(true); drawGallows(); renderHint();
-  $('lose-answer').textContent=state.word.toUpperCase();
-  $('lose-streak').textContent=state.streak;
-  setTimeout(()=>openModal('modal-lose','ad-lose',ADS.medium250),500);
-}
-
-/* ---------- COMPARTIR / GUARDAR ---------- */
-function genAchievementCanvas(){
-  const c=document.createElement('canvas'); c.width=1080; c.height=1080;
-  const x=c.getContext('2d');
-  const g=x.createLinearGradient(0,0,0,1080);
-  g.addColorStop(0,'#3d4e60'); g.addColorStop(1,'#1c2a3a');
-  x.fillStyle=g; x.fillRect(0,0,1080,1080);
-  x.strokeStyle='#f4cf3a'; x.lineWidth=18; x.strokeRect(40,40,1000,1000);
-  x.font='180px sans-serif'; x.textAlign='center'; x.fillText('🎉',540,240);
-  x.fillStyle='#f4cf3a'; x.font='bold 56px sans-serif'; x.fillText('¡PALABRA ADIVINADA!',540,330);
-  x.fillStyle='#fff'; x.font='bold 90px sans-serif'; x.fillText('Ahorcado',540,430);
-  x.fillStyle='#9fb0c4'; x.font='bold 38px sans-serif';
-  x.fillText(`${DIFFICULTIES[state.difficulty].label} · ${WORDS[state.entry.cat||state.category].label}`,540,490);
-  x.fillStyle='#fff'; x.font='bold 70px monospace'; x.fillText(state.word.toUpperCase(),540,580);
-  x.fillStyle='#f4cf3a'; roundRect(x,90,640,900,240,30); x.fill();
-  x.fillStyle='#3a2400'; x.font='bold 90px sans-serif';
-  x.fillText(fmtTime(state.elapsed),280,760); x.fillText(state.livesLeft+'❤',540,760); x.fillText(state.streak+'🔥',800,760);
-  x.fillStyle='rgba(58,36,0,.7)'; x.font='bold 24px sans-serif';
-  x.fillText('TIEMPO',280,820); x.fillText('VIDAS',540,820); x.fillText('RACHA',800,820);
-  x.fillStyle='#f4cf3a'; x.font='bold 48px sans-serif'; x.fillText('SeaKingsGames',540,990);
-  return c;
-}
-function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.arcTo(x+w,y,x+w,y+r,r);c.lineTo(x+w,y+h-r);c.arcTo(x+w,y+h,x+w-r,y+h,r);c.lineTo(x+r,y+h);c.arcTo(x,y+h,x,y+h-r,r);c.lineTo(x,y+r);c.arcTo(x,y,x+r,y,r);c.closePath();}
-async function shareAchievement(){
-  const c=genAchievementCanvas();
-  const text=`🎉 Ahorcado · ${DIFFICULTIES[state.difficulty].label}\n"${state.word.toUpperCase()}" en ${fmtTime(state.elapsed)} · Racha ${state.streak}🔥\nJuega: SeaKingsGames`;
-  c.toBlob(async(blob)=>{
-    const file=new File([blob],'logro.png',{type:'image/png'});
-    try{
-      if(navigator.canShare&&navigator.canShare({files:[file]})) await navigator.share({files:[file],text});
-      else if(navigator.share) await navigator.share({text});
-      else{downloadCanvas(c);if(navigator.clipboard)await navigator.clipboard.writeText(text);alert('Imagen descargada y texto copiado');}
-    }catch(e){}
-  },'image/png');
-}
-function saveAchievement(){downloadCanvas(genAchievementCanvas());}
-function downloadCanvas(c){
-  c.toBlob(blob=>{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`logro-ahorcado-${Date.now()}.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);},'image/png');
-}
-
-/* ---------- MODALES ---------- */
-function openModal(id,adId,adCfg){$(id).classList.add('active');if(adId)loadAd($(adId),adCfg);}
-function closeModal(id){$(id).classList.remove('active');}
+addEventListener('resize', () => { if ($('game').classList.contains('active')) { resizeCanvas(); drawGallows(); renderWord(); } });
 
 /* ---------- MENÚ ---------- */
+function paintDailyCard(){
+  const ds = mxDate(), saved = SK.store.get('sk-ah-daily-' + ds), n = dailyNum(ds), k = dailyStreak();
+  $('daily-card').classList.toggle('done', !!saved);
+  $('dc-title').textContent = saved ? `#${n} · ${saved.won ? '✅ ¡Resuelta!' : '💀 No salió'}` : `#${n} · ¡Ya está lista!`;
+  $('dc-sub').textContent = saved
+    ? `La siguiente en ${timeToNext()}${k.cur > 1 ? ` · 🔥 racha ${k.cur} días` : ''}`
+    : `La misma para todos. Solo un intento.${k.cur ? ` 🔥 Llevas ${k.cur} día${k.cur > 1 ? 's' : ''}` : ''}`;
+}
+const CATS_VISIBLE = 12;
 function buildCategoryGrid(){
-  const grid=$('cat-grid'); grid.innerHTML='';
-  Object.entries(WORDS).forEach(([k,c])=>{
-    const btn=document.createElement('button');
-    btn.className='cat-btn'+(k===state.category?' selected':'');
-    btn.dataset.cat=k;
-    btn.innerHTML=`<span class="ico">${c.ico}</span><span>${c.label}</span>`;
-    btn.onclick=()=>{SFX.init();SFX.tap();state.category=k;grid.querySelectorAll('.cat-btn').forEach(b=>b.classList.toggle('selected',b.dataset.cat===k));try{localStorage.setItem('sk-ah-cat',k);}catch(e){};};
-    grid.appendChild(btn);
+  const grid = $('cat-grid'); grid.innerHTML = '';
+  const selIdx = CAT_ORDER.indexOf(st.category);
+  const visible = showAllCats || selIdx >= CATS_VISIBLE ? CAT_ORDER : CAT_ORDER.slice(0, CATS_VISIBLE);
+  visible.forEach(k => {
+    const c = WORDS[k], b = document.createElement('button');
+    b.className = 'cat-btn' + (k === st.category ? ' selected' : '') + (k === SEASON ? ' season' : '');
+    b.dataset.cat = k;
+    b.innerHTML = '<span class="ico"></span><span class="lb"></span><span class="prog"></span>';
+    b.querySelector('.ico').textContent = c.ico;
+    b.querySelector('.lb').textContent = c.label;
+    b.querySelector('.prog').textContent = `${album.count(k)}/${c.list.length}`;
+    if (k === SEASON) { const t = document.createElement('span'); t.className = 'tmp'; t.textContent = 'DE TEMPORADA'; b.appendChild(t); }
+    b.onclick = () => {
+      sfx.init(); sfx.tap(); st.category = k; SK.store.set('sk-ah-cat', k);
+      grid.querySelectorAll('.cat-btn').forEach(x => x.classList.toggle('selected', x.dataset.cat === k));
+      paintCrRecord();
+    };
+    grid.appendChild(b);
   });
+  const more = $('cat-more');
+  more.style.display = visible.length < CAT_ORDER.length || showAllCats ? '' : 'none';
+  more.textContent = visible.length < CAT_ORDER.length ? `Ver las ${CAT_ORDER.length} categorías ▾` : 'Ver menos ▴';
 }
+$('cat-more').onclick = () => { sfx.tap(); showAllCats = !showAllCats; buildCategoryGrid(); };
 function buildDiffMenu(){
-  const list=$('diff-list'); list.innerHTML='';
-  Object.entries(DIFFICULTIES).forEach(([k,cfg])=>{
-    let rec=null,streak=0;
-    try{rec=JSON.parse(localStorage.getItem(`sk-ah-rec-${k}`)||'null');}catch(e){}
-    try{streak=parseInt(localStorage.getItem(`sk-ah-streak-${k}`)||'0',10);}catch(e){}
-    const btn=document.createElement('button');
-    btn.className='diff-btn'; btn.dataset.d=k;
-    let recLine='';
-    if(rec||streak){const parts=[];if(rec)parts.push(`🏆 ${fmtTime(rec.time)}`);if(streak)parts.push(`🔥 ${streak}`);recLine=`<div class="record-line">${parts.join(' · ')}</div>`;}
-    btn.innerHTML=`<div><div>${cfg.label}</div>${recLine}</div><span class="tag">${cfg.lives}❤</span>`;
-    btn.onclick=()=>{SFX.init();SFX.tap();state.difficulty=k;state.level=1;state.streak=0;newGame();showScreen('game');};
-    list.appendChild(btn);
+  const list = $('diff-list'); list.innerHTML = '';
+  Object.entries(DIFFICULTIES).forEach(([k, cfg]) => {
+    const rec = SK.store.get(`sk-ah-rec-${k}`), streak = +SK.store.get(`sk-ah-streak-${k}`, 0) || 0;
+    const parts = []; if (rec) parts.push(`🏆 ${SK.fmtTime(rec.time)}`); if (streak) parts.push(`🔥 ${streak}`);
+    const b = document.createElement('button'); b.className = 'diff-btn';
+    b.innerHTML = `<div><div>${cfg.label}</div>${parts.length ? `<div class="record-line">${parts.join(' · ')}</div>` : ''}</div><span class="tag ${cfg.cls}">${cfg.lives}❤ · ${cfg.maxLen > 30 ? cfg.minLen + '+' : cfg.minLen + '–' + cfg.maxLen} letras</span>`;
+    b.onclick = () => { sfx.init(); sfx.tap(); st.difficulty = k; st.level = 1; newClasico(false); };
+    list.appendChild(b);
   });
 }
+function paintCrRecord(){
+  const rec = +SK.store.get(`sk-ah-cr-${st.category}`, 0) || 0, c = WORDS[st.category];
+  $('cr-rec').textContent = rec ? `🏆 Tu récord en ${c.label}: ${rec} palabras` : `Categoría: ${c.ico} ${c.label}`;
+}
+function paintMode(){
+  document.querySelectorAll('#seg-mode button').forEach(b => b.classList.toggle('on', b.dataset.m === menuMode));
+  $('mode-clasico').style.display = menuMode === 'clasico' ? '' : 'none';
+  $('mode-cr').style.display = menuMode === 'cr' ? '' : 'none';
+}
+document.querySelectorAll('#seg-mode button').forEach(b => b.onclick = () => { sfx.init(); sfx.tap(); menuMode = b.dataset.m; SK.store.set('sk-ah-mode', menuMode); paintMode(); });
+function paintChar(){ document.querySelectorAll('#seg-char button').forEach(b => b.classList.toggle('on', b.dataset.c === character)); }
+document.querySelectorAll('#seg-char button').forEach(b => b.onclick = () => { sfx.init(); sfx.tap(); character = b.dataset.c; SK.store.set('sk-ah-char', character); paintChar(); });
+function buildMenu(){ paintDailyCard(); buildCategoryGrid(); buildDiffMenu(); paintCrRecord(); paintMode(); paintChar(); }
 
-/* ---------- BOTONES ---------- */
-$('btn-back').onclick=()=>{SFX.tap();stopTimer();buildDiffMenu();showScreen('menu');};
-$('btn-restart').onclick=()=>{SFX.tap();openModal('modal-restart','ad-restart',ADS.medium250);};
-$('btn-sound').onclick=()=>{SFX.init();SFX.enabled=!SFX.enabled;localStorage.setItem('sk-sound',SFX.enabled?'1':'0');$('btn-sound').textContent=SFX.enabled?'🔊':'🔇';if(SFX.enabled)SFX.tap();};
-$('btn-sound').textContent=SFX.enabled?'🔊':'🔇';
+/* ---------- RETO ---------- */
+let rLives = 6, rUrl = '';
+function paintRLives(){ document.querySelectorAll('#r-lives button').forEach(b => b.classList.toggle('on', +b.dataset.l === rLives)); }
+document.querySelectorAll('#r-lives button').forEach(b => b.onclick = () => { sfx.tap(); rLives = +b.dataset.l; paintRLives(); });
+function openReto(){
+  $('r-out').hidden = true; $('r-err').textContent = '';
+  $('r-name').value = SK.store.get('sk-ah-reto-name', '') || '';
+  paintRLives(); showScreen('reto');
+}
+$('r-create').onclick = () => {
+  sfx.init();
+  const w = cleanWord($('r-word').value), problem = wordProblem(w);
+  if (problem) { $('r-err').textContent = problem; sfx.bad(); $('r-word').focus(); return; }
+  const o = { w, h: $('r-hint').value.trim().slice(0, 80), n: $('r-name').value.trim().slice(0, 24), l: rLives };
+  if (o.h && normalize(o.h).includes(normalize(w))) { $('r-err').textContent = 'La pista no debe incluir la palabra 😉'; sfx.bad(); return; }
+  $('r-err').textContent = '';
+  SK.store.set('sk-ah-reto-name', o.n);
+  rUrl = gameUrl('?reto=' + encodeReto(o));
+  $('r-link').textContent = rUrl; $('r-out').hidden = false; sfx.good();
+  $('r-out').scrollIntoView({ behavior:'smooth', block:'center' });
+};
+const retoMsg = () => `🪢 ¡Te reto al Ahorcado! ¿Adivinas mi palabra secreta?\n${rUrl}`;
+$('r-wa').onclick = () => { sfx.tap(); window.open('https://wa.me/?text=' + encodeURIComponent(retoMsg()), '_blank'); };
+$('r-copy').onclick = async () => { sfx.tap(); try { await navigator.clipboard.writeText(retoMsg()); SK.toast('📋 Link copiado'); } catch(e) { prompt('Copia el link:', rUrl); } };
+$('r-share').onclick = () => { sfx.tap(); SK.shareText(retoMsg()); };
 
-$('btn-next').onclick=()=>{closeModal('modal-win');state.level++;newGame(true);SFX.tap();};
-$('btn-share').onclick=()=>{SFX.tap();shareAchievement();};
-$('btn-save').onclick=()=>{SFX.tap();saveAchievement();};
-$('btn-menu-win').onclick=()=>{closeModal('modal-win');buildDiffMenu();showScreen('menu');SFX.tap();};
+/* ---------- ÁLBUM ---------- */
+function openAlbum(){
+  const k = dailyStreak(), pct = stats.played ? Math.round(100 * stats.won / stats.played) : 0;
+  $('stat-cards').innerHTML = '';
+  [[stats.played, 'PARTIDAS'], [pct + '%', 'GANADAS'], [stats.best, 'MEJOR RACHA'], [k.best || 0, 'DÍAS SEGUIDOS']].forEach(([v, l]) => {
+    const d = document.createElement('div'); d.className = 'stat-card'; d.innerHTML = '<b></b><small></small>';
+    d.firstChild.textContent = v; d.lastChild.textContent = l; $('stat-cards').appendChild(d);
+  });
+  const total = album.count('aleatorio');
+  $('album-total').innerHTML = `<div class="row"><span>📚 Palabras descubiertas</span><span>${total} / ${TOTAL_WORDS}</span></div><div class="bar"><i style="width:${(100 * total / TOTAL_WORDS).toFixed(1)}%"></i></div>`;
+  const list = $('album-list'); list.innerHTML = '';
+  CAT_ORDER.slice(1).forEach(key => {
+    const c = WORDS[key], set = new Set(album.data[key] || []);
+    const got = c.list.filter(w => set.has(w.id)), n = got.length, t = c.list.length;
+    const row = document.createElement('button'); row.className = 'album-row';
+    row.innerHTML = `<div class="top"><span></span><span class="lb"></span><span class="n">${n}/${t}${n === t ? ' 🏅' : ''}</span></div><div class="bar"><i style="width:${(100 * n / t).toFixed(1)}%"></i></div><div class="chips"></div>`;
+    row.querySelector('.top span').textContent = c.ico; row.querySelector('.lb').textContent = c.label;
+    const chips = row.querySelector('.chips');
+    got.slice().sort((a, b) => a.word.localeCompare(b.word, 'es')).forEach(w => { const s = document.createElement('span'); s.textContent = w.word; chips.appendChild(s); });
+    if (n < t) { const s = document.createElement('span'); s.className = 'lock'; s.textContent = `🔒 ${t - n} por descubrir`; chips.appendChild(s); }
+    row.onclick = () => { sfx.tap(); row.classList.toggle('open'); };
+    list.appendChild(row);
+  });
+  showScreen('album');
+}
 
-$('btn-retry').onclick=()=>{closeModal('modal-lose');state.level=1;state.streak=0;newGame();SFX.tap();};
-$('btn-menu-lose').onclick=()=>{closeModal('modal-lose');buildDiffMenu();showScreen('menu');SFX.tap();};
+/* ---------- NAVEGACIÓN ---------- */
+function showScreen(name){
+  SK.showScreen(name);
+  $('btn-restart').style.visibility = st.mode === 'clasico' || st.mode === 'cr' ? 'visible' : 'hidden';
+  if (name === 'game') requestAnimationFrame(() => { resizeCanvas(); drawGallows(); renderWord(); });
+}
+function toMenu(){
+  stopClock(); clearInterval(st.crTimer); st.crOver = true; st.finished = true;
+  SK.closeModal(); buildMenu(); showScreen('menu');
+}
+$('daily-card').onclick = () => { sfx.init(); sfx.tap(); startDaily(); };
+$('btn-cr').onclick = () => { sfx.init(); sfx.tap(); startCR(); };
+$('btn-reto').onclick = () => { sfx.init(); sfx.tap(); openReto(); };
+$('btn-album').onclick = () => { sfx.init(); sfx.tap(); openAlbum(); };
+$('btn-reto-back').onclick = () => { sfx.tap(); toMenu(); };
+$('btn-album-back').onclick = () => { sfx.tap(); toMenu(); };
+$('btn-back').onclick = () => {
+  sfx.tap();
+  if (st.mode === 'cr' && !st.crOver) {
+    SK.result({ emoji:'⏱️', title:'¿Salir del contrarreloj?', text:'Se perderá esta partida', buttons:[{ label:'Sí, salir', onClick: toMenu }, { label:'Seguir jugando', kind:'secondary' }] });
+    return;
+  }
+  toMenu();
+};
+$('btn-restart').onclick = () => {
+  sfx.tap();
+  if (st.mode === 'cr') {
+    SK.result({ emoji:'🔄', title:'¿Reiniciar contrarreloj?', text:'Empezarás de nuevo con 2 minutos', buttons:[{ label:'Sí, reiniciar', onClick: startCR }, { label:'Cancelar', kind:'secondary' }] });
+  } else if (st.mode === 'clasico') {
+    if (!st.rightLetters.length && !st.wrongLetters.length) { newClasico(true); return; }
+    SK.result({ emoji:'🔄', title:'¿Otra palabra?', text: st.streak ? `Perderás tu racha de ${st.streak} 🔥` : 'Cambiarás de palabra', buttons:[{ label:'Sí, otra palabra', onClick: () => { st.level = 1; newClasico(false); } }, { label:'Cancelar', kind:'secondary' }] });
+  }
+};
+SK.soundButton($('btn-sound'));
 
-$('btn-confirm-restart').onclick=()=>{closeModal('modal-restart');state.streak=0;newGame();SFX.tap();};
-$('btn-cancel-restart').onclick=()=>{closeModal('modal-restart');SFX.tap();};
-$('btn-menu-restart').onclick=()=>{closeModal('modal-restart');stopTimer();buildDiffMenu();showScreen('menu');SFX.tap();};
-
-/* teclado físico */
-document.addEventListener('keydown',e=>{
-  if(!$('game').classList.contains('active')) return;
-  if(e.key.length!==1) return;
-  const ch=normalize(e.key);
-  if(ALPHABET.includes(ch)) onLetter(ch);
+/* teclado físico (acepta acentos y ñ) */
+document.addEventListener('keydown', e => {
+  if (!$('game').classList.contains('active') || document.querySelector('#sk-modal.active')) return;
+  if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
+  const ch = normalize(e.key);
+  if (ALPHABET.includes(ch)) onLetter(ch);
 });
 
-function showScreen(name){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  $(name).classList.add('active');
-  if(name==='game') requestAnimationFrame(()=>{resizeCanvas();drawGallows();});
-}
-
-/* ---------- PWA ---------- */
-let deferredPrompt=null;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;if(!localStorage.getItem('sk-install-dismissed'))$('install-prompt').classList.add('show');});
-$('btn-install').onclick=async()=>{if(!deferredPrompt)return;$('install-prompt').classList.remove('show');deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;};
-$('btn-install-close').onclick=()=>{$('install-prompt').classList.remove('show');try{localStorage.setItem('sk-install-dismissed','1');}catch(e){}};
-window.addEventListener('appinstalled',()=>{$('install-prompt').classList.remove('show');});
-
-if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
-
-/* ---------- INIT ---------- */
-try{const c=localStorage.getItem('sk-ah-cat');if(c&&WORDS[c])state.category=c;}catch(e){}
-buildCategoryGrid();
-buildDiffMenu();
-window.addEventListener('load',()=>{loadAd($('ad-bottom-menu'),ADS.banner50);});
+/* ---------- INICIO ---------- */
+buildMenu();
+SK.bannerAd($('ad-bottom'));
+SK.initPWA('Ahorcado');
+(() => {
+  const p = new URLSearchParams(location.search);
+  const clean = () => history.replaceState(null, '', location.pathname);
+  if (p.get('reto')) {
+    const code = p.get('reto'), r = decodeReto(code); clean();
+    if (r) { st.retoCode = code; startReto(r); } else SK.toast('Ese link de reto no funciona 😕');
+  } else if (p.get('modo') === 'diaria') { clean(); startDaily(); }
+  else if (p.get('modo') === 'reto') { clean(); openReto(); }
+  else if (p.get('modo') === 'contrarreloj') { clean(); menuMode = 'cr'; paintMode(); }
+})();
 </script>
 </body>
 </html>

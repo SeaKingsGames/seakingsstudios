@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#7a1f3d">
+<title>Lotería · SeaKingsGames</title>
+<meta name="description" content="Lotería mexicana gratis con baraja propia de 54 cartas y versos originales. Gritón con voz, 4 tipos de juego y 3 rivales. Funciona sin internet.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="comun.css">
+<style>
+  :root{ --bg:#7a1f3d; --bg-2:#3a0c1d; --panel:#982a4e; --panel-2:#ad3a60; --accent:#ffd43b; --accent-deep:#c79a00; --accent-ink:#3a2a00; --card:#fff8e7; }
+  #game{flex:1}
+  #game > *{flex-shrink:0}
+  .caller{display:flex;align-items:center;gap:12px;margin:4px auto 0;width:min(440px,94vw);padding:10px 12px;border-radius:18px;background:rgba(0,0,0,.25)}
+  .big{width:86px;height:118px;flex-shrink:0;border-radius:12px;background:var(--card);border:4px solid #e8b04b;box-shadow:0 6px 16px rgba(0,0,0,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#3a1020;position:relative}
+  .big .e{font-size:52px;line-height:1}
+  .big .n{font-size:11px;font-weight:700;margin-top:4px;text-align:center;line-height:1.1;padding:0 3px}
+  .big .k{position:absolute;top:3px;left:6px;font-size:10px;font-weight:700;opacity:.6}
+  .big.flip{animation:flipIn .45s ease-out}
+  @keyframes flipIn{0%{transform:rotateY(90deg) scale(.8)}100%{transform:none}}
+  .caller .txt{flex:1;min-width:0}
+  .caller .name{font-family:'Bagel Fat One','Fredoka',system-ui,sans-serif;font-size:24px;color:var(--accent);line-height:1.05}
+  .caller .verse{font-size:14px;color:#ffe3ec;margin-top:4px;line-height:1.3;font-style:italic}
+  .caller .meta{font-size:11px;color:#f3b9cc;margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .prev{display:flex;gap:3px}
+  .prev span{font-size:16px;background:var(--card);border-radius:5px;padding:1px 3px}
+  .rivals{display:flex;justify-content:center;gap:6px;padding:8px 8px 2px;flex-wrap:wrap}
+  .rivals span{font-size:12px;font-weight:600;padding:4px 9px;border-radius:10px;background:rgba(255,255,255,.1)}
+  .rivals span.hot{background:#ff8787;color:#fff;animation:pulse .8s infinite}
+  @keyframes pulse{50%{opacity:.7}}
+  .tabla{display:grid;grid-template-columns:repeat(4,var(--cw));gap:6px;justify-content:center;padding:8px;margin:4px auto;background:#5a1430;border-radius:16px;width:max-content;box-shadow:inset 0 0 0 3px #e8b04b}
+  .c{width:var(--cw);height:calc(var(--cw) * 1.32);border-radius:9px;background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;color:#3a1020;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+  .c .e{font-size:calc(var(--cw) * .5);line-height:1}
+  .c .n{font-size:calc(var(--cw) * .13);font-weight:700;margin-top:3px;text-align:center;line-height:1.05;padding:0 2px}
+  .c .k{position:absolute;top:2px;left:4px;font-size:calc(var(--cw) * .12);font-weight:700;opacity:.5}
+  .c.goal{box-shadow:0 3px 0 rgba(0,0,0,.25),inset 0 0 0 3px rgba(255,212,59,.9)}
+  .c .bean{position:absolute;width:44%;height:30%;border-radius:50%;background:radial-gradient(circle at 35% 35%,#c98b5a,#7a4321 70%);box-shadow:0 2px 3px rgba(0,0,0,.45);transform:rotate(-20deg);animation:beanIn .25s ease-out}
+  .c .bean::after{content:'';position:absolute;left:30%;top:20%;width:40%;height:20%;border-radius:50%;background:rgba(255,255,255,.35)}
+  @keyframes beanIn{from{transform:rotate(-20deg) scale(2);opacity:0}}
+  .c.no{animation:shakeX .35s}
+  .acts{display:flex;justify-content:center;gap:10px;padding:8px 12px 16px}
+  .loteria-btn{font-family:'Bagel Fat One','Fredoka',system-ui,sans-serif;font-size:26px;letter-spacing:1px;min-width:200px}
+  .loteria-btn:disabled{opacity:.4}
+  .chk{display:flex;align-items:center;gap:8px;color:#ffe3ec;font-size:14px;font-weight:500}
+  .chk input{width:18px;height:18px;accent-color:var(--accent)}
+  .patterns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:min(420px,94vw)}
+  .pat{background:var(--panel);border-radius:14px;padding:8px 4px;box-shadow:var(--shadow);border:2px solid transparent;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:12px;font-weight:600}
+  .pat.on{border-color:var(--accent);background:var(--panel-2)}
+  .mini{display:grid;grid-template-columns:repeat(4,8px);gap:2px}
+  .mini i{width:8px;height:10px;border-radius:2px;background:rgba(255,255,255,.25)}
+  .mini i.g{background:var(--accent)}
+</style>
+</head>
+<body>
+
+<section id="menu" class="screen active">
+  <div class="logo-ico">🎴</div>
+  <div class="logo">LOTERÍA<small>Baraja SeaKings · 54 cartas</small></div>
+  <div class="record-line" id="wins"></div>
+  <div class="section-title">¿A QUÉ JUGAMOS?</div>
+  <div class="patterns" id="patterns"></div>
+  <div class="section-title">VELOCIDAD DEL GRITÓN</div>
+  <div class="seg" id="seg-speed"><button data-s="lento">🐢 Lento</button><button data-s="normal">🙂 Normal</button><button data-s="rapido">⚡ Rápido</button></div>
+  <label class="chk"><input type="checkbox" id="chk-voice"> 🗣️ Que el gritón cante las cartas en voz alta</label>
+  <button class="btn-primary" id="btn-start" style="width:min(380px,94vw);font-size:20px">🎴 ¡Corre y se va!</button>
+  <p class="how" style="color:#ffe3ec">El gritón saca cartas; si la tienes en tu tabla, tócala para ponerle un frijolito. Cuando completes la figura, ¡grita LOTERÍA! antes que Lupita, Don Chuy y Pancho.</p>
+  <a class="back-link" href="index.html">← Volver a la arcada</a>
+  <div class="ad-banner-bottom" id="ad-bottom"></div>
+</section>
+
+<section id="game" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" id="btn-back">‹</button>
+    <div class="level-title"><div class="badge" id="badge">TABLA LLENA</div><h1>Lotería</h1></div>
+    <button class="icon-btn small" id="btn-sound">🔊</button>
+    <button class="icon-btn" id="btn-pause">⏸</button>
+  </div>
+  <div class="caller">
+    <div class="big" id="big"><span class="k"></span><span class="e">🎴</span><span class="n"></span></div>
+    <div class="txt">
+      <div class="name" id="c-name">¡Corre y se va!</div>
+      <div class="verse" id="c-verse">Prepárate, que ya empieza…</div>
+      <div class="meta"><span id="c-count"></span><span class="prev" id="c-prev"></span></div>
+    </div>
+  </div>
+  <div class="rivals" id="rivals"></div>
+  <div class="tabla" id="tabla"></div>
+  <div class="acts"><button class="btn-primary loteria-btn" id="btn-loteria">¡LOTERÍA!</button></div>
+</section>
+
+<script src="comun.js"></script>
+<script>
+/* =====================================================
+   LOTERÍA · SeaKingsGames
+   Baraja propia: 54 cartas con emojis y versos originales.
+   ===================================================== */
+const { $, sfx } = SK;
+const CARDS = [
+  ['El Gallo', '🐓', 'Antes que suene la alarma, ya está cantando en la azotea.'],
+  ['El Diablito', '😈', 'Con su colita y su trinche, siempre anda de travieso.'],
+  ['La Dama', '💃', 'Elegante y bailadora, se adueña de la pista.'],
+  ['El Catrín', '🎩', 'Bastón, sombrero y bigote: el más presumido del barrio.'],
+  ['El Paraguas', '☂️', 'Si lo traes no llueve; si lo olvidas, cae tormenta.'],
+  ['La Sirena', '🧜‍♀️', 'Canta bonito en el mar y nadie se la puede olvidar.'],
+  ['La Escalera', '🪜', 'Paso a pasito se llega hasta la azotea.'],
+  ['La Botella', '🍾', 'Se destapa en las fiestas y salpica a todos.'],
+  ['El Árbol', '🌳', 'Da sombra en el parque y casa a los pajaritos.'],
+  ['El Melón', '🍈', 'Dulce y redondito, para el agua fresca del mediodía.'],
+  ['El Charro', '🤠', 'Sombrero ancho y espuelas: el más galán del jaripeo.'],
+  ['El Gorrito', '🧢', 'Se pone al revés para verse más chido.'],
+  ['La Muerte', '💀', 'Llega en noviembre y le ponemos su ofrenda.'],
+  ['La Pera', '🍐', 'Panzoncita y jugosa, la consentida del frutero.'],
+  ['La Bandera', '🇲🇽', 'Verde, blanco y colorado, ondeando en el Zócalo.'],
+  ['La Guitarra', '🎸', 'Seis cuerdas y una serenata bajo la ventana.'],
+  ['El Violín', '🎻', 'Suspira bonito cuando lo toca el mariachi.'],
+  ['El Pájaro', '🐦', 'Canta en el cable de luz frente a tu casa.'],
+  ['La Mano', '✋', 'Cinco deditos para saludar al vecino.'],
+  ['La Bota', '👢', 'Para bailar zapateado y pisar con fuerza.'],
+  ['La Luna', '🌙', 'Se asoma de noche y acompaña a los desvelados.'],
+  ['El Cotorro', '🦜', 'Repite todo lo que oye; ¡cuidado con los chismes!'],
+  ['El Corazón', '❤️', 'Late más fuerte cuando ve pasar a quien le gusta.'],
+  ['La Sandía', '🍉', 'Verde por fuera, roja por dentro y llena de semillas.'],
+  ['El Tambor', '🥁', 'Pum, pum, pum: marca el paso del desfile.'],
+  ['El Camarón', '🦐', 'Rosadito y bailarín, va derechito al coctel.'],
+  ['La Flecha', '🏹', 'Directo al blanco y sin miedo a fallar.'],
+  ['El Músico', '🎺', 'Toca la trompeta y se prende la fiesta.'],
+  ['La Araña', '🕷️', 'Teje su casita en la esquina del techo.'],
+  ['El Soldado', '💂', 'Firmes y derechos cuida la puerta del palacio.'],
+  ['La Estrella', '⭐', 'Pídele un deseo antes de dormir.'],
+  ['La Olla', '🍲', 'Ahí hierve el pozole de los domingos.'],
+  ['El Mundo', '🌎', 'Da vueltas y vueltas y nunca se marea.'],
+  ['El Nopal', '🌵', 'Espinoso por fuera, sabroso en ensalada.'],
+  ['El Alacrán', '🦂', 'Escondido en el zapato: revisa antes de ponértelo.'],
+  ['La Rosa', '🌹', 'Huele bonito, pero ojo con las espinas.'],
+  ['La Calavera', '☠️', 'Huesitos de azúcar con tu nombre en la frente.'],
+  ['La Campana', '🔔', 'Tilín, tilán: ya es hora de salir al recreo.'],
+  ['El Cantarito', '🏺', 'Agua fresquita de barro para el calorón.'],
+  ['El Venado', '🦌', 'Brinca en el monte con sus cuernos de rama.'],
+  ['El Sol', '☀️', 'Calienta los tejados y seca la ropa del tendedero.'],
+  ['La Corona', '👑', 'Para el rey o la reina de la fiesta.'],
+  ['La Chalupa', '🛶', 'Navega en los canales cargadita de flores.'],
+  ['El Pino', '🌲', 'Huele a Navidad aunque estemos en julio.'],
+  ['El Pescado', '🐟', 'Nada que nada y nunca se cansa.'],
+  ['La Palma', '🌴', 'Se mece con el viento a la orilla de la playa.'],
+  ['La Maceta', '🪴', 'Plantita en la ventana de la abuela.'],
+  ['El Acordeón', '🪗', 'Abre y cierra, y suena la norteña.'],
+  ['La Rana', '🐸', 'Croac, croac: canta cuando va a llover.'],
+  ['El Taco', '🌮', 'De pastor, con su piña, cebolla y cilantro.'],
+  ['El Elote', '🌽', 'Con mayonesa, queso y chilito del bueno.'],
+  ['La Piñata', '🪅', 'Repleta de dulces, espera el golpe en la posada.'],
+  ['El Chile', '🌶️', 'Pica poquito… o eso dice tu tía.'],
+  ['El Xolo', '🐕', 'Perrito sin pelo que guía a las almas.'],
+];
+const PATTERNS = {
+  llena:    { label:'Tabla llena', sets:[[...Array(16).keys()]] },
+  linea:    { label:'Línea', sets:[[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15],[0,4,8,12],[1,5,9,13],[2,6,10,14],[3,7,11,15],[0,5,10,15],[3,6,9,12]] },
+  esquinas: { label:'4 esquinas', sets:[[0,3,12,15]] },
+  centro:   { label:'Centrito', sets:[[5,6,9,10]] },
+};
+const SPEEDS = { lento:5200, normal:3700, rapido:2500 };
+const RIVALS = ['Lupita', 'Don Chuy', 'Pancho'];
+const K = window.LOT_SPEED || 1; // solo para pruebas automáticas
+
+let pattern = SK.store.get('sk-lot-pattern', 'llena');
+let speed = SK.store.get('sk-lot-speed', 'normal');
+let voice = SK.store.get('sk-lot-voice', true);
+const st = { deck:[], called:new Set(), idx:0, mine:[], marks:new Set(), rivals:[], timer:null, paused:false, over:true, run:0, lock:0, last:[] };
+
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const tabla = () => shuffle([...CARDS.keys()]).slice(0, 16);
+// cuántas cartas le faltan a una tabla para completar la figura
+function missing(cards, marked){
+  return Math.min(...PATTERNS[pattern].sets.map(set => set.filter(k => !marked.has(k)).length));
+}
+
+/* ---------- PARTIDA ---------- */
+function start(){
+  sfx.init(); sfx.tap();
+  st.run++; clearTimeout(st.timer);
+  Object.assign(st, { deck: shuffle([...CARDS.keys()]), called:new Set(), idx:0, mine: tabla(), marks:new Set(), paused:false, over:false, lock:0, last:[] });
+  st.rivals = RIVALS.map(name => ({ name, cards: tabla(), marks: new Set(), claimed:false }));
+  $('badge').textContent = PATTERNS[pattern].label.toUpperCase();
+  $('btn-pause').textContent = '⏸';
+  SK.showScreen('game'); layout(); renderTabla(); renderRivals();
+  setCaller(null);
+  speak('¡Corre y se va!');
+  const run = st.run;
+  st.timer = setTimeout(() => draw(run), 1800 / K);
+}
+function draw(run){
+  if (run !== st.run || st.over) return;
+  if (st.paused) { st.timer = setTimeout(() => draw(run), 400); return; }
+  if (st.idx >= st.deck.length) return;
+  const card = st.deck[st.idx++];
+  st.called.add(card); st.last.unshift(card); st.last = st.last.slice(0, 5);
+  setCaller(card);
+  // los rivales ponen su frijolito con un poquito de retraso
+  st.rivals.forEach(r => {
+    const pos = r.cards.indexOf(card);
+    if (pos < 0) return;
+    setTimeout(() => {
+      if (run !== st.run || st.over) return;
+      r.marks.add(pos); renderRivals();
+      if (!r.claimed && missing(r.cards, r.marks) === 0) {
+        r.claimed = true;
+        setTimeout(() => { if (run === st.run && !st.over) rivalWins(r); }, (900 + Math.random() * 2200) / K);
+      }
+    }, (500 + Math.random() * 1400) / K);
+  });
+  st.timer = setTimeout(() => draw(run), SPEEDS[speed] / K);
+}
+function setCaller(card){
+  const big = $('big');
+  if (card == null) { big.querySelector('.e').textContent = '🎴'; big.querySelector('.n').textContent = ''; big.querySelector('.k').textContent = ''; $('c-count').textContent = ''; $('c-prev').innerHTML = ''; return; }
+  const [name, emoji, verse] = CARDS[card];
+  big.querySelector('.e').textContent = emoji; big.querySelector('.n').textContent = name; big.querySelector('.k').textContent = card + 1;
+  big.classList.remove('flip'); void big.offsetWidth; big.classList.add('flip');
+  $('c-name').textContent = name; $('c-verse').textContent = verse;
+  $('c-count').textContent = `Carta ${st.idx} de 54`;
+  const prev = $('c-prev'); prev.innerHTML = '';
+  st.last.slice(1).forEach(k => { const s = document.createElement('span'); s.textContent = CARDS[k][1]; s.title = CARDS[k][0]; prev.appendChild(s); });
+  sfx.tone(520, .06, 'triangle', .1); sfx.tone(780, .08, 'triangle', .1, .06);
+  // lento: verso y luego nombre (como el gritón de feria); normal: nombre primero para que nunca se corte; rápido: solo el nombre
+  speak(speed === 'lento' ? `${verse} ¡${name}!` : speed === 'normal' ? `¡${name}! ${verse}` : `¡${name}!`);
+}
+function speak(text){
+  if (!voice || !sfx.enabled || !('speechSynthesis' in window)) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'es-MX'; u.rate = speed === 'rapido' ? 1.25 : 1.05; u.pitch = 1.05;
+    const v = speechSynthesis.getVoices().find(x => /es[-_]MX/i.test(x.lang)) || speechSynthesis.getVoices().find(x => /^es/i.test(x.lang));
+    if (v) u.voice = v;
+    speechSynthesis.speak(u);
+  } catch(e) {}
+}
+
+/* ---------- TU TABLA ---------- */
+function layout(){
+  const w = Math.min(innerWidth, 520) - 48, h = innerHeight - 330;
+  const cw = Math.floor(Math.max(54, Math.min(w / 4 - 6, (h / 4 - 6) / 1.32, 110)));
+  $('tabla').style.setProperty('--cw', cw + 'px');
+}
+addEventListener('resize', () => { if ($('game').classList.contains('active')) layout(); });
+function renderTabla(){
+  const box = $('tabla'); box.innerHTML = '';
+  const goal = new Set(pattern === 'linea' ? [] : PATTERNS[pattern].sets[0]);
+  st.mine.forEach((card, pos) => {
+    const [name, emoji] = CARDS[card];
+    const d = document.createElement('div'); d.className = 'c' + (goal.has(pos) && pattern !== 'llena' ? ' goal' : '');
+    d.innerHTML = '<span class="k"></span><span class="e"></span><span class="n"></span>';
+    d.querySelector('.k').textContent = card + 1; d.querySelector('.e').textContent = emoji; d.querySelector('.n').textContent = name;
+    if (st.marks.has(pos)) { const b = document.createElement('i'); b.className = 'bean'; d.appendChild(b); }
+    d.onclick = () => mark(pos, d);
+    box.appendChild(d);
+  });
+}
+function mark(pos, el){
+  if (st.over) return;
+  sfx.init();
+  if (st.marks.has(pos)) return;
+  if (!st.called.has(st.mine[pos])) { el.classList.remove('no'); void el.offsetWidth; el.classList.add('no'); sfx.bad(); SK.toast('Esa carta todavía no sale'); return; }
+  st.marks.add(pos); sfx.tone(300, .05, 'square', .07);
+  renderTabla();
+  if (missing(st.mine, st.marks) === 0) { sfx.tone(988, .12, 'triangle', .12); SK.toast('¡Ya la tienes! Grita ¡LOTERÍA!'); }
+}
+function renderRivals(){
+  const box = $('rivals'); box.innerHTML = '';
+  st.rivals.forEach(r => {
+    const m = missing(r.cards, r.marks), s = document.createElement('span');
+    s.textContent = `${r.name}: ${m === 0 ? '¡ya casi grita!' : `le falta${m > 1 ? 'n' : ''} ${m}`}`;
+    if (m <= 1) s.className = 'hot';
+    box.appendChild(s);
+  });
+}
+
+/* ---------- ¡LOTERÍA! ---------- */
+$('btn-loteria').onclick = () => {
+  if (st.over || Date.now() < st.lock) return;
+  sfx.init();
+  if (missing(st.mine, st.marks) === 0) return win();
+  st.lock = Date.now() + 3000; $('btn-loteria').disabled = true;
+  setTimeout(() => $('btn-loteria').disabled = false, 3000);
+  sfx.bad(); SK.toast('¡Todavía no! Te faltan cartas. Espera 3 segundos…');
+};
+function win(){
+  st.over = true; clearTimeout(st.timer); speechSynthesis && speechSynthesis.cancel && speechSynthesis.cancel();
+  speak('¡Lotería!'); sfx.win(); setTimeout(() => sfx.newRec(), 500);
+  const key = `sk-lot-wins-${pattern}`; SK.store.set(key, SK.store.get(key, 0) + 1);
+  const total = Object.keys(PATTERNS).reduce((s, k) => s + SK.store.get(`sk-lot-wins-${k}`, 0), 0);
+  setTimeout(() => SK.result({
+    emoji:'🎉', title:'¡LOTERÍA!', text:`Ganaste en ${PATTERNS[pattern].label.toLowerCase()} con ${st.idx} cartas cantadas`,
+    stats:[[st.idx, 'CARTAS'], [total, 'VICTORIAS']],
+    share:{ emoji:'🎴', title:'¡LOTERÍA!', game:'Lotería', sub: PATTERNS[pattern].label, big:`${st.idx} cartas`, stats:[[st.idx, 'CARTAS'], [total, 'VICTORIAS']], text:`🎴 ¡Grité LOTERÍA! (${PATTERNS[pattern].label}) a las ${st.idx} cartas\nJuega: SeaKingsGames`, file:'logro-loteria' },
+    buttons:[{ label:'Otra tabla →', onClick: start }, { label:'Cambiar juego', kind:'ghost', onClick: toMenu }],
+  }), 700);
+}
+function rivalWins(r){
+  st.over = true; clearTimeout(st.timer);
+  speak(`¡Lotería! Ganó ${r.name}`); sfx.lose();
+  const extra = document.createElement('div');
+  extra.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:6px auto;max-width:220px';
+  r.cards.forEach((c, k) => { const d = document.createElement('div'); d.style.cssText = `font-size:22px;background:#fff8e7;border-radius:6px;padding:3px;position:relative;opacity:${r.marks.has(k) ? 1 : .45}`; d.textContent = CARDS[c][1]; extra.appendChild(d); });
+  setTimeout(() => SK.result({
+    emoji:'😱', lose:true, title:`¡${r.name} gritó LOTERÍA!`, text:`Te ganó a las ${st.idx} cartas. Te faltaban ${missing(st.mine, st.marks)}.`, extra,
+    buttons:[{ label:'Revancha →', onClick: start }, { label:'Cambiar juego', kind:'ghost', onClick: toMenu }],
+  }), 600);
+}
+
+/* ---------- MENÚ ---------- */
+function buildMenu(){
+  const box = $('patterns'); box.innerHTML = '';
+  Object.entries(PATTERNS).forEach(([k, p]) => {
+    const b = document.createElement('button'); b.className = 'pat' + (k === pattern ? ' on' : '');
+    const goal = new Set(k === 'linea' ? [0, 1, 2, 3] : p.sets[0]);
+    b.innerHTML = `<div class="mini">${[...Array(16).keys()].map(i => `<i class="${goal.has(i) ? 'g' : ''}"></i>`).join('')}</div><span></span>`;
+    b.lastChild.textContent = p.label;
+    b.onclick = () => { sfx.init(); sfx.tap(); pattern = k; SK.store.set('sk-lot-pattern', k); buildMenu(); };
+    box.appendChild(b);
+  });
+  document.querySelectorAll('#seg-speed button').forEach(b => { b.classList.toggle('on', b.dataset.s === speed); b.onclick = () => { sfx.tap(); speed = b.dataset.s; SK.store.set('sk-lot-speed', speed); buildMenu(); }; });
+  $('chk-voice').checked = voice;
+  const total = Object.keys(PATTERNS).reduce((s, k) => s + SK.store.get(`sk-lot-wins-${k}`, 0), 0);
+  $('wins').textContent = total ? `🏆 Has gritado lotería ${total} ${total === 1 ? 'vez' : 'veces'}` : '';
+}
+$('chk-voice').onchange = e => { voice = e.target.checked; SK.store.set('sk-lot-voice', voice); if (voice) { sfx.init(); speak('¡Así cantaré las cartas!'); } };
+$('btn-start').onclick = start;
+function toMenu(){ st.run++; st.over = true; clearTimeout(st.timer); try { speechSynthesis.cancel(); } catch(e) {} SK.closeModal(); buildMenu(); SK.showScreen('menu'); }
+$('btn-back').onclick = () => {
+  sfx.tap();
+  if (st.over) { toMenu(); return; }
+  st.paused = true;
+  SK.result({ emoji:'🚪', title:'¿Salir del juego?', text:'Se perderá esta tabla', buttons:[{ label:'Sí, salir', onClick: toMenu }, { label:'Seguir jugando', kind:'secondary', onClick: () => { st.paused = false; } }] });
+};
+$('btn-pause').onclick = () => {
+  if (st.over) return;
+  st.paused = !st.paused; $('btn-pause').textContent = st.paused ? '▶' : '⏸';
+  SK.toast(st.paused ? '⏸ Pausa: el gritón espera' : '▶ ¡Seguimos!');
+};
+document.addEventListener('visibilitychange', () => { if (document.hidden && !st.over) { st.paused = true; $('btn-pause').textContent = '▶'; } });
+SK.soundButton($('btn-sound'));
+if ('speechSynthesis' in window) speechSynthesis.getVoices();
+buildMenu();
+SK.bannerAd($('ad-bottom'));
+SK.initPWA('Lotería');
+</script>
+</body>
+</html>

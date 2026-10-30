@@ -90,7 +90,11 @@ const SK = (() => {
     x.fillStyle = acc; x.font = 'bold 54px sans-serif'; x.fillText(o.title || '¡LOGRO!', 540, 320);
     x.fillStyle = '#fff'; x.font = 'bold 92px sans-serif'; x.fillText(o.game, 540, 425);
     x.fillStyle = 'rgba(255,255,255,.7)'; x.font = 'bold 38px sans-serif'; x.fillText(o.sub || '', 540, 490);
-    if (o.big) { x.fillStyle = '#fff'; x.font = 'bold 76px sans-serif'; x.fillText(o.big, 540, 585); }
+    if (o.big) {
+      x.fillStyle = '#fff'; let fs = 76; x.font = `bold ${fs}px sans-serif`;
+      while (x.measureText(o.big).width > 920 && fs > 28) { fs -= 4; x.font = `bold ${fs}px sans-serif`; }
+      x.fillText(o.big, 540, 585);
+    }
     x.fillStyle = acc; roundRect(x, 90, 640, 900, 240, 30); x.fill();
     const st = (o.stats || []).slice(0, 3), n = st.length || 1;
     st.forEach(([val, lbl], i) => {
@@ -173,5 +177,26 @@ const SK = (() => {
   }
   function bannerAd(el){ addEventListener('load', () => loadAd(el, ADS.banner50)); }
 
-  return { $, sfx, soundButton, ADS, loadAd, bannerAd, store, fmtTime, showScreen, result, closeModal: close, share, achievementCanvas, initPWA };
+  /* ---------- AVISO CORTO ---------- */
+  let toastT = null;
+  function toast(msg){
+    let t = document.getElementById('sk-toast');
+    if (!t) {
+      t = document.createElement('div'); t.id = 'sk-toast';
+      t.style.cssText = 'position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 16px);transform:translateX(-50%);z-index:200;background:rgba(10,20,41,.95);color:#fff;padding:10px 16px;border-radius:14px;font-weight:600;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:90vw;text-align:center;transition:opacity .3s;pointer-events:none';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg; t.style.opacity = '1';
+    clearTimeout(toastT); toastT = setTimeout(() => t.style.opacity = '0', 2600);
+  }
+  /* ---------- COMPARTIR TEXTO (resultado tipo Wordle) ---------- */
+  async function shareText(text){
+    try {
+      if (navigator.share) { await navigator.share({ text }); return; }
+    } catch(e) { if (e && e.name === 'AbortError') return; }
+    try { await navigator.clipboard.writeText(text); toast('📋 Resultado copiado, pégalo donde quieras'); }
+    catch(e) { prompt('Copia tu resultado:', text); }
+  }
+
+  return { $, sfx, soundButton, ADS, loadAd, bannerAd, store, fmtTime, showScreen, result, closeModal: close, share, shareText, toast, achievementCanvas, initPWA };
 })();
