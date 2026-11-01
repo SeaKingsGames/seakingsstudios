@@ -1,6 +1,6 @@
 ---
 nombre: Serpientes y Escaleras
-orden: 9
+orden: 10
 archivo: serpientes
 genero: Juego de mesa
 lema: Tira el dado, sube escaleras y cuidado con las serpientes.

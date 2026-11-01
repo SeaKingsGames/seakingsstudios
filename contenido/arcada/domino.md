@@ -1,6 +1,6 @@
 ---
 nombre: Dominó
-orden: 5
+orden: 6
 archivo: domino
 genero: Juego de mesa
 lema: En parejas, mano a mano o todos contra todos, a 100 puntos.

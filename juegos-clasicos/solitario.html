@@ -6,6 +6,14 @@
 <meta name="theme-color" content="#17663a">
 <title>Solitario · SeaKingsGames</title>
 <meta name="description" content="Solitario Klondike gratis en español: robar 1 o robar 3, deshacer, pistas y terminar automático. Juega sin internet desde el celular.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Solitario · SeaKingsGames">
+<meta property="og:description" content="Solitario Klondike gratis en español: robar 1 o robar 3, deshacer, pistas y terminar automático. Juega sin internet desde el celular.">
+<meta property="og:url" content="https://seakingsgames.github.io/SeaKingsClassicGames/solitario.html">
+<meta property="og:image" content="https://seakingsgames.github.io/SeaKingsClassicGames/img/arte/solitario-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -47,7 +55,7 @@
 <body>
 
 <section id="menu" class="screen active">
-  <div class="logo-ico">🃏</div>
+  <img class="sk-hero" src="img/arte/solitario.jpg" alt="" decoding="async">
   <div class="logo">SOLITARIO<small>Klondike · SeaKingsGames</small></div>
   <div class="record-line" id="rec"></div>
   <div class="section-title">MODO</div>
@@ -55,6 +63,7 @@
   <button class="btn-primary" id="btn-continue" style="width:min(380px,94vw);font-size:19px;display:none">▶ Continuar partida</button>
   <button class="btn-primary" id="btn-new" style="width:min(380px,94vw);font-size:19px">🃏 Repartir cartas</button>
   <p class="how">Sube las 52 cartas a las 4 bases, del As al Rey de cada palo. En las columnas acomoda de mayor a menor alternando rojo y negro; solo un Rey puede ir en un hueco vacío. Toca una carta para que se mueva sola, o arrástrala.</p>
+  <a class="diff-btn" href="spider.html" style="width:min(380px,94vw);text-decoration:none;color:#fff">🕷️ Solitario Spider <span class="tag d2">1, 2 o 4 palos</span></a>
   <a class="back-link" href="index.html">← Volver a la arcada</a>
   <div class="ad-banner-bottom" id="ad-bottom"></div>
 </section>
@@ -192,6 +201,13 @@ function doMove(src, k, dst, quiet){
   if (!quiet) { if (dst.p === 'f') sfx.tone(660 + S.found[dst.i].length * 30, .07, 'triangle', .1); else sfx.tone(340, .05, 'triangle', .09); }
   if (flipped) sfx.tone(520, .04, 'square', .05, .05);
   after();
+  if (dst.p === 'f' && !quiet) {
+    const slot = slots['f' + dst.i];
+    setTimeout(() => {
+      SK.fx.burst(slot, { colors: red(cards[0]) ? ['#ff8fab', '#fff'] : ['#ced4da', '#fff'], n: 6, speed: 110, size: 4, g: 120, life: .4 });
+      if (S.found[dst.i].length === 13 && !won) { SK.fx.ring(slot, { size: 70 }); SK.fx.sparkle(slot, { n: 14 }); SK.fx.float(slot, `¡${SUITS[suit(cards[0])]} completo!`, { color:'#ffd43b', size: 20 }); sfx.chime(); }
+    }, 200);
+  }
   return true;
 }
 function drawStock(){
@@ -402,7 +418,7 @@ function win(){
   sfx.win(); if (newRecord && prevT !== null) sfx.newRec();
   const time = SK.fmtTime(t), modeTxt = mode === 1 ? 'Robar 1' : 'Robar 3';
   const show = () => SK.result({
-    emoji:'🏆', title:'¡Lo resolviste!', newRecord: newRecord && prevT !== null,
+    emoji:'🏆', title:'¡Lo resolviste!', newRecord: newRecord && prevT !== null, celebrate: mode === 3 ? 'big' : true,
     text:`Solitario (${modeTxt}) en ${time} y ${moves} movimientos`,
     stats:[[time, 'TIEMPO'], [moves, 'MOVIMIENTOS'], [wins, 'VICTORIAS']],
     share:{ emoji:'🃏', title:'¡Solitario resuelto!', game:'Solitario', sub: modeTxt, big: time, stats:[[time, 'TIEMPO'], [moves, 'MOVIMIENTOS'], [wins, 'VICTORIAS']], text:`🃏 Resolví el Solitario (${modeTxt}) en ${time} y ${moves} movimientos\n¿Me ganas? SeaKingsGames`, file:'logro-solitario' },

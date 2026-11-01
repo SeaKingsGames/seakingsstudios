@@ -5,8 +5,8 @@ ruta: /arcada
 tipo: Arcada
 estado: publicado
 color: "#8cc4ff"
-lema: Veinte clásicos para jugar en el navegador o instalar en tu celular.
-resumen: Nuestra arcada de juegos clásicos. Lotería, Dominó, Solitario, Sudoku, Ahorcado, Batalla Naval, Buscaminas y más, rehechos por nosotros para jugarse con el dedo o con el teclado. Todos son gratis, en español, y la arcada se instala en tu celular como una app.
+lema: Veintiún clásicos para jugar en el navegador o instalar en tu celular.
+resumen: Nuestra arcada de juegos clásicos. Lotería, Dominó, Solitario, Spider, Sudoku, Ahorcado, Batalla Naval, Buscaminas y más, rehechos por nosotros para jugarse con el dedo o con el teclado. Todos son gratis, en español, y la arcada se instala en tu celular como una app.
 descripcion: Juega gratis Lotería, Dominó, Solitario, Sudoku, Ahorcado, Batalla Naval, Serpientes y Escaleras, Buscaminas, 2048 y más en tu navegador, o instala la arcada en tu celular. Juegos clásicos en español.
 icono: /img/arcada/icono.png
 compartir: /img/arcada/compartir.jpg
@@ -29,7 +29,7 @@ enlaces:
     url: "#juegos"
 ficha:
   Precio: Gratis
-  Juegos: 20
+  Juegos: 21
   Plataformas:
     - Navegador en celular, tableta y PC
     - Se instala en Android, iPhone y PC
@@ -47,6 +47,8 @@ historial:
     texto: Llegan cinco juegos nuevos (Buscaminas, 2048, Sopa de letras, Conecta 4 y Gato) y el Ahorcado crece a 25 temas y casi 1,500 palabras con pista.
   - fecha: 2026-10-30
     texto: Llegan ocho juegos más (Lotería, Solitario, Dominó, Sudoku, Ajolote Volador, Batalla Naval, Serpientes y Escaleras y El Juego del Ajolote), el Ahorcado estrena palabra del día, contrarreloj y retos por link, y la arcada se puede instalar en el celular.
+  - fecha: 2026-10-31
+    texto: Llega el Solitario Spider, cada juego estrena su ilustración, hay efectos y celebraciones en todos los juegos, y los juegos de tablero tienen animaciones y casillas ilustradas.
 esquema:
   tipo: VideoGame
   genero: Juegos casuales
@@ -56,7 +58,7 @@ esquema:
 
 ## Juegos de siempre, hechos a nuestra manera
 
-SeaKings Classic Games es la arcada de SeaKingsStudios. Tomamos juegos que todo mundo conoce, como la lotería, el dominó, el ahorcado o el solitario, y los rehicimos desde cero para que se sientan bien en el celular: botones grandes, partidas cortas y sonidos propios.
+SeaKings Classic Games es la arcada de SeaKingsStudios. Tomamos juegos que todo mundo conoce, como la lotería, el dominó, el ahorcado o el solitario, y los rehicimos desde cero para que se sientan bien en el celular: botones grandes, partidas cortas, sonidos propios y una ilustración hecha para cada juego.
 
 Todos los juegos comparten las mismas reglas de la casa:
 
@@ -86,7 +88,7 @@ Si llegaste desde TikTok, Instagram o Facebook, primero abre la página en tu na
 
 Para esos ratos cortos: la fila del banco, el camión o los cinco minutos antes de una junta. Las partidas son cortas y se pueden dejar a la mitad sin perder nada importante.
 
-También son buenos para jugar en familia. Serpientes y Escaleras y El Juego del Ajolote se juegan hasta entre cuatro en el mismo celular, y Conecta 4 y Gato entre dos. El Ahorcado, la Sopa de letras y Memoria funcionan muy bien con niños. La Lotería, el Dominó y el Solitario son los de mesa de toda la vida; Sudoku, Buscaminas, 2048, Numpuz y Tuercas Locas son para quien prefiere pensar antes de moverse, y Snake, Tower, Smash Brick y Ajolote Volador son puro reflejo.
+También son buenos para jugar en familia. Serpientes y Escaleras y El Juego del Ajolote se juegan hasta entre cuatro en el mismo celular, y Conecta 4 y Gato entre dos. El Ahorcado, la Sopa de letras y Memoria funcionan muy bien con niños. La Lotería, el Dominó, el Solitario y el Spider son los de mesa de toda la vida; Sudoku, Buscaminas, 2048, Numpuz y Tuercas Locas son para quien prefiere pensar antes de moverse, y Snake, Tower, Smash Brick y Ajolote Volador son puro reflejo.
 
 <!-- anuncio -->
 

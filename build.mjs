@@ -31,7 +31,7 @@ const slug = (t) => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').rep
 const urlAbs = (ruta) => SITIO.dominio + (ruta === '/' ? '/' : ruta);
 // La arcada se instala como app: empieza en el menú de juegos y abarca todo /arcada
 const APP = { manifiesto: '/arcada/app.webmanifest', sw: '/arcada-sw.js', alcance: '/arcada', inicio: '/arcada/jugar' };
-const NUMEROS = ['Cero', 'Un', 'Dos', 'Tres', 'Cuatro', 'Cinco', 'Seis', 'Siete', 'Ocho', 'Nueve', 'Diez', 'Once', 'Doce', 'Trece', 'Catorce', 'Quince', 'Dieciséis', 'Diecisiete', 'Dieciocho', 'Diecinueve', 'Veinte'];
+const NUMEROS = ['Cero', 'Un', 'Dos', 'Tres', 'Cuatro', 'Cinco', 'Seis', 'Siete', 'Ocho', 'Nueve', 'Diez', 'Once', 'Doce', 'Trece', 'Catorce', 'Quince', 'Dieciséis', 'Diecisiete', 'Dieciocho', 'Diecinueve', 'Veinte', 'Veintiún', 'Veintidós', 'Veintitrés', 'Veinticuatro', 'Veinticinco', 'Veintiséis', 'Veintisiete', 'Veintiocho', 'Veintinueve', 'Treinta'];
 const cantidad = (n) => NUMEROS[n] || String(n);
 
 function escribir(ruta, contenido) {
@@ -60,7 +60,7 @@ function medidas(ruta) {
   if (cacheMedidas.has(ruta)) return cacheMedidas.get(ruta);
   let r = null;
   try {
-    const b = fs.readFileSync(path.join(PUBLICO, ruta));
+    const b = fs.readFileSync(ruta.startsWith('/arcada/jugar/') ? path.join(RAIZ, 'juegos-clasicos', ruta.slice('/arcada/jugar/'.length)) : path.join(PUBLICO, ruta));
     if (b[0] === 0x89 && b.toString('ascii', 1, 4) === 'PNG') r = [b.readUInt32BE(16), b.readUInt32BE(20)];
     else if (b.toString('ascii', 0, 4) === 'RIFF' && b.toString('ascii', 8, 12) === 'WEBP') {
       const t = b.toString('ascii', 12, 16);
@@ -333,8 +333,8 @@ function tarjetaProyecto(p, i) {
 </a>`;
 }
 function tarjetaJuego(j) {
-  return `<a class="juego" href="/arcada/${j.id}">
-  <div class="juego-foto">${img(j.imagen, `Pantalla de ${j.nombre}`)}</div>
+  return `<a class="juego${j.arte ? ' juego--arte' : ''}" href="/arcada/${j.id}">
+  <div class="juego-foto">${j.arte ? img(j.arte, `Ilustración de ${j.nombre}`) : img(j.imagen, `Pantalla de ${j.nombre}`)}</div>
   <div class="juego-texto"><h3>${esc(j.nombre)}</h3><p>${esc(j.lema)}</p></div>
 </a>`;
 }
@@ -657,6 +657,10 @@ function swArcada() {
   const juegos = archivos.filter((f) => f.endsWith('.html') && f !== 'index.html').map((f) => `${APP.inicio}/${f.replace(/\.html$/, '')}`);
   const base = [APP.inicio, ...archivos.filter((f) => /^(comun\.(css|js)|icon-192\.png)$/.test(f)).map((f) => `${APP.inicio}/${f}`)];
   const resto = archivos.filter((f) => /\.(js|css|png)$/.test(f) && !base.includes(`${APP.inicio}/${f}`)).map((f) => `${APP.inicio}/${f}`);
+  const imgs = [];
+  const recorrer = (d, rel) => { if (!fs.existsSync(d)) return; for (const e of fs.readdirSync(d, { withFileTypes: true })) { if (e.isDirectory()) recorrer(path.join(d, e.name), `${rel}/${e.name}`); else if (/\.(jpg|png|webp)$/.test(e.name) && !/-og\./.test(e.name)) imgs.push(`${APP.inicio}/${rel}/${e.name}`); } };
+  recorrer(path.join(dir, 'img'), 'img');
+  resto.push(...imgs);
   return `// Service worker de la arcada de SeaKingsStudios (lo genera build.mjs)
 const CACHE = 'sk-arcada-${VERSION_CSS}';
 const BASE = ${JSON.stringify(base)};
@@ -697,7 +701,11 @@ function construir() {
   fs.mkdirSync(DIST, { recursive: true });
 
   const proyectos = leerCarpeta('proyectos').map((p) => ({ ...p, ruta: p.ruta || `/proyectos/${p.id}` })).sort((a, b) => (a.orden ?? 99) - (b.orden ?? 99));
-  const juegos = leerCarpeta('arcada').sort((a, b) => (a.orden ?? 99) - (b.orden ?? 99));
+  // Si el repo de la arcada trae ilustraciones (img/arte/<juego>.jpg y <juego>-og.jpg), se usan solas
+  const arte = (f) => (fs.existsSync(path.join(RAIZ, 'juegos-clasicos', 'img', 'arte', f)) ? `/arcada/jugar/img/arte/${f}` : null);
+  const juegos = leerCarpeta('arcada')
+    .map((j) => ({ ...j, arte: j.arte || arte(`${j.archivo}.jpg`), compartir: j.compartir || arte(`${j.archivo}-og.jpg`) }))
+    .sort((a, b) => (a.orden ?? 99) - (b.orden ?? 99));
   const articulos = leerCarpeta('bitacora').filter((a) => !a.borrador).sort((a, b) => iso(b.fecha).localeCompare(iso(a.fecha)));
   const paginas = leerCarpeta('paginas');
   const proyectosPorId = Object.fromEntries(proyectos.map((p) => [p.id, p]));
@@ -725,7 +733,7 @@ function construir() {
   escribir('404.html', pagina404(datos));
 
   escribir('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${rutas.map((r) => `  <url><loc>${urlAbs(r)}</loc></url>`).join('\n')}\n</urlset>\n`);
-  escribir('robots.txt', `User-agent: *\nAllow: /\nDisallow: /arcada/jugar/\n\nSitemap: ${urlAbs('/sitemap.xml')}\n`);
+  escribir('robots.txt', `User-agent: *\nAllow: /\nAllow: /arcada/jugar/img/\nDisallow: /arcada/jugar/\n\nSitemap: ${urlAbs('/sitemap.xml')}\n`);
 
   console.log(`✓ Sitio listo en dist/: ${rutas.length} páginas (${proyectos.length} proyectos, ${juegos.length} juegos, ${articulos.length} artículos).`);
 }

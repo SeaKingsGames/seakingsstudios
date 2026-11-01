@@ -1,6 +1,6 @@
 ---
 nombre: Conecta 4
-orden: 14
+orden: 15
 archivo: conecta4
 genero: Juego de estrategia
 lema: Junta cuatro fichas en línea antes que tu rival.

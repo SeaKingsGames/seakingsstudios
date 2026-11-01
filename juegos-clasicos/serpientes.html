@@ -6,6 +6,14 @@
 <meta name="theme-color" content="#1e3a2a">
 <title>Serpientes y Escaleras · SeaKingsGames</title>
 <meta name="description" content="Serpientes y escaleras gratis en español: juega contra la compu o con hasta 4 amigos en el mismo celular. Funciona sin internet.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Serpientes y Escaleras · SeaKingsGames">
+<meta property="og:description" content="Serpientes y escaleras gratis en español: juega contra la compu o con hasta 4 amigos en el mismo celular. Funciona sin internet.">
+<meta property="og:url" content="https://seakingsgames.github.io/SeaKingsClassicGames/serpientes.html">
+<meta property="og:image" content="https://seakingsgames.github.io/SeaKingsClassicGames/img/arte/serpientes-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,7 +30,7 @@
 <body>
 
 <section id="menu" class="screen active">
-  <div class="logo-ico">🐍</div>
+  <img class="sk-hero" src="img/arte/serpientes.jpg" alt="" decoding="async">
   <div class="logo">SERPIENTES<br>Y ESCALERAS<small>SeaKingsGames</small></div>
   <div class="record-line" id="wins"></div>
   <div class="section-title">¿CON QUIÉN JUEGAS?</div>
@@ -95,10 +103,15 @@ function drawLadder(ctx, a, b, s){
     ctx.beginPath(); ctx.moveTo(A.x + px * w * sg, A.y + py * w * sg); ctx.lineTo(B.x + px * w * sg, B.y + py * w * sg); ctx.stroke();
   });
 }
-function drawSnake(ctx, h, t, s, [col, dark]){
+function snakePts(h, t, s){
   const dx = t.x - h.x, dy = t.y - h.y, len = Math.hypot(dx, dy), ux = dx / len, uy = dy / len, px = -uy, py = ux;
   const waves = Math.max(1, Math.round(len / (s * 1.6))), amp = s * .28, pts = [];
   for (let k = 0; k <= 60; k++) { const t2 = k / 60, off = Math.sin(t2 * Math.PI * 2 * waves) * amp * Math.sin(Math.PI * Math.min(1, t2 * 1.4)); pts.push({ x: h.x + dx * t2 + px * off, y: h.y + dy * t2 + py * off, t: t2 }); }
+  return pts;
+}
+function drawSnake(ctx, h, t, s, [col, dark]){
+  const dx = t.x - h.x, dy = t.y - h.y, len = Math.hypot(dx, dy), ux = dx / len, uy = dy / len;
+  const pts = snakePts(h, t, s);
   // cuerpo que se adelgaza hacia la cola
   for (let pass = 0; pass < 2; pass++) for (let k = pts.length - 1; k >= 0; k--) {
     const p = pts[k], r = s * (.15 - .1 * p.t) + (pass ? 0 : s * .025);
@@ -131,8 +144,19 @@ const juego = Tablero({
   cellCenter: (n, W) => center(n, W),
   drawBoard,
   onLand(p, n){
-    if (LADDERS[n]) return { to: LADDERS[n], sound:'good', ms:800, msg:`🪜 ¡${p.you ? 'Subiste' : p.name + ' subió'} una escalera! De la ${n} a la ${LADDERS[n]}` };
-    if (SNAKES[n]) return { to: SNAKES[n], sound:'bad', ms:1000, msg:`🐍 ¡Ay! Una serpiente ${p.you ? 'te bajó' : 'bajó a ' + p.name} de la ${n} a la ${SNAKES[n]}` };
+    if (LADDERS[n]) return {
+      to: LADDERS[n], sound:'good', ms: 500 + (LADDERS[n] - n) * 18, linear:true,
+      msg:`🪜 ¡${p.you ? 'Subiste' : p.name + ' subió'} una escalera! De la ${n} a la ${LADDERS[n]}`,
+      anim: async () => { SK.sfx.glide(300, 900, .7, 'triangle', .09); },
+      after: async (q, api) => { const pt = api.pagePoint(q.x, q.y); SK.fx.ring(pt, { color:'#ffd43b' }); SK.fx.float(pt, `+${LADDERS[n] - n}`, { color:'#ffd43b', size: 24 }); },
+    };
+    if (SNAKES[n]) return {
+      to: SNAKES[n], sound:'bad', ms: 700 + (n - SNAKES[n]) * 22,
+      path: W => snakePts(center(n, W), center(SNAKES[n], W), W / 10),
+      msg:`🐍 ¡Ay! Una serpiente ${p.you ? 'te bajó' : 'bajó a ' + p.name} de la ${n} a la ${SNAKES[n]}`,
+      anim: async (q, api) => { SK.sfx.noise(.35, .12); SK.fx.float(api.pagePoint(q.x, q.y - 10), 'Ssss…', { color:'#8ce99a', size: 20 }); await api.wait(250); SK.sfx.glide(800, 160, .9, 'sine', .1); },
+      after: async (q, api) => { SK.fx.float(api.pagePoint(q.x, q.y), `−${n - SNAKES[n]}`, { color:'#ff8787', size: 24 }); },
+    };
     return null;
   },
 });

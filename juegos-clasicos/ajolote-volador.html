@@ -6,6 +6,14 @@
 <meta name="theme-color" content="#0b4f6c">
 <title>Ajolote Volador · SeaKingsGames</title>
 <meta name="description" content="Ajolote Volador: nada entre los corales sin chocar. Toca para nadar, gana medallas y supera tu récord. Gratis y sin internet.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ajolote Volador · SeaKingsGames">
+<meta property="og:description" content="Ajolote Volador: nada entre los corales sin chocar. Toca para nadar, gana medallas y supera tu récord. Gratis y sin internet.">
+<meta property="og:url" content="https://seakingsgames.github.io/SeaKingsClassicGames/ajolote-volador.html">
+<meta property="og:image" content="https://seakingsgames.github.io/SeaKingsClassicGames/img/arte/ajolote-volador-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -42,6 +50,7 @@
 </div>
 
 <div class="overlay" id="menu">
+  <img class="sk-hero" src="img/arte/ajolote-volador.jpg" alt="" decoding="async" style="width:min(360px,84vw)">
   <div class="logo">AJOLOTE<br>VOLADOR<small>SeaKingsGames</small></div>
   <div class="best" id="best"></div>
   <div class="seg" id="seg-mode"><button data-m="normal">🌊 Normal</button><button data-m="facil">🫧 Fácil</button></div>
@@ -117,11 +126,14 @@ function start(){
   $('menu').classList.add('hide'); $('tap-hint').classList.remove('hide'); $('ad-bottom').style.display = 'none';
   reset(); g.state = 'ready';
 }
+// de coordenadas del juego a la pantalla (para los efectos compartidos)
+function toPage(x, y){ const offY = (innerHeight / scale - H) / 2; return { x: x * scale, y: (y + offY) * scale }; }
 function die(){
   if (g.state !== 'play') return;
   g.state = 'dead'; g.shake = 14; g.flash = 1;
   sfx.noise(.25, .25); sfx.tone(180, .3, 'sawtooth', .12);
-  if (navigator.vibrate) navigator.vibrate(80);
+  SK.fx.vibrate(80);
+  SK.fx.burst(toPage(g.x, g.y), { colors:['#ff8fb1', '#8fe3c6', '#a5d8ff', '#fff'], n: 18, speed: 260, size: 6, g: 500, life: .7 });
   const score = g.score, key = `sk-ajolote-best-${mode}`, best = SK.store.get(key, 0), isRec = score > best;
   if (isRec) SK.store.set(key, score);
   SK.store.set('sk-ajolote-games', SK.store.get('sk-ajolote-games', 0) + 1);
@@ -129,7 +141,7 @@ function die(){
   setTimeout(() => {
     if (isRec && score > 0) sfx.newRec(); else sfx.lose();
     SK.result({
-      emoji: medal ? medal[1] : '💦', lose: !medal && !isRec,
+      emoji: medal ? medal[1] : '💦', lose: !medal && !isRec, celebrate: isRec && score > 0 ? (score >= 25 ? 'big' : true) : false,
       title: isRec && score > 0 ? '¡Nuevo récord!' : (medal ? `¡Medalla de ${medal[2].toLowerCase()}!` : '¡Ups, chocaste!'),
       stats:[[score, 'CORALES'], [Math.max(best, score), 'RÉCORD']],
       share:{ emoji: medal ? medal[1] : '💚', title: isRec ? '¡NUEVO RÉCORD!' : 'MI PARTIDA', game:'Ajolote Volador', sub:`Modo ${MODES[mode].label}`, big:`${score} corales`, stats:[[score, 'CORALES'], [Math.max(best, score), 'RÉCORD']], text:`💚 Mi ajolote pasó ${score} corales en Ajolote Volador. ¿Me ganas?\nJuega: SeaKingsGames`, file:'logro-ajolote' },
@@ -156,7 +168,12 @@ function update(dt){
     g.speed = Math.min(m.maxSpeed, m.speed + g.score * m.accel);
     g.obs.forEach(o => {
       o.x -= g.speed * dt;
-      if (!o.passed && o.x + o.w / 2 < g.x) { o.passed = true; g.score++; sfx.tone(880, .07, 'triangle', .1); sfx.tone(1320, .08, 'triangle', .08, .05); if ([10, 25, 50, 100].includes(g.score)) sfx.win(); }
+      if (!o.passed && o.x + o.w / 2 < g.x) {
+        o.passed = true; g.score++; sfx.tone(880, .07, 'triangle', .1); sfx.tone(1320, .08, 'triangle', .08, .05);
+        const md = MEDALS.find(([n]) => n === g.score);
+        if (md) { sfx.win(); const pt = toPage(g.x, g.y - 30); SK.fx.float(pt, `${md[1]} ¡${md[2].toLowerCase()}!`, { size: 28, color:'#ffd43b' }); SK.fx.sparkle(pt, { n: 16 }); SK.fx.vibrate(30); }
+        else if (g.score % 5 === 0) SK.fx.float(toPage(g.x + 20, g.y - 30), `${g.score}`, { size: 22, color:'#fff', dy: 50 });
+      }
       // choque: círculo contra los dos bloques
       const cx = Math.max(o.x, Math.min(g.x, o.x + o.w));
       const top = Math.max(0, Math.min(g.y, o.gy)), bot = Math.max(o.gy + o.gap, Math.min(g.y, FLOOR));

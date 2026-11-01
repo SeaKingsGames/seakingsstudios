@@ -1,7 +1,7 @@
 {
   "name": "SeaKingsGames",
   "short_name": "SeaKings",
-  "description": "Arcada de juegos clásicos en español: Lotería, Dominó, Solitario, Sudoku, Ahorcado, Batalla Naval, Serpientes y Escaleras, Buscaminas, 2048 y más.",
+  "description": "Arcada de juegos clásicos en español: Lotería, Dominó, Solitario, Spider, Sudoku, Ahorcado, Batalla Naval, Serpientes y Escaleras, Buscaminas, 2048 y más.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -46,8 +46,9 @@
       "url": "./ahorcado.html",
       "icons": [
         {
-          "src": "icon-192.png",
-          "sizes": "192x192"
+          "src": "img/arte/ahorcado-mini.jpg",
+          "sizes": "96x96",
+          "type": "image/jpeg"
         }
       ]
     },
@@ -57,8 +58,9 @@
       "url": "./loteria.html",
       "icons": [
         {
-          "src": "icon-192.png",
-          "sizes": "192x192"
+          "src": "img/arte/loteria-mini.jpg",
+          "sizes": "96x96",
+          "type": "image/jpeg"
         }
       ]
     },
@@ -68,8 +70,9 @@
       "url": "./solitario.html",
       "icons": [
         {
-          "src": "icon-192.png",
-          "sizes": "192x192"
+          "src": "img/arte/solitario-mini.jpg",
+          "sizes": "96x96",
+          "type": "image/jpeg"
         }
       ]
     },
@@ -79,8 +82,9 @@
       "url": "./domino.html",
       "icons": [
         {
-          "src": "icon-192.png",
-          "sizes": "192x192"
+          "src": "img/arte/domino-mini.jpg",
+          "sizes": "96x96",
+          "type": "image/jpeg"
         }
       ]
     },
@@ -90,8 +94,9 @@
       "url": "./sudoku.html",
       "icons": [
         {
-          "src": "icon-192.png",
-          "sizes": "192x192"
+          "src": "img/arte/sudoku-mini.jpg",
+          "sizes": "96x96",
+          "type": "image/jpeg"
         }
       ]
     },
@@ -101,8 +106,9 @@
       "url": "./buscaminas.html",
       "icons": [
         {
-          "src": "icon-192.png",
-          "sizes": "192x192"
+          "src": "img/arte/buscaminas-mini.jpg",
+          "sizes": "96x96",
+          "type": "image/jpeg"
         }
       ]
     },
@@ -112,8 +118,9 @@
       "url": "./batalla-naval.html",
       "icons": [
         {
-          "src": "icon-192.png",
-          "sizes": "192x192"
+          "src": "img/arte/batalla-naval-mini.jpg",
+          "sizes": "96x96",
+          "type": "image/jpeg"
         }
       ]
     },
@@ -123,8 +130,9 @@
       "url": "./serpientes.html",
       "icons": [
         {
-          "src": "icon-192.png",
-          "sizes": "192x192"
+          "src": "img/arte/serpientes-mini.jpg",
+          "sizes": "96x96",
+          "type": "image/jpeg"
         }
       ]
     }

@@ -146,7 +146,7 @@
 
 <!-- ====================== MENÚ ====================== -->
 <section id="menu" class="screen active">
-  <div class="logo-ico">🪢</div>
+  <img class="sk-hero" src="img/arte/ahorcado.jpg" alt="" decoding="async">
   <div class="logo">AHORCADO<small>SeaKingsGames · v4</small></div>
 
   <button class="daily-card" id="daily-card">
@@ -539,13 +539,14 @@ function onLetter(letter){
   if (st.chars.some(c => c.isLetter && c.base === letter)) {
     st.rightLetters.push(letter); st.seq.push('🟩');
     sfx.good(); renderWord(letter); renderKeyboard();
+    document.querySelectorAll('#word .letter-slot.pop').forEach((el, k) => setTimeout(() => SK.fx.burst(el, { colors:['#69db7c', '#fff', '#ffd43b'], n: 6, speed: 120, size: 4, g: 200, life: .45 }), k * 60));
     if (checkWin()) { st.finished = true; setTimeout(onWordWin, st.mode === 'cr' ? 300 : 600); }
   } else {
     st.wrongLetters.push(letter); st.seq.push('🟥'); st.livesLeft--;
     sfx.bad();
     if (st.mode === 'cr') { st.crEnd -= CR_PENALTY * 1000; floatTime(`−${CR_PENALTY}s`, 'bad'); }
     renderLives(); renderWrong(); renderKeyboard(); renderHint();
-    st.shake = 10; animateGallowsShake();
+    st.shake = 10; animateGallowsShake(); SK.fx.vibrate(40);
     if (st.livesLeft <= 0) { st.finished = true; setTimeout(onWordLose, st.mode === 'cr' ? 300 : 700); }
   }
 }
@@ -592,7 +593,7 @@ function clasicoWin(isNew){
   recordResult(true, st.streak);
   const d = DIFFICULTIES[st.difficulty], catLabel = WORDS[st.entry.cat].label;
   SK.result({
-    emoji:'🎉', title:'¡Lo adivinaste!', newRecord: isRec, extra: answerBox(isNew),
+    emoji:'🎉', title:'¡Lo adivinaste!', newRecord: isRec, celebrate: true, extra: answerBox(isNew),
     stats:[[SK.fmtTime(st.elapsed), 'TIEMPO'], [st.livesLeft, 'VIDAS'], [st.streak, 'RACHA']],
     share:{ emoji:'🪢', title:'¡PALABRA ADIVINADA!', game:'Ahorcado', sub:`${d.label} · ${catLabel}`, big: st.word.toUpperCase(),
       stats:[[SK.fmtTime(st.elapsed), 'TIEMPO'], [st.livesLeft + '❤', 'VIDAS'], [st.streak + '🔥', 'RACHA']],
@@ -628,7 +629,7 @@ function showDailyResult(ds, res){
   const errTxt = `${res.errors} error${res.errors === 1 ? '' : 'es'}`;
   const text = `🪢 Ahorcado del día #${res.num}\n${res.won ? `✅ La adiviné con ${errTxt} en ${SK.fmtTime(res.time)}` : '💀 Hoy no la saqué'}\n${res.seq}\n${k.cur > 1 ? `🔥 Racha: ${k.cur} días\n` : ''}¿Tú la sacas? ${gameUrl('?modo=diaria')}`;
   SK.result({
-    emoji: res.won ? '🎉' : '💀', lose: !res.won, title: res.won ? '¡Palabra del día resuelta!' : 'Hoy no se pudo', extra,
+    emoji: res.won ? '🎉' : '💀', lose: !res.won, celebrate: res.won ? 'big' : false, title: res.won ? '¡Palabra del día resuelta!' : 'Hoy no se pudo', extra,
     stats:[[res.won ? SK.fmtTime(res.time) : '—', 'TIEMPO'], [res.errors, 'ERRORES'], [k.cur, 'RACHA DIARIA']],
     buttons:[
       { label:'📤 Compartir mi resultado', keep:true, onClick: () => SK.shareText(text) },
@@ -648,6 +649,7 @@ function crTick(){
 function crWordWon(){
   st.crScore++; st.crWords.push({ w: st.word, ok: true }); recordResult(true, 0);
   st.crEnd += CR_BONUS * 1000; floatTime(`+${CR_BONUS}s`, 'good'); sfx.good();
+  SK.fx.sparkle($('word'), { n: 12 }); if (st.crScore % 5 === 4) { SK.fx.float($('word'), `¡${st.crScore + 1} palabras!`, { color:'#ffd43b', size: 26 }); sfx.chime(); }
   $('st3').textContent = st.crScore; $('title').textContent = `Palabras: ${st.crScore}`;
   setTimeout(crNext, 450);
 }
@@ -662,7 +664,7 @@ function crFinish(){
   if (!st.crWords.length) extra.innerHTML = '<span class="no">Ninguna palabra esta vez</span>';
   st.crWords.forEach(x => { const s = document.createElement('span'); s.className = x.ok ? 'ok' : 'no'; s.textContent = x.w.toUpperCase(); extra.appendChild(s); });
   SK.result({
-    emoji:'⏱️', title:'¡Se acabó el tiempo!', newRecord: isRec && st.crScore > 0, extra,
+    emoji:'⏱️', title:'¡Se acabó el tiempo!', newRecord: isRec && st.crScore > 0, celebrate: isRec && st.crScore > 0, extra,
     stats:[[st.crScore, 'PALABRAS'], [best, 'RÉCORD']],
     share:{ emoji:'⏱️', title:'CONTRARRELOJ', game:'Ahorcado', sub: cat.label, big:`${st.crScore} palabras en 2 minutos`, stats:[[st.crScore, 'PALABRAS'], [best, 'RÉCORD']],
       text:`⏱️ Adiviné ${st.crScore} palabras en el contrarreloj del Ahorcado (${cat.label}). ¿Me superas?\n${gameUrl()}`, file:'logro-contrarreloj' },
@@ -676,7 +678,7 @@ function retoEnd(won){
     ? `🪢 ¡Adiviné el reto de ${who} en el Ahorcado con ${errors} error${errors === 1 ? '' : 'es'}! ${st.seq.join('')}\nCrea el tuyo: ${gameUrl('?modo=reto')}`
     : `💀 ${who} me ganó en el Ahorcado. ¿Tú la adivinas?\n${gameUrl('?reto=' + st.retoCode)}`;
   setTimeout(() => SK.result({
-    emoji: won ? '🏆' : '💀', lose: !won, title: won ? '¡Ganaste el reto!' : `${who.charAt(0).toUpperCase() + who.slice(1)} te ganó`,
+    emoji: won ? '🏆' : '💀', lose: !won, celebrate: won ? 'big' : false, title: won ? '¡Ganaste el reto!' : `${who.charAt(0).toUpperCase() + who.slice(1)} te ganó`,
     extra: answerBox(false), stats:[[SK.fmtTime(st.elapsed), 'TIEMPO'], [errors, 'ERRORES']],
     buttons:[
       { label:'🤝 Crear mi propio reto', onClick: openReto },

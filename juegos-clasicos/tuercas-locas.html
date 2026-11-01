@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#2a1855">
 <title>Tuercas Locas · SeaKingsGames</title>
+<meta name="description" content="Tuercas Locas: ordena las tuercas de colores en sus tornillos. 4 dificultades y niveles infinitos. Gratis y sin internet.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tuercas Locas · SeaKingsGames">
+<meta property="og:description" content="Tuercas Locas: ordena las tuercas de colores en sus tornillos. 4 dificultades y niveles infinitos. Gratis y sin internet.">
+<meta property="og:url" content="https://seakingsgames.github.io/SeaKingsClassicGames/tuercas-locas.html">
+<meta property="og:image" content="https://seakingsgames.github.io/SeaKingsClassicGames/img/arte/tuercas-locas-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -241,11 +250,18 @@
   /* ajuste para que el banner no tape el menú */
   #menu{padding-bottom:80px}
 </style>
+<style>
+  .sk-hero{display:block;width:min(440px,92vw);aspect-ratio:12/5;object-fit:cover;border-radius:22px;box-shadow:0 14px 34px rgba(0,0,0,.45),0 0 0 3px rgba(255,255,255,.16);animation:skHeroIn .6s cubic-bezier(.34,1.56,.64,1),skHeroFloat 6s .6s ease-in-out infinite;flex-shrink:0;margin:0 auto}
+  .sk-hero + .logo{margin-top:-30px;position:relative;filter:drop-shadow(0 0 10px rgba(0,0,0,.6)) drop-shadow(0 2px 3px rgba(0,0,0,.5))}
+  @keyframes skHeroIn{from{opacity:0;transform:scale(.92) translateY(12px)}}
+  @keyframes skHeroFloat{50%{transform:translateY(-5px)}}
+</style>
 </head>
 <body>
 
 <!-- ====================== MENÚ ====================== -->
 <section id="menu" class="screen active">
+  <img class="sk-hero" src="img/arte/tuercas-locas.jpg" alt="" decoding="async">
   <div class="logo">TUERCAS<br>LOCAS<small>SeaKingsGames</small></div>
   <div class="diff-list" id="diff-list"></div>
   <a href="index.html" style="color:var(--text-dim);font-size:14px;text-decoration:none">← Volver al inicio</a>
@@ -354,6 +370,7 @@
   </div>
 </div>
 
+<script src="comun.js"></script>
 <script>
 /* =====================================================
    TUERCAS LOCAS · SeaKingsGames
@@ -571,6 +588,9 @@ function onStackClick(i) {
   from.pop();
   to.push(piece);
   state.selected = null;
+  if (window.SK && to.length === state.capacity && to.every(c => c === piece)) {
+    setTimeout(() => { const el = board.children[i]; SK.fx.sparkle(el, { n: 14 }); SK.fx.ring(el, { size: 70 }); SK.fx.float(el, '¡Listo!', { color:'#ffd43b', size: 20 }); SK.fx.vibrate(25); }, 120);
+  }
   // arrancar timer al primer movimiento
   if (!state.ticking) {
     state.ticking = true;
@@ -648,6 +668,7 @@ function showWin() {
   $('win-moves').textContent = m;
   $('new-record-tag').style.display = isNewRec ? 'block' : 'none';
   openModal('modal-win', 'ad-win', ADS.medium250);
+  if (window.SK) SK.fx.celebrate(isNewRec);
 }
 function showStuck()  { Audio.stuck(); openModal('modal-stuck','ad-stuck',  ADS.medium250); }
 function showRestart(){ openModal('modal-restart','ad-restart',ADS.medium250); }

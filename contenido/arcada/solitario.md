@@ -32,6 +32,8 @@ Para mover una carta, **tócala** y se va sola al mejor lugar disponible, o **ar
 - **Terminar** sube solas todas las cartas a las bases cuando ya están todas destapadas.
 - Si sales del juego, tu partida se guarda y puedes **continuarla** después.
 
+¿Ya le ganas siempre? Prueba el [Solitario Spider](/arcada/spider), que se juega con dos barajas.
+
 <!-- anuncio -->
 
 ## Consejos

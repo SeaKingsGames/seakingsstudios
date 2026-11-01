@@ -1,6 +1,6 @@
 ---
 nombre: Ajolote Volador
-orden: 7
+orden: 8
 archivo: ajolote-volador
 genero: Arcade
 lema: Toca para nadar entre los corales sin chocar.

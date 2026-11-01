@@ -6,6 +6,14 @@
 <meta name="theme-color" content="#5a2a4a">
 <title>El Juego del Ajolote · SeaKingsGames</title>
 <meta name="description" content="El Juego del Ajolote: un juego de mesa tipo Oca con reglas mexicanas. De ajolote a ajolote, trajineras, taquería, cenote, La Llorona y cartas del tianguis. Gratis y sin internet.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="El Juego del Ajolote · SeaKingsGames">
+<meta property="og:description" content="El Juego del Ajolote: un juego de mesa tipo Oca con reglas mexicanas. De ajolote a ajolote, trajineras, taquería, cenote, La Llorona y cartas del tianguis. Gratis y sin internet.">
+<meta property="og:url" content="https://seakingsgames.github.io/SeaKingsClassicGames/juego-ajolote.html">
+<meta property="og:image" content="https://seakingsgames.github.io/SeaKingsClassicGames/img/arte/juego-ajolote-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,14 +26,15 @@
   :root{ --bg:#5a2a4a; --bg-2:#2a1022; --panel:#7a3a63; --panel-2:#8f4877; --accent:#ffd43b; --accent-deep:#c79a00; --accent-ink:#3a2a00; }
   #game{flex:1}
   .rules{width:min(420px,94vw);display:grid;grid-template-columns:1fr 1fr;gap:6px}
-  .rules div{background:rgba(255,255,255,.07);border-radius:12px;padding:8px 10px;font-size:12px;line-height:1.3;color:#f3dcea}
+  .rules div{background:rgba(255,255,255,.07);border-radius:12px;padding:8px 10px;font-size:12px;line-height:1.3;color:#f3dcea;display:flex;gap:8px;align-items:flex-start}
+  .rules img{width:46px;height:46px;border-radius:10px;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.35)}
   .rules b{display:block;font-size:13px;color:#fff;margin-bottom:2px}
 </style>
 </head>
 <body>
 
 <section id="menu" class="screen active">
-  <div class="logo-ico">💚</div>
+  <img class="sk-hero" src="img/arte/juego-ajolote.jpg" alt="" decoding="async">
   <div class="logo">EL JUEGO<br>DEL AJOLOTE<small>Un juego tipo Oca, a la mexicana</small></div>
   <div class="record-line" id="wins"></div>
   <div class="section-title">¿CON QUIÉN JUEGAS?</div>
@@ -86,7 +95,24 @@ const CARDS = [
   { t:'Te quedaste viendo videos en el celular 📱 Pierdes un turno.', skip:1, why:'se quedó viendo videos' },
   { t:'Te pusiste a regatear y se te hizo tarde 🧾 Retrocedes 1.', d:-1 },
   { t:'Encontraste un atajo entre los puestos 🛒 Avanzas 2.', d:2 },
+  { t:'Te tocó la última torta de tamal 🫔 Avanzas 2.', d:2 },
+  { t:'Te subiste al camión correcto a la primera 🚌 Avanzas 6.', d:6 },
+  { t:'Encontraste tenis en oferta 👟 ¡Tiras otra vez!', again:true },
+  { t:'Pasó el de los camotes y te espantó con el silbato 🍠 Retrocedes 2.', d:-2 },
+  { t:'Tu mamá te mandó por las tortillas 🫓 Retrocedes 4.', d:-4 },
+  { t:'Te pusiste a jugar en las maquinitas 🕹️ Pierdes un turno.', skip:1, why:'está en las maquinitas' },
 ];
+
+/* ---------- IMÁGENES DE LAS CASILLAS ----------
+   Cuando estén en img/ajolote/, agrega su nombre a esta lista
+   y el tablero las usa en lugar del emoji. */
+const CASILLAS_IMG = ['ajolote', 'trajinera', 'embarcadero', 'taqueria', 'chapulin', 'cenote', 'metro', 'trafico', 'llorona', 'tianguis', 'meta'];
+const IMG_KEY = { 6:'trajinera', 12:'embarcadero', 19:'taqueria', 26:'chapulin', 53:'chapulin', 31:'cenote', 42:'metro', 52:'trafico', 58:'llorona', 63:'meta' };
+const IMGS = {};
+CASILLAS_IMG.forEach(k => { const im = new Image(); im.onload = () => { IMGS[k] = im; if (typeof juego !== 'undefined') juego.redraw(); }; im.src = `img/ajolote/${k}.jpg`; });
+// para los avisos grandes: la imagen de la casilla si ya cargó, si no el emoji
+const ico = (k, emoji) => IMGS[k] ? { img: IMGS[k].src } : emoji;
+const imgFor = n => IMGS[AJOLOTES.includes(n) ? 'ajolote' : TIANGUIS.includes(n) ? 'tianguis' : IMG_KEY[n]];
 
 /* ---------- ESPIRAL DE 63 CASILLAS ---------- */
 const PATH = (() => {
@@ -126,13 +152,24 @@ function drawBoard(ctx, W, H){
   ctx.beginPath(); for (let n = 1; n <= MAX; n++) { const c = center(n, W); n === 1 ? ctx.moveTo(c.x, c.y) : ctx.lineTo(c.x, c.y); } ctx.stroke();
   for (let n = 1; n <= MAX; n++) {
     const c = center(n, W), sp = SPECIAL[n], axo = AJOLOTES.includes(n);
-    const x = c.x - s / 2 + 2, y = c.y - s / 2 + 2, w = s - 4;
+    const x = c.x - s / 2 + 2, y = c.y - s / 2 + 2, w = s - 4, img = imgFor(n);
+    const rr = () => { ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, w, s * .14) : ctx.rect(x, y, w, w); };
     ctx.fillStyle = axo ? '#bdf2df' : sp ? sp.bg : (n % 2 ? '#fff3d6' : '#ffe1b8');
-    ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, w, s * .14) : ctx.rect(x, y, w, w); ctx.fill();
+    rr(); ctx.fill();
+    if (img) { ctx.save(); rr(); ctx.clip(); const k = Math.max(w / img.width, w / img.height); ctx.drawImage(img, c.x - img.width * k / 2, c.y - img.height * k / 2, img.width * k, img.height * k); ctx.restore(); }
+    else if (sp || axo) { const g = ctx.createRadialGradient(c.x, c.y, s * .05, c.x, c.y, s * .6); g.addColorStop(0, 'rgba(255,255,255,.55)'); g.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = g; rr(); ctx.fill(); }
     ctx.fillStyle = 'rgba(0,0,0,.12)'; ctx.fillRect(x + s * .1, y + w - 3, w - s * .2, 3);
-    ctx.fillStyle = 'rgba(60,30,50,.6)'; ctx.font = `600 ${Math.round(s * .22)}px Fredoka, system-ui, sans-serif`; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    if (img) {
+      ctx.save(); rr(); ctx.clip();
+      ctx.fillStyle = 'rgba(255,255,255,.92)'; ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(x - 2, y - 2, s * .4, s * .3, [0, 0, s * .12, 0]) : ctx.rect(x - 2, y - 2, s * .4, s * .3); ctx.fill();
+      ctx.restore();
+      ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 1.5; rr(); ctx.stroke();
+    }
+    ctx.fillStyle = 'rgba(60,30,50,.7)'; ctx.font = `600 ${Math.round(s * .22)}px Fredoka, system-ui, sans-serif`; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
     ctx.fillText(n, x + s * .07, y + s * .05);
-    if (axo) miniAxo(ctx, c.x, c.y + s * .1, s * .22);
+    if (img) {}
+    else if (axo) miniAxo(ctx, c.x, c.y + s * .1, s * .22);
     else if (sp) { ctx.font = `${Math.round(s * .42)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(sp.ico, c.x, c.y + s * .1); }
     // flechita hacia la siguiente casilla
     if (n < MAX) {
@@ -151,43 +188,117 @@ function drawBoard(ctx, W, H){
 
 /* ---------- REGLAS ---------- */
 function bounce(n){ return n > MAX ? MAX - (n - MAX) : Math.max(1, n); }
+/* ---------- EFECTOS DE CADA CASILLA ---------- */
+const { fx, sfx } = SK;
+const at = (p, api, dy = 0) => api.pagePoint(p.x, p.y + dy);
+const splash = (pt, n = 18) => fx.burst(pt, { colors:['#a5d8ff', '#74c0fc', '#e7f5ff', '#4dabf7'], n, speed: 230, g: 700, size: 7 });
+const GRAD = {
+  axo:'linear-gradient(180deg,#63e6be,#0ca678)', water:'linear-gradient(180deg,#4dabf7,#1864ab)', food:'linear-gradient(180deg,#ffa94d,#e8590c)',
+  bug:'linear-gradient(180deg,#8ce99a,#2b8a3e)', cave:'linear-gradient(180deg,#3bc9db,#0b7285)', metro:'linear-gradient(180deg,#ff922b,#c2410c)',
+  red:'linear-gradient(180deg,#ff6b6b,#c92a2a)', ghost:'linear-gradient(180deg,#868e96,#212529)', gold:'linear-gradient(180deg,#ffe066,#f08c00)', bad:'linear-gradient(180deg,#b197fc,#5f3dc4)',
+};
 function onLand(p, n){
   if (n === MAX) return null;
   const i = AJOLOTES.indexOf(n);
   if (i >= 0) {
     const to = i < AJOLOTES.length - 1 ? AJOLOTES[i + 1] : MAX;
-    return { to, again: to !== MAX, sound:'good', msg:`💚 ¡De ajolote a ajolote y tiro porque me toca! ${p.you ? 'Brincas' : p.name + ' brinca'} de la ${n} a la ${to}` };
+    return { to, again: to !== MAX, sound:'good', arc: 1.4, ms: 800, banner:[ico('ajolote', '💚'), '¡De ajolote a ajolote!', GRAD.axo, 1100],
+      msg:`💚 ¡De ajolote a ajolote y tiro porque me toca! ${p.you ? 'Brincas' : p.name + ' brinca'} de la ${n} a la ${to}`,
+      anim: async (q, api) => { splash(at(q, api)); sfx.glide(500, 1100, .35, 'triangle', .08); },
+      after: async (q, api) => { splash(at(q, api), 12); sfx.noise(.18, .08); } };
   }
   switch (n) {
-    case 6:  return { to:12, again:true, sound:'good', msg:'🛶 ¡De trajinera en trajinera! La corriente te lleva a la 12 y tiras otra vez' };
-    case 19: return { skip:1, skipWhy:'está en la taquería', sound:'bad', msg: p.you ? '🌮 Te quedaste comiendo tacos: pierdes un turno' : `🌮 ${p.name} se quedó comiendo tacos: pierde un turno` };
-    case 26: return { to:53, again:true, sound:'good', msg:'🦗 ¡Brinco de chapulín! De la 26 a la 53 y tiras otra vez' };
-    case 53: return { to:26, sound:'bad', msg:'🦗 ¡Uy! El chapulín te regresó de la 53 a la 26' };
-    case 31: return { skip:2, skipWhy:'está en el cenote', sound:'bad', msg: p.you ? '🕳️ Caíste al cenote: pierdes dos turnos' : `🕳️ ${p.name} cayó al cenote: pierde dos turnos` };
-    case 42: return { to:30, sound:'bad', msg:'🚇 Metro en hora pico: tardaste tanto que regresas a la 30' };
-    case 52: return { skip:2, skipWhy:'está en el tráfico', sound:'bad', msg: p.you ? '🚦 Te atoraste en el tráfico del Periférico: pierdes dos turnos' : `🚦 ${p.name} se atoró en el tráfico del Periférico: pierde dos turnos` };
-    case 58: return { to:0, sound:'bad', ms:1500, msg: p.you ? '👻 ¡Ayyy, mis hijos! La Llorona te espantó: regresas al inicio' : `👻 ¡Ayyy, mis hijos! La Llorona espantó a ${p.name}: regresa al inicio` };
+    case 6:  return { to:12, again:true, sound:'good', ms:1300, wobble:true, banner:[ico('trajinera', '🛶'), '¡Trajinera!', GRAD.water],
+      msg:'🛶 ¡De trajinera en trajinera! La corriente te lleva a la 12 y tiras otra vez',
+      anim: async () => sfx.whoosh(.9, .1), after: async (q, api) => fx.burst(at(q, api), { emoji:['🌸', '🌼', '🌺'], n: 9, speed: 170, size: 18, g: 300 }) };
+    case 19: return { skip:1, skipWhy:'está en la taquería', sound:'bad', banner:[ico('taqueria', '🌮'), '¡A comer tacos!', GRAD.food],
+      msg: p.you ? '🌮 Te quedaste comiendo tacos: pierdes un turno' : `🌮 ${p.name} se quedó comiendo tacos: pierde un turno`,
+      anim: async (q, api) => { fx.burst(at(q, api), { emoji:['🌮', '🌯', '🍋', '🌶️'], n: 10, speed: 200, size: 20, g: 380 }); for (let k = 0; k < 3; k++) { sfx.noise(.07, .1); await api.wait(160); } fx.float(at(q, api, -20), '¡Ñam ñam!', { color:'#ffa94d', size: 20 }); } };
+    case 26: return { to:53, again:true, sound:'good', arc: 3.2, ms: 1200, banner:[ico('chapulin', '🦗'), '¡Brinco de chapulín!', GRAD.bug],
+      msg:'🦗 ¡Brinco de chapulín! De la 26 a la 53 y tiras otra vez',
+      anim: async () => sfx.glide(300, 1400, .9, 'triangle', .09), after: async (q, api) => fx.burst(at(q, api), { emoji:'🦗', n: 6, speed: 160, size: 18, g: 400 }) };
+    case 53: return { to:26, sound:'bad', arc: 2.2, ms: 1100, banner:[ico('chapulin', '🦗'), '¡Chapulín de regreso!', GRAD.bad],
+      msg:'🦗 ¡Uy! El chapulín te regresó de la 53 a la 26', anim: async () => sfx.glide(1200, 250, .9, 'triangle', .09) };
+    case 31: return { skip:2, skipWhy:'está en el cenote', sound:'bad', banner:[ico('cenote', '🕳️'), '¡Al cenote!', GRAD.cave],
+      msg: p.you ? '🕳️ Caíste al cenote: pierdes dos turnos' : `🕳️ ${p.name} cayó al cenote: pierde dos turnos`,
+      anim: async (q, api) => {
+        sfx.glide(700, 120, .7, 'sine', .12);
+        await api.animate(650, k => { q.scale = 1 - k * .75; });
+        splash(at(q, api), 22); fx.ring(at(q, api), { color:'#74c0fc', size: 60 }); sfx.noise(.3, .14);
+        fx.float(at(q, api, -16), '¡Splash!', { color:'#a5d8ff', size: 22 });
+        await api.wait(500); await api.animate(400, k => { q.scale = .25 + k * .75; }); q.scale = 1;
+      } };
+    case 42: return { to:30, sound:'bad', ms: 900, banner:[ico('metro', '🚇'), '¡Hora pico!', GRAD.metro],
+      msg:'🚇 Metro en hora pico: tardaste tanto que regresas a la 30',
+      anim: async (q, api) => { const { W } = api.size(); sfx.whoosh(.8, .14); await api.sprite('🚇', { x: W + 40, y: q.y }, { x: -40, y: q.y }, 900, 52); } };
+    case 52: return { skip:2, skipWhy:'está en el tráfico', sound:'bad', banner:[ico('trafico', '🚦'), '¡Puro tráfico!', GRAD.red],
+      msg: p.you ? '🚦 Te atoraste en el tráfico del Periférico: pierdes dos turnos' : `🚦 ${p.name} se atoró en el tráfico del Periférico: pierde dos turnos`,
+      anim: async (q, api) => {
+        fx.burst(at(q, api), { emoji:['🚗', '🚕', '🚙', '🚌'], n: 8, speed: 180, size: 20, g: 300 });
+        for (let k = 0; k < 2; k++) { sfx.tone(370, .16, 'square', .07); sfx.tone(466, .16, 'square', .06); await api.wait(240); }
+        fx.float(at(q, api, -18), '¡PIIIP!', { color:'#ffd43b', size: 22 });
+      } };
+    case 58: return { to:0, sound:'bad', ms:1500, delay: 200, banner:[ico('llorona', '👻'), '¡La Llorona!', GRAD.ghost, 1500],
+      msg: p.you ? '👻 ¡Ayyy, mis hijos! La Llorona te espantó: regresas al inicio' : `👻 ¡Ayyy, mis hijos! La Llorona espantó a ${p.name}: regresa al inicio`,
+      anim: async (q, api) => {
+        const { W } = api.size();
+        api.darken(2600); fx.vibrate([80, 60, 120]);
+        sfx.glide(900, 420, 1.3, 'sine', .1); sfx.glide(940, 440, 1.3, 'sine', .06, .05);
+        api.sprite('👻', { x: W + 50, y: q.y - 30 }, { x: q.x, y: q.y - 20 }, 1100, 64);
+        await api.wait(900);
+        fx.float(at(q, api, -40), '¡Ayyy, mis hijos!', { color:'#e9ecef', size: 24, dur: 1400 });
+        fx.shake(api.board(), 1.2); sfx.glide(700, 200, .8, 'sawtooth', .06);
+        await api.wait(700);
+      } };
   }
   if (TIANGUIS.includes(n)) {
-    const c = CARDS[(Math.random() * CARDS.length) | 0];
+    const c = CARDS[(Math.random() * CARDS.length) | 0], bad = (c.d && c.d < 0) || c.skip;
     return {
       to: c.d ? bounce(n + c.d) : undefined, again: !!c.again, skip: c.skip || 0, skipWhy: c.why,
-      sound: (c.d && c.d < 0) || c.skip ? 'bad' : 'good', pause:1600, delay:900,
+      sound: bad ? 'bad' : 'good', pause:1600, delay:900,
+      banner:[ico('tianguis', '🛍️'), bad ? '¡Mala suerte!' : '¡Suerte!', bad ? GRAD.bad : GRAD.gold, 1400],
       msg:`🛍️ Carta del tianguis: ${c.t}`,
+      anim: async (q, api) => { if (!bad) { sfx.chime(); fx.sparkle(at(q, api), { n: 12 }); } },
     };
   }
   return null;
 }
+/* ---------- FICHAS: AJOLOTITOS DE COLORES ---------- */
+function drawToken(ctx, p, r, col, turn){
+  [-1, 1].forEach(sg => [-.75, 0, .75].forEach(a => {
+    const ang = (sg > 0 ? 0 : Math.PI) - sg * a;
+    ctx.fillStyle = '#ff8fb1'; ctx.beginPath(); ctx.ellipse(sg * r * .82 + Math.cos(ang) * r * .3, -r * .2 + Math.sin(ang) * r * .3, r * .34, r * .15, ang, 0, Math.PI * 2); ctx.fill();
+  }));
+  const g = ctx.createRadialGradient(-r * .3, -r * .35, r * .15, 0, 0, r * 1.05);
+  g.addColorStop(0, '#fff'); g.addColorStop(.3, col.c); g.addColorStop(1, col.d);
+  ctx.fillStyle = g; ctx.strokeStyle = turn ? '#fff' : 'rgba(255,255,255,.7)'; ctx.lineWidth = turn ? 3 : 2;
+  ctx.beginPath(); ctx.ellipse(0, 0, r, r * .84, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  [-1, 1].forEach(sg => {
+    ctx.fillStyle = '#1d1d2b'; ctx.beginPath(); ctx.arc(sg * r * .38, -r * .2, r * .13, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(sg * r * .38 + r * .04, -r * .25, r * .045, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,110,150,.5)'; ctx.beginPath(); ctx.ellipse(sg * r * .62, r * .02, r * .12, r * .07, 0, 0, Math.PI * 2); ctx.fill();
+  });
+  ctx.strokeStyle = '#1d1d2b'; ctx.lineWidth = Math.max(1.2, r * .08); ctx.beginPath(); ctx.arc(0, -r * .1, r * .18, Math.PI * .2, Math.PI * .8); ctx.stroke();
+  ctx.font = `700 ${Math.round(r * .48)}px Fredoka, system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,.45)'; ctx.fillStyle = '#fff';
+  ctx.strokeText(p.tag, 0, r * .48); ctx.fillText(p.tag, 0, r * .48);
+}
 
 /* ---------- MENÚ ---------- */
-RULES.forEach(([t, d]) => { const div = document.createElement('div'); div.innerHTML = '<b></b><span></span>'; div.firstChild.textContent = t; div.lastChild.textContent = d; SK.$('rules').appendChild(div); });
+const RULE_IMG = ['ajolote', 'trajinera', 'taqueria', 'chapulin', 'cenote', 'metro', 'trafico', 'llorona', 'tianguis', 'meta'];
+RULES.forEach(([t, d], k) => {
+  const div = document.createElement('div'), has = CASILLAS_IMG.includes(RULE_IMG[k]);
+  div.innerHTML = (has ? `<img src="img/ajolote/${RULE_IMG[k]}.jpg" alt="" loading="lazy">` : '') + '<p><b></b><span></span></p>';
+  div.querySelector('b').textContent = has ? t.replace(/^\S+\s/, '') : t; div.querySelector('span').textContent = d;
+  SK.$('rules').appendChild(div);
+});
 
 const juego = Tablero({
   id:'juego-ajolote', title:'El Juego del Ajolote', emoji:'💚', maxCell:MAX, aspect: COLS / (ROWS + .8),
   dice:2, exact:true, extraOnSix:false,
   cellSize: W => W / COLS,
   cellCenter: (n, W) => center(n, W),
-  drawBoard, onLand,
+  drawBoard, onLand, drawToken,
 });
 SK.bannerAd(SK.$('ad-bottom'));
 SK.initPWA('El Juego del Ajolote');

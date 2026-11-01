@@ -1,6 +1,6 @@
 ---
 nombre: Sopa de letras
-orden: 13
+orden: 14
 archivo: sopa-letras
 genero: Juego de palabras
 lema: Encuentra las palabras escondidas, o adivínalas por su pista.

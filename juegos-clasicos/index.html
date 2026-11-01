@@ -107,7 +107,10 @@
   }
   .card:active{transform:scale(.98)}
   .card-art{height:160px;display:flex;align-items:center;justify-content:center;font-size:78px;position:relative;overflow:hidden}
-  .card-art::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.5) 100%)}
+  .card-art::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.45) 100%);pointer-events:none}
+  .card-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.8,.2,1),opacity .4s;animation:cardImgIn .5s ease-out}
+  @keyframes cardImgIn{from{opacity:0}}
+  .card:hover .card-img{transform:scale(1.06)}
   .card-body{padding:16px 18px 18px;position:relative;z-index:1}
   .card h3{font-size:20px;font-weight:700;margin-bottom:4px}
   .card p{color:var(--text-dim);font-size:14px;line-height:1.45}
@@ -135,6 +138,7 @@
   .art-gato   {background:radial-gradient(circle at 50% 40%,#ff7a8a 0%,#271a40 72%)}
   .art-loteria{background:radial-gradient(circle at 50% 40%,#ff8a5c 0%,#5a1430 72%)}
   .art-sol    {background:radial-gradient(circle at 50% 40%,#40c057 0%,#0a3a1f 72%)}
+  .art-spider {background:radial-gradient(circle at 50% 40%,#7950f2 0%,#140d30 72%)}
   .art-sudoku {background:radial-gradient(circle at 50% 40%,#748ffc 0%,#1b2440 72%)}
   .art-domino {background:radial-gradient(circle at 50% 40%,#3aa572 0%,#14432f 72%)}
   .dmn{display:inline-flex;flex-direction:column;gap:5px;padding:6px;background:#fffdf5;border-radius:9px;box-shadow:0 4px 10px rgba(0,0,0,.4);transform:rotate(-12deg)}
@@ -416,6 +420,9 @@ const GAMES = [
   { id:'solitario', title:'Solitario', desc:'El Klondike de siempre: robar 1 o robar 3, deshacer, pistas y terminar automático.',
     art:'🃏', artClass:'art-sol', href:'solitario.html', badge:'NUEVO', isNew:true, tags:['mesa', 'puzzle'],
     rec: () => { const n = sumOf('sk-sol-wins-'); return n ? `🏆 ${plural(n, 'partida resuelta', 'partidas resueltas')}` : ''; } },
+  { id:'spider', title:'Solitario Spider', desc:'Arma escaleras del Rey al As del mismo palo. Con 1 palo (solo negras), 2 o 4 palos.',
+    art:'🕷️', artClass:'art-spider', href:'spider.html', badge:'NUEVO', isNew:true, tags:['mesa', 'puzzle'],
+    rec: () => { const n = sumOf('sk-spider-wins-'); return n ? `🏆 ${plural(n, 'partida resuelta', 'partidas resueltas')}` : ''; } },
   { id:'domino', title:'Dominó', desc:'En parejas con la compu, mano a mano con pozo o todos contra todos, a 100 puntos.',
     art: dominoArt(6, 3), artClass:'art-domino', href:'domino.html', badge:'NUEVO', isNew:true, tags:['mesa'],
     rec: () => { const n = sumOf('sk-domino-wins-'); return n ? `🏆 ${plural(n, 'partida ganada', 'partidas ganadas')}` : ''; } },
@@ -483,7 +490,7 @@ GAMES.forEach(g => {
   a.href = g.href; a.dataset.tags = g.tags.join(' ');
   let rec = ''; try { rec = g.rec(); } catch(e) {}
   a.innerHTML = `
-    <div class="card-art ${g.artClass}">${g.art}</div>
+    <div class="card-art ${g.artClass}"><span class="card-emoji">${g.art}</span><img class="card-img" src="img/arte/${g.href.replace('.html', '')}.jpg" alt="" loading="lazy" decoding="async" onerror="this.remove()"></div>
     <div class="card-body">
       <h3>${g.title}</h3>
       <p>${g.desc}</p>
@@ -518,7 +525,7 @@ FILTERS.forEach(([k, label]) => {
   const box = document.getElementById('recent');
   ids.forEach(id => {
     const g = GAMES.find(x => x.id === id), a = document.createElement('a');
-    a.href = g.href; a.innerHTML = `<span>${g.art}</span>${g.title}`;
+    a.href = g.href; a.innerHTML = `<span><img src="img/arte/${g.href.replace('.html', '')}-mini.jpg" alt="" style="width:26px;height:26px;border-radius:8px;display:block;object-fit:cover"></span>${g.title}`;
     a.addEventListener('click', e => goTo(g, e));
     box.appendChild(a);
   });

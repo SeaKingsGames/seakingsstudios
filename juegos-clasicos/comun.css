@@ -137,3 +137,44 @@ button{font-family:inherit;border:none;cursor:pointer;color:inherit;background:n
 @keyframes bounceY{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 @keyframes shakeX{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
 .shake{animation:shakeX .4s}
+
+/* ---------- EFECTOS COMPARTIDOS ---------- */
+.screen.active{animation:screenIn .28s ease-out}
+@keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sk-float{position:fixed;z-index:160;pointer-events:none;font-weight:700;font-family:'Bagel Fat One','Fredoka',system-ui,sans-serif;transform:translate(-50%,-50%);text-shadow:0 2px 0 rgba(0,0,0,.35),0 0 12px rgba(0,0,0,.25);white-space:nowrap;animation:skFloat ease-out forwards}
+@keyframes skFloat{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}15%{opacity:1;transform:translate(-50%,-60%) scale(1.15)}30%{transform:translate(-50%,-65%) scale(1)}100%{opacity:0;transform:translate(-50%,calc(-50% + var(--dy,-60px))) scale(.95)}}
+.sk-shake{animation:skShake .42s cubic-bezier(.36,.07,.19,.97)}
+@keyframes skShake{10%,90%{transform:translate(calc(var(--shk,7px) * -.3),0)}20%,80%{transform:translate(calc(var(--shk,7px) * .5),1px)}30%,50%,70%{transform:translate(calc(var(--shk,7px) * -1),-1px)}40%,60%{transform:translate(var(--shk,7px),1px)}}
+.sk-pop{animation:skPop .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes skPop{0%{transform:scale(.7)}100%{transform:scale(1)}}
+#sk-toast.sk-pop{animation:skToast .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes skToast{from{transform:translateX(-50%) translateY(-14px) scale(.9)}to{transform:translateX(-50%)}}
+.sk-flash{position:fixed;inset:0;z-index:140;pointer-events:none;animation:skFlash ease-out forwards}
+@keyframes skFlash{from{opacity:.55}to{opacity:0}}
+#sk-amb{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;display:none}
+body[data-screen="menu"] #sk-amb{display:block}
+#sk-amb i{position:absolute;bottom:-40px;border-radius:50%;background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.7) 0 10%,rgba(255,255,255,.1) 28%,rgba(255,255,255,.03) 62%,rgba(255,255,255,.12) 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);opacity:.55;animation:skBubble linear infinite}
+@keyframes skBubble{0%{transform:translate(0,0);opacity:0}10%{opacity:.55}50%{transform:translate(var(--sway),-55vh)}90%{opacity:.45}100%{transform:translate(0,-110vh);opacity:0}}
+#menu .btn-primary{position:relative;overflow:hidden}
+#menu .btn-primary::after{content:'';position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);animation:skShine 3.6s ease-in-out infinite}
+@keyframes skShine{0%,65%{left:-60%}100%{left:130%}}
+.diff-btn,.tool-btn,.btn-primary,.btn-secondary,.icon-btn{transition:transform .12s,filter .12s}
+@media (hover:hover){.diff-btn:hover,.tool-btn:hover,.btn-primary:hover,.btn-secondary:hover{filter:brightness(1.08);transform:translateY(-1px)}}
+.diff-btn:active,.tool-btn:active,.btn-primary:active,.btn-secondary:active{transform:translateY(2px) scale(.98)}
+.modal .emoji{animation:popIn .45s cubic-bezier(.34,1.56,.64,1)}
+.modal .emoji.bounce{animation:popIn .45s cubic-bezier(.34,1.56,.64,1),bounceY 1.2s .45s infinite}
+@media (prefers-reduced-motion: reduce){.screen.active,#menu .btn-primary::after{animation:none}}
+
+/* ---------- PORTADA DEL JUEGO (ilustración arriba del menú) ---------- */
+.sk-hero{display:block;width:min(440px,92vw);aspect-ratio:12/5;object-fit:cover;border-radius:22px;box-shadow:0 14px 34px rgba(0,0,0,.45),0 0 0 3px rgba(255,255,255,.16);animation:skHeroIn .6s cubic-bezier(.34,1.56,.64,1),skHeroFloat 6s .6s ease-in-out infinite;flex-shrink:0}
+.sk-hero + .logo{margin-top:-30px;position:relative;font-size:clamp(32px,9.5vw,56px);text-shadow:0 4px 0 var(--accent-deep),0 0 16px rgba(0,0,0,.7),0 2px 4px rgba(0,0,0,.6)}
+@keyframes skHeroIn{from{opacity:0;transform:scale(.92) translateY(12px)}}
+@keyframes skHeroFloat{50%{transform:translateY(-5px)}}
+@media (prefers-reduced-motion: reduce){.sk-hero{animation:none}}
+
+/* fondo con la ilustración del juego, muy suave y difuminado */
+body.sk-has-art::before{content:'';position:fixed;inset:-40px;z-index:-1;background:var(--sk-art) center/cover no-repeat;filter:blur(22px) saturate(1.15);opacity:.16;pointer-events:none}
+body.sk-has-art[data-screen="menu"]::before{opacity:.12}
+/* ilustración arriba del modal de resultados */
+.modal-art{display:block;width:calc(100% + 40px);max-width:none;margin:-24px -20px -46px;aspect-ratio:12/5;object-fit:cover;border-radius:24px 24px 0 0;-webkit-mask-image:linear-gradient(#000 50%,transparent);mask-image:linear-gradient(#000 50%,transparent)}
+.modal.with-art .emoji{position:relative;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5))}

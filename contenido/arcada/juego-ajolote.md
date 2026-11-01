@@ -1,6 +1,6 @@
 ---
 nombre: El Juego del Ajolote
-orden: 10
+orden: 11
 archivo: juego-ajolote
 genero: Juego de mesa
 lema: Un juego tipo Oca, a la mexicana. De ajolote a ajolote y tiro porque me toca.
@@ -32,7 +32,7 @@ Se juega contra 1, 2 o 3 compus, o con 2 a 4 amigos en el mismo celular.
 | 🛍️ Tianguis (10, 22, 37 y 47) | Sacas una carta de la suerte, que puede ayudarte o no |
 | 🎉 Meta (63) | Hay que llegar exacto |
 
-Los ajolotes están repartidos por todo el tablero: en las casillas 5, 9, 14, 18, 23, 27, 32, 36, 41, 45, 50, 54 y 59.
+Los ajolotes están repartidos por todo el tablero: en las casillas 5, 9, 14, 18, 23, 27, 32, 36, 41, 45, 50, 54 y 59. Cada casilla especial tiene su propia ilustración en el tablero, y las fichas avanzan casilla por casilla con animación.
 
 <!-- anuncio -->
 

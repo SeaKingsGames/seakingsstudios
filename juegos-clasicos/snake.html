@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0f3a1e">
 <title>Snake · SeaKingsGames</title>
+<meta name="description" content="Snake, el clásico de la serpiente: 4 dificultades y modo con o sin paredes. Gratis, en español y sin internet.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Snake · SeaKingsGames">
+<meta property="og:description" content="Snake, el clásico de la serpiente: 4 dificultades y modo con o sin paredes. Gratis, en español y sin internet.">
+<meta property="og:url" content="https://seakingsgames.github.io/SeaKingsClassicGames/snake.html">
+<meta property="og:image" content="https://seakingsgames.github.io/SeaKingsClassicGames/img/arte/snake-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -209,12 +218,18 @@
     .dpad{display:none}
   }
 </style>
+<style>
+  .sk-hero{display:block;width:min(440px,92vw);aspect-ratio:12/5;object-fit:cover;border-radius:22px;box-shadow:0 14px 34px rgba(0,0,0,.45),0 0 0 3px rgba(255,255,255,.16);animation:skHeroIn .6s cubic-bezier(.34,1.56,.64,1),skHeroFloat 6s .6s ease-in-out infinite;flex-shrink:0;margin:0 auto}
+  .sk-hero + .logo{margin-top:-30px;position:relative;filter:drop-shadow(0 0 10px rgba(0,0,0,.6)) drop-shadow(0 2px 3px rgba(0,0,0,.5))}
+  @keyframes skHeroIn{from{opacity:0;transform:scale(.92) translateY(12px)}}
+  @keyframes skHeroFloat{50%{transform:translateY(-5px)}}
+</style>
 </head>
 <body>
 
 <!-- ====================== MENÚ ====================== -->
 <section id="menu" class="screen active">
-  <div class="snake-deco">🐍</div>
+  <img class="sk-hero" src="img/arte/snake.jpg" alt="" decoding="async">
   <div class="logo">SNAKE<small>SeaKingsGames</small></div>
 
   <div class="section-title">DIFICULTAD</div>
@@ -297,6 +312,7 @@
   </div>
 </div>
 
+<script src="comun.js"></script>
 <script>
 /* =====================================================
    SNAKE · SeaKingsGames
@@ -494,6 +510,9 @@ function step(){
     $('stat-score').textContent = state.score;
     SFX.eat(500 + state.length*15);
     state.eatPulse = 8;
+    if (window.SK) { const r = $('board').getBoundingClientRect(), c = state.cellSize, pt = { x: r.left + (nx + .5) * c, y: r.top + (ny + .5) * c };
+      SK.fx.burst(pt, { colors:['#ff6b6b', '#ffd43b', '#fff'], n: 8, speed: 130, size: 4, g: 150, life: .45 });
+      if (state.score % 50 === 0) { SK.fx.float(pt, `${state.score}`, { color:'#ffd43b', size: 22 }); SK.fx.ring(pt, { color:'#ffd43b', size: 50 }); } }
     placeFood();
     // acelerar levemente cada 5 comidas (capa de tensión)
     if (state.length % 5 === 0 && state.speed > 50) state.speed = Math.max(50, state.speed - 4);
@@ -507,6 +526,7 @@ function crash(){
   state.running = false;
   state.shake = 12;
   SFX.crash();
+  if (window.SK && state.snake[0]) { const r = $('board').getBoundingClientRect(), c = state.cellSize, h = state.snake[0]; SK.fx.burst({ x: r.left + (h.x + .5) * c, y: r.top + (h.y + .5) * c }, { colors:['#5fc99a', '#2b8a3e', '#fff'], n: 18, speed: 220, size: 5, g: 300, life: .6 }); SK.fx.vibrate(70); }
   stopTimer();
   setTimeout(onGameOver, 700);
 }

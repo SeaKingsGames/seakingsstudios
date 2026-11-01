@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#1a1a3a">
 <title>Tower · SeaKingsGames</title>
+<meta name="description" content="Tower: apila bloques con timing perfecto y haz combos. ¿Hasta qué piso llegas? Gratis y sin internet.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tower · SeaKingsGames">
+<meta property="og:description" content="Tower: apila bloques con timing perfecto y haz combos. ¿Hasta qué piso llegas? Gratis y sin internet.">
+<meta property="og:url" content="https://seakingsgames.github.io/SeaKingsClassicGames/tower.html">
+<meta property="og:image" content="https://seakingsgames.github.io/SeaKingsClassicGames/img/arte/tower-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -228,14 +237,18 @@
   .bounce{animation:bounce 1.2s infinite}
   @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 </style>
+<style>
+  .sk-hero{display:block;width:min(440px,92vw);aspect-ratio:12/5;object-fit:cover;border-radius:22px;box-shadow:0 14px 34px rgba(0,0,0,.45),0 0 0 3px rgba(255,255,255,.16);animation:skHeroIn .6s cubic-bezier(.34,1.56,.64,1),skHeroFloat 6s .6s ease-in-out infinite;flex-shrink:0;margin:0 auto}
+  .sk-hero + .logo{margin-top:-30px;position:relative;filter:drop-shadow(0 0 10px rgba(0,0,0,.6)) drop-shadow(0 2px 3px rgba(0,0,0,.5))}
+  @keyframes skHeroIn{from{opacity:0;transform:scale(.92) translateY(12px)}}
+  @keyframes skHeroFloat{50%{transform:translateY(-5px)}}
+</style>
 </head>
 <body>
 
 <!-- ====================== MENÚ ====================== -->
 <section id="menu" class="screen active">
-  <div class="tower-deco">
-    <div></div><div></div><div></div><div></div><div></div>
-  </div>
+  <img class="sk-hero" src="img/arte/tower.jpg" alt="" decoding="async">
   <div class="logo">TOWER<small>SeaKingsGames</small></div>
 
   <div class="section-title">DIFICULTAD</div>
@@ -308,6 +321,7 @@
   </div>
 </div>
 
+<script src="comun.js"></script>
 <script>
 /* =====================================================
    TOWER · SeaKingsGames
@@ -672,6 +686,7 @@ function dropBlock(){
     state.score += 10 + state.combo * 2;
     SFX.perfect(state.combo);
     showPerfectPop(prev.x + prev.w/2, mov.y);
+    if (window.SK) { const r = $('game').getBoundingClientRect(), pt = { x: r.left + r.width / 2, y: r.top + (mov.y - state.cameraY) }; SK.fx.sparkle(pt, { n: 6 + Math.min(10, state.combo * 2), speed: 160 }); if (state.combo >= 3) SK.fx.vibrate(20); }
     $('floor-num').classList.add('perfect');
     setTimeout(() => $('floor-num').classList.remove('perfect'), 600);
     if (state.combo >= 2) showCombo(state.combo);
@@ -810,6 +825,7 @@ function onGameOver(){
   $('go-score').textContent = state.score;
   $('go-perfect').textContent = perfects;
   $('new-record-tag').style.display = isNewRec ? 'block' : 'none';
+  if (isNewRec && window.SK) setTimeout(() => SK.fx.celebrate(state.score > 200), 300);
   if (isNewRec) {
     $('go-emoji').textContent = '🎉';
     $('go-title').textContent = '¡Nuevo récord!';

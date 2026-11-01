@@ -1,6 +1,6 @@
 ---
 nombre: Sudoku
-orden: 6
+orden: 7
 archivo: sudoku
 genero: Rompecabezas de lógica
 lema: Del 1 al 9 sin repetir, con notas, pistas y deshacer.

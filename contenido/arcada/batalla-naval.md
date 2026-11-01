@@ -1,6 +1,6 @@
 ---
 nombre: Batalla Naval
-orden: 8
+orden: 9
 archivo: batalla-naval
 genero: Juego de estrategia
 lema: Acomoda tu flota y hunde los cinco barcos de la compu.

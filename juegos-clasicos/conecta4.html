@@ -6,6 +6,14 @@
 <meta name="theme-color" content="#0e1f45">
 <title>Conecta 4 · SeaKingsGames</title>
 <meta name="description" content="Conecta 4 gratis en español: juega contra la compu en 3 niveles o con un amigo en el mismo celular. Funciona sin internet.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Conecta 4 · SeaKingsGames">
+<meta property="og:description" content="Conecta 4 gratis en español: juega contra la compu en 3 niveles o con un amigo en el mismo celular. Funciona sin internet.">
+<meta property="og:url" content="https://seakingsgames.github.io/SeaKingsClassicGames/conecta4.html">
+<meta property="og:image" content="https://seakingsgames.github.io/SeaKingsClassicGames/img/arte/conecta4-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -48,7 +56,7 @@
 <body>
 
 <section id="menu" class="screen active">
-  <div class="logo-ico">🔴</div>
+  <img class="sk-hero" src="img/arte/conecta4.jpg" alt="" decoding="async">
   <div class="logo">CONECTA 4<small>SeaKingsGames</small></div>
   <div class="section-title">CONTRA LA COMPU</div>
   <div class="diff-list" id="diff-list"></div>
@@ -152,7 +160,11 @@ function drop(c, who){
   disc.style.setProperty('--from', `-${fall}px`);
   disc.style.setProperty('--dt', `${Math.round(180 + r * 45)}ms`);
   holes[r * C + c].appendChild(disc);
-  setTimeout(() => sfx.tone(180 + r * 25, .07, 'triangle', .14), 160 + r * 45);
+  setTimeout(() => {
+    sfx.tone(180 + r * 25, .07, 'triangle', .14);
+    SK.fx.burst(holes[r * C + c], { colors: who === 1 ? ['#ff6b6b', '#fff'] : ['#ffd43b', '#fff'], n: 5, speed: 90, size: 4, g: 250, life: .35 });
+    if (r === R - 1) SK.fx.shake($('board'), .15);
+  }, 160 + r * 45);
   return r;
 }
 function play(c){
@@ -254,7 +266,7 @@ function bestMove(board, lvl){
 function finish(winner, line){
   st.over = true; paintScore();
   st.starter = 3 - st.starter; // alterna quién empieza
-  if (line) line.forEach(([r, c]) => holes[r * C + c].querySelector('.disc')?.classList.add('win'));
+  if (line) line.forEach(([r, c], k) => { holes[r * C + c].querySelector('.disc')?.classList.add('win'); setTimeout(() => { SK.fx.sparkle(holes[r * C + c], { n: 8, speed: 150 }); sfx.tone(520 + k * 130, .08, 'triangle', .1); }, 200 + k * 110); });
   if (winner) st.score[winner - 1]++;
   paintScore();
   const human = st.mode === 'cpu';
@@ -270,7 +282,7 @@ function finish(winner, line){
   if (winner) $('status').textContent = title;
   const names = human ? ['TÚ', 'COMPU'] : ['ROJO', 'AMARILLO'];
   setTimeout(() => SK.result({
-    emoji, title, lose, text: `Marcador: ${st.score[0]} - ${st.score[1]}`,
+    emoji, title, lose, celebrate: !!winner && !(human && winner === 2), text: `Marcador: ${st.score[0]} - ${st.score[1]}`,
     stats: [[st.score[0], names[0]], [st.score[1], names[1]]],
     share: human && winner === 1 ? { emoji:'🔴', title:'¡LE GANÉ A LA COMPU!', game:'Conecta 4', sub:`Nivel ${LEVELS[st.level].label}`, big:`${st.score[0]} - ${st.score[1]}`, stats:[[st.score[0], 'GANADAS'], [st.streak, 'RACHA']], text:`🔴 Le gané a la compu en Conecta 4 (${LEVELS[st.level].label}). Marcador ${st.score[0]}-${st.score[1]}\nJuega: SeaKingsGames`, file:'logro-conecta4' } : null,
     buttons: [{ label:'Otra ronda →', onClick: newRound }, { label:'Volver al menú', kind:'ghost', onClick: toMenu }],

@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#2a3e4f">
 <title>Numpuz · SeaKingsGames</title>
+<meta name="description" content="Numpuz, el puzzle deslizante de números: ordena del 1 al N en tableros de 3×3 a 6×6. Gratis y sin internet.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Numpuz · SeaKingsGames">
+<meta property="og:description" content="Numpuz, el puzzle deslizante de números: ordena del 1 al N en tableros de 3×3 a 6×6. Gratis y sin internet.">
+<meta property="og:url" content="https://seakingsgames.github.io/SeaKingsClassicGames/numpuz.html">
+<meta property="og:image" content="https://seakingsgames.github.io/SeaKingsClassicGames/img/arte/numpuz-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -222,16 +231,18 @@
   .bounce{animation:bounce 1.2s infinite}
   @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 </style>
+<style>
+  .sk-hero{display:block;width:min(440px,92vw);aspect-ratio:12/5;object-fit:cover;border-radius:22px;box-shadow:0 14px 34px rgba(0,0,0,.45),0 0 0 3px rgba(255,255,255,.16);animation:skHeroIn .6s cubic-bezier(.34,1.56,.64,1),skHeroFloat 6s .6s ease-in-out infinite;flex-shrink:0;margin:0 auto}
+  .sk-hero + .logo{margin-top:-30px;position:relative;filter:drop-shadow(0 0 10px rgba(0,0,0,.6)) drop-shadow(0 2px 3px rgba(0,0,0,.5))}
+  @keyframes skHeroIn{from{opacity:0;transform:scale(.92) translateY(12px)}}
+  @keyframes skHeroFloat{50%{transform:translateY(-5px)}}
+</style>
 </head>
 <body>
 
 <!-- ====================== MENÚ ====================== -->
 <section id="menu" class="screen active">
-  <div class="preview-deco">
-    <div>1</div><div>2</div><div>3</div>
-    <div>4</div><div>5</div><div>6</div>
-    <div>7</div><div>8</div><div class="empty"></div>
-  </div>
+  <img class="sk-hero" src="img/arte/numpuz.jpg" alt="" decoding="async">
   <div class="logo">NUMPUZ<small>SeaKingsGames</small></div>
 
   <div class="section-title">TAMAÑO</div>
@@ -313,6 +324,7 @@
   </div>
 </div>
 
+<script src="comun.js"></script>
 <script>
 /* =====================================================
    NUMPUZ · SeaKingsGames
@@ -558,6 +570,8 @@ function onTileClick(value){
   $('stat-moves').textContent = state.moves;
   SFX.slide(450 + Math.min(state.moves*3, 300));
   updateTilePositions();
+  // brillito cuando la ficha llega a su lugar correcto
+  if (window.SK && value === emptyIdx + 1) setTimeout(() => SK.fx.burst(state.tilesEls[value], { colors:['#ffd43b', '#fff'], n: 5, speed: 90, size: 4, g: 120, life: .35 }), 140);
 
   if (isSolved(state.tiles)) setTimeout(onWin, 320);
 }

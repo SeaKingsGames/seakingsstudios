@@ -6,6 +6,14 @@
 <meta name="theme-color" content="#1b2440">
 <title>Sudoku · SeaKingsGames</title>
 <meta name="description" content="Sudoku gratis en español: 4 dificultades, notas, pistas, deshacer y récords. Siempre con una sola solución. Funciona sin internet.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sudoku · SeaKingsGames">
+<meta property="og:description" content="Sudoku gratis en español: 4 dificultades, notas, pistas, deshacer y récords. Siempre con una sola solución. Funciona sin internet.">
+<meta property="og:url" content="https://seakingsgames.github.io/SeaKingsClassicGames/sudoku.html">
+<meta property="og:image" content="https://seakingsgames.github.io/SeaKingsClassicGames/img/arte/sudoku-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -65,7 +73,7 @@
 <body>
 
 <section id="menu" class="screen active">
-  <div class="logo-ico">🔢</div>
+  <img class="sk-hero" src="img/arte/sudoku.jpg" alt="" decoding="async">
   <div class="logo">SUDOKU<small>SeaKingsGames</small></div>
   <button class="diff-btn" id="btn-continue" style="width:min(380px,94vw);display:none;background:var(--accent);color:var(--accent-ink)"></button>
   <div class="section-title">NUEVO SUDOKU</div>
@@ -271,7 +279,8 @@ function input(v){
   st.values[i] = v; st.notes[i] = 0;
   cells[i].classList.remove('pop'); void cells[i].offsetWidth; cells[i].classList.add('pop');
   if (v !== st.solution[i]) {
-    st.errors++; sfx.bad(); if (navigator.vibrate) navigator.vibrate(60);
+    st.errors++; sfx.bad(); SK.fx.vibrate(60);
+    SK.fx.burst(cells[i], { colors:['#ff6b6b', '#ffa8a8'], n: 7, speed: 120, size: 4, g: 200, life: .4 }); SK.fx.shake(cells[i].parentElement, .35);
     $('st-err').textContent = limitErrors ? `${st.errors}/3` : st.errors;
     render(); save();
     if (limitErrors && st.errors >= 3) lose();
@@ -280,7 +289,11 @@ function input(v){
   // quita esa nota de las casillas relacionadas
   PEERS[i].forEach(j => st.notes[j] &= ~(1 << v));
   sfx.good();
-  render(); celebrate(i); save(); checkWin();
+  SK.fx.burst(cells[i], { colors:['#91a7ff', '#fff'], n: 5, speed: 90, size: 4, g: 150, life: .35 });
+  render(); celebrate(i); save();
+  // ¿ya pusiste los 9 de este número?
+  if (st.values.filter((x, k) => x === v && x === st.solution[k]).length === 9) { SK.fx.float(cells[i], `¡Todos los ${v}!`, { color:'#ffd43b', size: 22 }); sfx.chime(); }
+  checkWin();
 }
 function erase(){
   const i = st.sel;
@@ -318,7 +331,7 @@ function celebrate(i){
       g.forEach((k, n) => setTimeout(() => { cells[k].classList.remove('done'); void cells[k].offsetWidth; cells[k].classList.add('done'); }, n * 35));
     }
   });
-  if (any) sfx.tone(880, .12, 'triangle', .1, .05);
+  if (any) { sfx.tone(880, .12, 'triangle', .1, .05); SK.fx.sparkle(cells[i], { n: 10, speed: 160 }); }
 }
 function checkWin(){
   if (!st.values.every((v, i) => v === st.solution[i])) return;
@@ -327,9 +340,11 @@ function checkWin(){
   if (isRec) { SK.store.set(key, st.elapsed); sfx.newRec(); }
   SK.store.set(`sk-sudoku-wins-${st.diff}`, SK.store.get(`sk-sudoku-wins-${st.diff}`, 0) + 1);
   sfx.win();
+  // ola de brillo por todo el tablero
+  for (let k = 0; k < 81; k++) setTimeout(() => { cells[k].classList.remove('done'); void cells[k].offsetWidth; cells[k].classList.add('done'); }, (ROW[k] + COL[k]) * 40);
   const d = DIFFS[st.diff];
   setTimeout(() => SK.result({
-    emoji:'🏆', title:'¡Sudoku resuelto!', newRecord: isRec,
+    emoji:'🏆', title:'¡Sudoku resuelto!', newRecord: isRec, celebrate: st.diff === 'experto' || st.diff === 'dificil' ? 'big' : true,
     stats:[[SK.fmtTime(st.elapsed), 'TIEMPO'], [st.errors, 'ERRORES'], [3 - st.hints, 'PISTAS']],
     share:{ emoji:'🔢', title:'¡SUDOKU RESUELTO!', game:'Sudoku', sub:`Nivel ${d.label}`, big: SK.fmtTime(st.elapsed), stats:[[st.errors, 'ERRORES'], [3 - st.hints, 'PISTAS']], text:`🔢 Resolví un Sudoku ${d.label} en ${SK.fmtTime(st.elapsed)}\nJuega: SeaKingsGames`, file:'logro-sudoku' },
     buttons:[{ label:'Otro sudoku →', onClick: () => newGame(st.diff) }, { label:'Cambiar dificultad', kind:'ghost', onClick: toMenu }],

@@ -6,6 +6,14 @@
 <meta name="theme-color" content="#271a40">
 <title>Gato · SeaKingsGames</title>
 <meta name="description" content="El juego del gato (tres en raya) gratis en español: contra la compu en 3 niveles o con un amigo. Funciona sin internet.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Gato · SeaKingsGames">
+<meta property="og:description" content="El juego del gato (tres en raya) gratis en español: contra la compu en 3 niveles o con un amigo. Funciona sin internet.">
+<meta property="og:url" content="https://seakingsgames.github.io/SeaKingsClassicGames/gato.html">
+<meta property="og:image" content="https://seakingsgames.github.io/SeaKingsClassicGames/img/arte/gato-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -54,7 +62,7 @@
 <body>
 
 <section id="menu" class="screen active">
-  <div class="logo-ico">❌⭕</div>
+  <img class="sk-hero" src="img/arte/gato.jpg" alt="" decoding="async">
   <div class="logo">GATO<small>SeaKingsGames</small></div>
   <div class="section-title">CONTRA LA COMPU</div>
   <div class="diff-list" id="diff-list"></div>
@@ -140,6 +148,7 @@ function mark(i, who){
     ? '<svg viewBox="0 0 100 100"><line class="mk x draw" style="--len:120" x1="15" y1="15" x2="85" y2="85"/><line class="mk x draw d2" style="--len:120" x1="85" y1="15" x2="15" y2="85"/></svg>'
     : '<svg viewBox="0 0 100 100"><circle class="mk o draw" style="--len:230" cx="50" cy="50" r="36"/></svg>';
   who === 'X' ? sfx.tone(520, .08, 'triangle', .12) : sfx.tone(380, .1, 'sine', .14);
+  SK.fx.burst(sq, { colors: who === 'X' ? ['#ff7a8a', '#fff'] : ['#5fd3ff', '#fff'], n: 6, speed: 120, size: 5, g: 150, life: .45 });
 }
 function winner(b){
   for (const l of LINES) if (b[l[0]] && b[l[0]] === b[l[1]] && b[l[1]] === b[l[2]]) return { who:b[l[0]], line:l };
@@ -197,6 +206,7 @@ function finish(w){
     svg.setAttribute('class', 'winline'); svg.setAttribute('viewBox', '0 0 100 100'); svg.setAttribute('preserveAspectRatio', 'none');
     svg.innerHTML = `<line x1="${x1 - dx}" y1="${y1 - dy}" x2="${x2 + dx}" y2="${y2 + dy}" vector-effect="non-scaling-stroke"/>`;
     board.appendChild(svg);
+    w.line.forEach((i, k) => setTimeout(() => { SK.fx.sparkle(board.children[i], { n: 8, speed: 140 }); sfx.tone(660 + k * 180, .08, 'triangle', .1); }, 250 + k * 120));
   }
   const cpu = st.mode === 'cpu';
   let emoji, title, lose = false;
@@ -210,7 +220,7 @@ function finish(w){
   else { emoji = w.who === 'X' ? '❌' : '⭕'; title = `¡Ganó ${w.who}!`; sfx.win(); }
   $('status').textContent = title;
   setTimeout(() => SK.result({
-    emoji, title, lose, text: `Marcador: X ${st.score.X} · O ${st.score.O} · Empates ${st.score.D}`,
+    emoji, title, lose, celebrate: w.who !== 'D' && !(cpu && w.who === 'O'), text: `Marcador: X ${st.score.X} · O ${st.score.O} · Empates ${st.score.D}`,
     stats: [[st.score.X, cpu ? 'TÚ' : 'X'], [st.score.D, 'EMPATES'], [st.score.O, cpu ? 'COMPU' : 'O']],
     share: cpu && w.who === 'X' ? { emoji:'❌', title:'¡LE GANÉ A LA COMPU!', game:'Gato', sub:`Nivel ${LEVELS[st.level].label}`, big:`${st.score.X} - ${st.score.O}`, stats:[[st.score.X, 'GANADAS'], [st.score.D, 'EMPATES']], text:`❌⭕ Le gané a la compu en el Gato (${LEVELS[st.level].label})\nJuega: SeaKingsGames`, file:'logro-gato' } : null,
     buttons: [{ label:'Otra ronda →', onClick: newRound }, { label:'Volver al menú', kind:'ghost', onClick: toMenu }],

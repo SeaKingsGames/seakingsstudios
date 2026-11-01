@@ -1,6 +1,6 @@
 ---
 nombre: Gato
-orden: 15
+orden: 16
 archivo: gato
 genero: Juego de estrategia
 lema: El tres en raya de toda la vida. ¿Le sacas un empate a la compu?

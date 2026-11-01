@@ -42,8 +42,21 @@ function Tablero(cfg){
     .die{width:52px;height:52px;border-radius:12px;background:#fff;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:7px;box-shadow:0 4px 0 #c9cfd8,0 8px 16px rgba(0,0,0,.35)}
     .die b{width:9px;height:9px;border-radius:50%;background:#1c2a3a;margin:auto;opacity:0}
     .die b.on{opacity:1}
-    .die.roll{animation:dieRoll .12s linear infinite}
-    @keyframes dieRoll{50%{transform:rotate(12deg) translateY(-4px)}}
+    .die.roll{animation:dieRoll .14s linear infinite}
+    @keyframes dieRoll{0%{transform:rotate(0) translateY(0)}25%{transform:rotate(-14deg) translateY(-7px) scale(1.05)}50%{transform:rotate(10deg) translateY(-2px)}75%{transform:rotate(-6deg) translateY(-6px)}100%{transform:rotate(0)}}
+    .die.land{animation:dieLand .38s cubic-bezier(.34,1.56,.64,1)}
+    @keyframes dieLand{0%{transform:scale(1.35) rotate(-10deg)}60%{transform:scale(.92)}100%{transform:none}}
+    .tb-roll:not(:disabled){animation:tbPulse 1.3s ease-in-out infinite}
+    @keyframes tbPulse{0%,100%{box-shadow:0 4px 0 var(--accent-deep),0 0 0 0 rgba(255,212,59,.55)}50%{box-shadow:0 4px 0 var(--accent-deep),0 0 0 10px rgba(255,212,59,0)}}
+    .tb-banner{position:absolute;left:50%;top:50%;z-index:5;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 22px;border-radius:20px;color:#fff;font-family:'Bagel Fat One','Fredoka',system-ui,sans-serif;font-size:24px;text-align:center;line-height:1.05;box-shadow:0 10px 30px rgba(0,0,0,.45),inset 0 0 0 3px rgba(255,255,255,.5);pointer-events:none;animation:tbBanner var(--ms,1300ms) ease-out forwards;white-space:nowrap}
+    .tb-banner b{font-size:48px;line-height:1;font-family:sans-serif}
+    .tb-banner b img{display:block;width:min(34vw,140px);height:min(34vw,140px);border-radius:16px;box-shadow:0 6px 16px rgba(0,0,0,.4),0 0 0 3px rgba(255,255,255,.85);margin-bottom:6px}
+    .tb-banner.has-img{padding:12px 16px 14px}
+    @keyframes tbBanner{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-8deg)}14%{opacity:1;transform:translate(-50%,-50%) scale(1.12) rotate(2deg)}24%{transform:translate(-50%,-50%) scale(1)}82%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-62%) scale(.9)}}
+    .tb-dark{position:absolute;inset:0;z-index:4;background:radial-gradient(circle,rgba(10,20,40,.35),rgba(0,0,10,.85));pointer-events:none;animation:tbDark var(--ms,1600ms) ease-in-out forwards}
+    @keyframes tbDark{0%,100%{opacity:0}20%,75%{opacity:1}}
+    .tb-sprite{position:absolute;z-index:6;pointer-events:none;font-size:46px;line-height:1;transform:translate(-50%,-50%)}
+    .tb-msg.flash{animation:skPop .35s cubic-bezier(.34,1.56,.64,1)}
     .tb-roll{min-width:150px}
     .tb-roll:disabled{opacity:.4}
     .tb-modes{display:flex;flex-direction:column;gap:10px;width:min(380px,94vw)}
@@ -98,14 +111,22 @@ function Tablero(cfg){
     const r = Math.max(8, cfg.cellSize(st.W, st.H) * .27);
     const order = st.players.map((p, i) => i).sort((a, b) => (a === st.cur) - (b === st.cur));
     order.forEach(i => {
-      const p = st.players[i], col = COLORS[p.color], y = p.y - (p.lift || 0);
-      fctx.fillStyle = 'rgba(0,0,0,.3)'; fctx.beginPath(); fctx.ellipse(p.x, p.y + r * .75, r * .8, r * .3, 0, 0, Math.PI * 2); fctx.fill();
-      const g = fctx.createRadialGradient(p.x - r * .35, y - r * .4, r * .2, p.x, y, r);
-      g.addColorStop(0, '#fff'); g.addColorStop(.25, col.c); g.addColorStop(1, col.d);
-      fctx.fillStyle = g; fctx.strokeStyle = i === st.cur && !st.over ? '#fff' : 'rgba(255,255,255,.75)'; fctx.lineWidth = i === st.cur && !st.over ? 3 : 2;
-      fctx.beginPath(); fctx.arc(p.x, y, r, 0, Math.PI * 2); fctx.fill(); fctx.stroke();
-      fctx.fillStyle = '#fff'; fctx.font = `700 ${Math.round(r * .9)}px Fredoka, system-ui, sans-serif`; fctx.textAlign = 'center'; fctx.textBaseline = 'middle';
-      fctx.strokeStyle = 'rgba(0,0,0,.35)'; fctx.lineWidth = 3; fctx.strokeText(p.tag, p.x, y + 1); fctx.fillText(p.tag, p.x, y + 1);
+      const p = st.players[i], col = COLORS[p.color], lift = p.lift || 0, y = p.y - lift, sy = p.sy || 1, sx = 1 / Math.sqrt(sy), sc = p.scale == null ? 1 : p.scale;
+      if (sc <= .01) return;
+      const sh = Math.max(.35, 1 - lift / (r * 4));
+      fctx.fillStyle = `rgba(0,0,0,${.3 * sh})`; fctx.beginPath(); fctx.ellipse(p.x, p.y + r * .75, r * .8 * sh * sc, r * .3 * sh * sc, 0, 0, Math.PI * 2); fctx.fill();
+      const turn = i === st.cur && !st.over;
+      fctx.save(); fctx.translate(p.x, y + r * (1 - sy) * .9); fctx.scale(sx * sc, sy * sc);
+      if (cfg.drawToken) cfg.drawToken(fctx, p, r, col, turn);
+      else {
+        const g = fctx.createRadialGradient(-r * .35, -r * .4, r * .2, 0, 0, r);
+        g.addColorStop(0, '#fff'); g.addColorStop(.25, col.c); g.addColorStop(1, col.d);
+        fctx.fillStyle = g; fctx.strokeStyle = turn ? '#fff' : 'rgba(255,255,255,.75)'; fctx.lineWidth = turn ? 3 : 2;
+        fctx.beginPath(); fctx.arc(0, 0, r, 0, Math.PI * 2); fctx.fill(); fctx.stroke();
+        fctx.fillStyle = '#fff'; fctx.font = `700 ${Math.round(r * .9)}px Fredoka, system-ui, sans-serif`; fctx.textAlign = 'center'; fctx.textBaseline = 'middle';
+        fctx.strokeStyle = 'rgba(0,0,0,.35)'; fctx.lineWidth = 3; fctx.strokeText(p.tag, 0, 1); fctx.fillText(p.tag, 0, 1);
+      }
+      fctx.restore();
     });
   }
   function animate(ms, fn){
@@ -116,22 +137,71 @@ function Tablero(cfg){
     });
   }
   const wait = ms => new Promise(r => setTimeout(r, ms * SPEED));
-  async function hop(p, to){
+  async function hop(p, to, last){
     const a = { x: p.x, y: p.y }; p.pos = to; const b = spot(p, to), r = cfg.cellSize(st.W, st.H) * .35;
-    await animate(cfg.hopMs || 150, k => { p.x = a.x + (b.x - a.x) * k; p.y = a.y + (b.y - a.y) * k; p.lift = Math.sin(Math.PI * k) * r; });
+    await animate(cfg.hopMs || 150, k => { p.x = a.x + (b.x - a.x) * k; p.y = a.y + (b.y - a.y) * k; p.lift = Math.sin(Math.PI * k) * r; p.sy = 1 + Math.sin(Math.PI * k) * .18; });
     p.lift = 0; sfx.tone(500 + to * 4, .04, 'triangle', .07);
+    await animate(last ? 160 : 60, k => { p.sy = 1 - Math.sin(Math.PI * k) * (last ? .3 : .14); });
+    p.sy = 1;
   }
-  async function slide(p, to, ms){
-    const a = { x: p.x, y: p.y }; p.pos = to; const b = spot(p, to);
-    await animate(ms || 650, k => { const e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; p.x = a.x + (b.x - a.x) * e; p.y = a.y + (b.y - a.y) * e; });
+  const ease = k => k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+  async function slide(p, to, ms, opt = {}){
+    const a = { x: p.x, y: p.y }, from = p.pos; p.pos = to; const b = spot(p, to), s = cfg.cellSize(st.W, st.H);
+    const path = opt.path && opt.path.length > 1 ? opt.path : null;
+    let lens = null, total = 0;
+    if (path) { lens = [0]; for (let i = 1; i < path.length; i++) { total += Math.hypot(path[i].x - path[i - 1].x, path[i].y - path[i - 1].y); lens.push(total); } }
+    await animate(ms || 650, k => {
+      const e = opt.linear ? k : ease(k);
+      if (path) {
+        const d = e * total; let i = 1; while (i < lens.length - 1 && lens[i] < d) i++;
+        const q = (d - lens[i - 1]) / Math.max(1e-6, lens[i] - lens[i - 1]);
+        p.x = path[i - 1].x + (path[i].x - path[i - 1].x) * q; p.y = path[i - 1].y + (path[i].y - path[i - 1].y) * q;
+        if (k > .85) { const t = (k - .85) / .15; p.x += (b.x - p.x) * t; p.y += (b.y - p.y) * t; }
+      } else { p.x = a.x + (b.x - a.x) * e; p.y = a.y + (b.y - a.y) * e; }
+      p.lift = opt.arc ? Math.sin(Math.PI * e) * s * (opt.arc === true ? 1.6 : opt.arc) : 0;
+      p.sy = opt.arc ? 1 + Math.sin(Math.PI * e) * .2 : 1;
+      if (opt.wobble) p.x += Math.sin(k * Math.PI * 8) * s * .06 * (1 - k);
+    });
+    p.lift = 0; p.sy = 1;
     // reacomoda a todos los que comparten casilla
     st.players.forEach(q => { const c = spot(q, q.pos); q.x = c.x; q.y = c.y; });
+    // efectitos genéricos: subir brilla, bajar tiembla
+    if (!opt.quiet) {
+      if (to > from && to !== 0) SK.fx.sparkle(pagePoint(p.x, p.y), { n: 10, size: 6 });
+      else if (to < from) { SK.fx.shake($('tb-board'), .6); SK.fx.vibrate(40); }
+    }
+    await animate(140, k => { p.sy = 1 - Math.sin(Math.PI * k) * .25; }); p.sy = 1;
+  }
+  function pagePoint(x, y){ const r = $('tb-board').getBoundingClientRect(); return { x: r.left + x, y: r.top + y }; }
+  function banner(ico, title, color, ms = 1300){
+    const d = document.createElement('div'); d.className = 'tb-banner';
+    d.style.background = color || 'linear-gradient(180deg,#ff8a5c,#e8590c)'; d.style.setProperty('--ms', ms + 'ms');
+    d.innerHTML = '<b></b><span></span>'; d.lastChild.textContent = title;
+    if (ico && ico.img) { const im = document.createElement('img'); im.src = ico.img; im.alt = ''; d.firstChild.appendChild(im); d.classList.add('has-img'); }
+    else d.firstChild.textContent = ico;
+    $('tb-board').appendChild(d); setTimeout(() => d.remove(), ms + 50);
+  }
+  function darken(ms = 1600){ const d = document.createElement('div'); d.className = 'tb-dark'; d.style.setProperty('--ms', ms + 'ms'); $('tb-board').appendChild(d); setTimeout(() => d.remove(), ms + 50); }
+  function sprite(txt, from, to, ms = 1400, size = 46){
+    const d = document.createElement('div'); d.className = 'tb-sprite'; d.textContent = txt; d.style.fontSize = size + 'px';
+    d.style.left = from.x + 'px'; d.style.top = from.y + 'px'; $('tb-board').appendChild(d);
+    const anim = d.animate([{ left: from.x + 'px', top: from.y + 'px', opacity: 0, transform:'translate(-50%,-50%) scale(.6)' }, { opacity: 1, offset: .15, transform:'translate(-50%,-50%) scale(1.1)' }, { opacity: 1, offset: .8 }, { left: to.x + 'px', top: to.y + 'px', opacity: 0, transform:'translate(-50%,-50%) scale(1)' }], { duration: ms * SPEED, easing:'ease-in-out' });
+    return new Promise(res => { anim.onfinish = () => { d.remove(); res(); }; });
+  }
+  // la ficha del turno respira mientras esperas
+  let idleRaf = 0;
+  function idle(){
+    cancelAnimationFrame(idleRaf);
+    const p = st.players[st.cur]; if (!p || !st.waiting || st.over) { if (p) { p.lift = 0; p.sy = 1; } drawTokens(); return; }
+    const r = cfg.cellSize(st.W, st.H) * .12, t = performance.now() / 1000;
+    p.lift = Math.abs(Math.sin(t * 4)) * r; p.sy = 1 + Math.sin(t * 8) * .04;
+    drawTokens(); idleRaf = requestAnimationFrame(idle);
   }
   async function moveSteps(p, steps){
     let dir = 1;
     for (let n = 0; n < steps; n++) {
       if (p.pos >= MAX) { if (!cfg.exact) break; dir = -1; }
-      await hop(p, p.pos + dir);
+      await hop(p, p.pos + dir, n === steps - 1);
     }
     st.players.forEach(q => { const c = spot(q, q.pos); q.x = c.x; q.y = c.y; });
     drawTokens();
@@ -145,11 +215,13 @@ function Tablero(cfg){
     const t0 = performance.now();
     while (performance.now() - t0 < 620 * SPEED) { showDice(Array.from({ length:n }, () => 1 + ((Math.random() * 6) | 0)), true); sfx.tone(300 + Math.random() * 300, .03, 'square', .04); await wait(70); }
     showDice(res, false); sfx.tone(700, .06, 'triangle', .12);
+    document.querySelectorAll('#tb-dice .die').forEach(d => d.classList.add('land'));
+    if (n > 1 && res.every(v => v === res[0])) SK.fx.float($('tb-dice'), '¡Dobles!', { color:'#ffd43b', size: 20 });
     return res;
   }
 
   /* ---------- TURNOS ---------- */
-  const msg = t => { $('tb-msg').textContent = t; };
+  const msg = t => { const m = $('tb-msg'); m.textContent = t; m.classList.remove('flash'); void m.offsetWidth; m.classList.add('flash'); };
   function paintPlayers(){
     const box = $('tb-players'); box.innerHTML = '';
     st.players.forEach((p, i) => {
@@ -159,7 +231,7 @@ function Tablero(cfg){
       box.appendChild(d);
     });
   }
-  function setRoll(on){ $('tb-roll').disabled = !on; st.waiting = on; }
+  function setRoll(on){ $('tb-roll').disabled = !on; st.waiting = on; if (on) idle(); else { cancelAnimationFrame(idleRaf); const p = st.players[st.cur]; if (p) { p.lift = 0; p.sy = 1; } } }
   async function turn(run){
     if (run !== st.run || st.over) return;
     const p = st.players[st.cur];
@@ -186,7 +258,14 @@ function Tablero(cfg){
       if (run !== st.run) return;
       if (act.msg) msg(act.msg);
       if (act.sound === 'good') sfx.good(); else if (act.sound === 'bad') sfx.bad(); else if (act.sound === 'big') sfx.win();
-      if (act.to != null && act.to !== p.pos) { await wait(act.delay || 450); await slide(p, Math.max(0, Math.min(MAX, act.to)), act.ms); }
+      if (act.banner) banner(act.banner[0], act.banner[1], act.banner[2], act.banner[3]);
+      if (act.anim) await act.anim(p, api);
+      if (act.to != null && act.to !== p.pos) {
+        await wait(act.delay || 450);
+        const to = Math.max(0, Math.min(MAX, act.to));
+        await slide(p, to, act.ms, { arc: act.arc, path: act.path ? act.path(st.W, st.H) : null, wobble: act.wobble, linear: act.linear, quiet: act.quiet });
+        if (act.after) await act.after(p, api);
+      }
       if (act.skip) { p.skip = act.skip; p.skipWhy = act.skipWhy || ''; }
       if (act.again) again = true;
       await wait(act.pause || 900);
@@ -195,7 +274,7 @@ function Tablero(cfg){
     if (run !== st.run) return;
     paintPlayers();
     if (p.pos === MAX) return finish(p);
-    if (again) { msg(p.you ? '🔁 ¡Tiras otra vez!' : `🔁 ¡${p.name} tira otra vez!`); await wait(700); return turn(run); }
+    if (again) { msg(p.you ? '🔁 ¡Tiras otra vez!' : `🔁 ¡${p.name} tira otra vez!`); SK.fx.float(pagePoint(p.x, p.y - 20), '🔁', { size: 26 }); await wait(700); return turn(run); }
     next(run);
   }
   function next(run){ if (run !== st.run || st.over) return; st.cur = (st.cur + 1) % st.players.length; turn(run); }
@@ -229,8 +308,10 @@ function Tablero(cfg){
       row.innerHTML = `<span>${['🥇', '🥈', '🥉', '4️⃣'][k]}</span><i style="width:14px;height:14px;border-radius:50%;background:${COLORS[q.color].c}"></i><span style="flex:1;text-align:left"></span><small style="color:var(--text-dim)">casilla ${q.pos}</small>`;
       row.children[2].textContent = q.name; extra.appendChild(row);
     });
+    const fp = pagePoint(p.x, p.y);
+    SK.fx.ring(fp, { size: 90 }); SK.fx.sparkle(fp, { n: 22 }); banner('🏆', `¡${p.you ? 'Ganaste' : 'Ganó ' + p.name}!`, 'linear-gradient(180deg,#ffd43b,#e0a800)', 1100);
     setTimeout(() => SK.result({
-      emoji: human ? '🏆' : '🤖', lose: solo && !human,
+      emoji: human ? '🏆' : '🤖', lose: solo && !human, celebrate: human || !solo ? 'big' : false,
       title: solo ? (human ? '¡Ganaste!' : `Ganó ${p.name}`) : `¡Ganó ${p.name}!`,
       text: `Llegó a la meta en ${st.rolls} tiradas`, extra,
       share: human && solo ? { emoji: cfg.emoji, title:'¡GANÉ!', game: cfg.title, sub: st.mode.label.replace(/^🤖 /, ''), big:'🏆 1er lugar', stats:[[st.rolls, 'TIRADAS'], [SK.store.get(`sk-${cfg.id}-wins`, 0), 'VICTORIAS']], text:`${cfg.emoji} ¡Gané en ${cfg.title}!\nJuega: SeaKingsGames`, file:`logro-${cfg.id}` } : null,
@@ -265,7 +346,7 @@ function Tablero(cfg){
   };
   SK.soundButton($('tb-sound'));
 
-  const api = { players: () => st.players, msg, wait, COLORS };
+  const api = { players: () => st.players, msg, wait, COLORS, banner, darken, sprite, pagePoint, center: n => cfg.cellCenter(n, st.W, st.H), cell: () => cfg.cellSize(st.W, st.H), board: () => $('tb-board'), redraw: () => layout(), animate, size: () => ({ W: st.W, H: st.H }) };
   buildMenu();
-  return { start, api, st };
+  return { start, api, st, redraw: () => { if (st.W) layout(); } };
 }

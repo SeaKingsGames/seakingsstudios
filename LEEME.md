@@ -56,6 +56,7 @@ Este repositorio genera **www.seakingsstudios.com**. Las páginas no se escriben
 1. Copia el archivo del juego (`mi-juego.html`) a `juegos-clasicos/`. Si el repo de la arcada cambió `comun.css`, `comun.js` o `palabras.js`, cópialos también. El generador les quita los anuncios externos y el service worker, y el botón «Volver al inicio» lleva a la arcada.
 2. Copia `contenido/arcada/snake.md` como `mi-juego.md` y pon `archivo: mi-juego`.
 3. Agrega una captura en `publico/img/arcada/`.
+4. Si el repo de la arcada trae su ilustración (`img/arte/mi-juego.jpg` y `img/arte/mi-juego-og.jpg`), copia la carpeta `img` completa a `juegos-clasicos/`: la tarjeta del juego y la imagen para compartir la usan sola.
 
 ## La arcada como app
 

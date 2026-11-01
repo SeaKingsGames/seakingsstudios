@@ -6,6 +6,14 @@
 <meta name="theme-color" content="#0d2a4a">
 <title>Batalla Naval · SeaKingsGames</title>
 <meta name="description" content="Batalla naval gratis en español contra la compu: acomoda tu flota y hunde sus barcos. 3 niveles de dificultad. Funciona sin internet.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Batalla Naval · SeaKingsGames">
+<meta property="og:description" content="Batalla naval gratis en español contra la compu: acomoda tu flota y hunde sus barcos. 3 niveles de dificultad. Funciona sin internet.">
+<meta property="og:url" content="https://seakingsgames.github.io/SeaKingsClassicGames/batalla-naval.html">
+<meta property="og:image" content="https://seakingsgames.github.io/SeaKingsClassicGames/img/arte/batalla-naval-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -55,7 +63,7 @@
 <body>
 
 <section id="menu" class="screen active">
-  <div class="logo-ico">🚢</div>
+  <img class="sk-hero" src="img/arte/batalla-naval.jpg" alt="" decoding="async">
   <div class="logo">BATALLA<br>NAVAL<small>SeaKingsGames</small></div>
   <div class="section-title">CONTRA LA COMPU</div>
   <div class="diff-list" id="diff-list"></div>
@@ -280,7 +288,14 @@ function fire(i){
 function fx(cells, i, res){
   const d = cells[i]; if (!d) return;
   d.classList.add(res === 'miss' ? 'splash' : 'pop');
-  if (res !== 'miss' && res !== 'hit') res.cells.forEach((k, n) => setTimeout(() => cells[k].classList.add('pop'), n * 70));
+  if (res === 'miss') SK.fx.burst(d, { colors:['#a5d8ff', '#74c0fc', '#fff'], n: 8, speed: 140, size: 4, g: 420, life: .45 });
+  else SK.fx.burst(d, { colors:['#ff922b', '#ffd43b', '#ff6b6b', '#495057'], n: 14, speed: 220, size: 5, g: 300, life: .6 });
+  if (res !== 'miss' && res !== 'hit') {
+    res.cells.forEach((k, n) => setTimeout(() => { cells[k].classList.add('pop'); SK.fx.burst(cells[k], { colors:['#ff922b', '#ffd43b', '#495057'], n: 8, speed: 180, size: 5, g: 300, life: .55 }); }, n * 70));
+    SK.fx.ring(d, { color:'#ff922b', size: 90, width: 6 }); SK.fx.shake(d.parentElement, .6);
+    const mine = cells === myCells;
+    SK.fx.float(d, mine ? `¡Hundieron tu ${SHIPS[res.id].name.toLowerCase()}!` : `¡${SHIPS[res.id].name} hundido!`, { color: mine ? '#ff8787' : '#ffd43b', size: 20 });
+  }
 }
 function cpuTurn(){
   if (st.over) return;
@@ -291,8 +306,8 @@ function cpuTurn(){
     paint(); fx(myCells, i, res);
     const coord = LETTERS[(i / N) | 0] + (i % N + 1);
     if (res === 'miss') { sfx.tone(200, .12, 'sine', .1); setStatus(`💧 La compu tiró a ${coord}: agua`); }
-    else if (res === 'hit') { sfx.noise(.2, .2); if (navigator.vibrate) navigator.vibrate(40); setStatus(`🔥 La compu le dio a tu barco en ${coord}`); }
-    else { sfx.noise(.35, .3); sfx.lose(); if (navigator.vibrate) navigator.vibrate([60, 40, 60]); setStatus(`💀 La compu hundió tu ${SHIPS[res.id].name}`); }
+    else if (res === 'hit') { sfx.noise(.2, .2); SK.fx.vibrate(40); setStatus(`🔥 La compu le dio a tu barco en ${coord}`); }
+    else { sfx.noise(.35, .3); sfx.lose(); SK.fx.vibrate([60, 40, 60]); setStatus(`💀 La compu hundió tu ${SHIPS[res.id].name}`); }
     if (st.mine.every(s => s.hits.size === s.size)) return end(false);
     if (res !== 'miss' && again) { setTimeout(cpuTurn, 900); return; }
     setTimeout(() => { if (st.over) return; st.turn = 'me'; st.busy = false; setStatus('🎯 Tu turno', true); }, 700);
@@ -355,7 +370,7 @@ function end(won){
     const key = `sk-naval-best-${st.level}`, best = SK.store.get(key), isRec = !best || st.shotsMe < best;
     if (isRec) { SK.store.set(key, st.shotsMe); setTimeout(() => sfx.newRec(), 400); }
     setTimeout(() => SK.result({
-      emoji:'🏆', title:'¡Hundiste toda su flota!', newRecord: isRec,
+      emoji:'🏆', title:'¡Hundiste toda su flota!', newRecord: isRec, celebrate: st.level === 'dificil' ? 'big' : true,
       stats:[[st.shotsMe, 'DISPAROS'], [acc + '%', 'PUNTERÍA'], [st.mine.filter(s => s.hits.size < s.size).length, 'BARCOS VIVOS']],
       share:{ emoji:'🚢', title:'¡GANÉ LA BATALLA!', game:'Batalla Naval', sub:`Nivel ${LEVELS[st.level].label}`, big:`${st.shotsMe} disparos`, stats:[[st.shotsMe, 'DISPAROS'], [acc + '%', 'PUNTERÍA']], text:`🚢 Hundí la flota de la compu (${LEVELS[st.level].label}) en ${st.shotsMe} disparos con ${acc}% de puntería\nJuega: SeaKingsGames`, file:'logro-naval' },
       buttons:[{ label:'Otra batalla →', onClick: () => openSetup(st.level) }, { label:'Menú', kind:'ghost', onClick: toMenu }],

@@ -6,6 +6,14 @@
 <meta name="theme-color" content="#221a3a">
 <title>2048 · SeaKingsGames</title>
 <meta name="description" content="2048 gratis en español: une números iguales deslizando. Tableros de 3×3 a 6×6, deshacer y récords. Funciona sin internet.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="2048 · SeaKingsGames">
+<meta property="og:description" content="2048 gratis en español: une números iguales deslizando. Tableros de 3×3 a 6×6, deshacer y récords. Funciona sin internet.">
+<meta property="og:url" content="https://seakingsgames.github.io/SeaKingsClassicGames/2048.html">
+<meta property="og:image" content="https://seakingsgames.github.io/SeaKingsClassicGames/img/arte/2048-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -49,7 +57,7 @@
 <body>
 
 <section id="menu" class="screen active">
-  <div class="logo-ico">🔢</div>
+  <img class="sk-hero" src="img/arte/2048.jpg" alt="" decoding="async">
   <div class="logo">2048<small>SeaKingsGames</small></div>
   <div class="section-title">TABLERO</div>
   <div class="diff-list" id="diff-list"></div>
@@ -118,7 +126,7 @@ addEventListener('resize', () => { if ($('game').classList.contains('active')) l
 /* ---------- PARTIDA ---------- */
 function newGame(){
   const n = st.n;
-  Object.assign(st, { grid: Array.from({ length:n }, () => Array(n).fill(null)), score:0, won:false, over:false, undo:[], undoLeft:3, busy:false, gid:(st.gid || 0) + 1 });
+  Object.assign(st, { grid: Array.from({ length:n }, () => Array(n).fill(null)), score:0, won:false, over:false, undo:[], undoLeft:3, busy:false, gid:(st.gid || 0) + 1, topSeen:64 });
   st.tiles.forEach(t => t.el.remove()); st.tiles = new Map();
   st.best = SK.store.get(`sk-2048-best-${n}`, 0);
   $('badge').textContent = SIZES[n].label; $('title').textContent = SIZES[n].name;
@@ -185,13 +193,15 @@ function move(dir){
     }
     if (cr !== null && (cr !== r || cc !== c)) { st.grid[r][c] = null; st.grid[cr][cc] = t; t.r = cr; t.c = cc; place(t); moved = true; }
   }
-  if (!moved) return;
+  if (!moved) { SK.fx.shake($('board'), .25); return; }
   st.undo.push(before); if (st.undo.length > 10) st.undo.shift();
   st.busy = true;
   st.score += gained;
   if (gained) { sfx.tone(300 + Math.min(900, gained * 2), .08, 'triangle', .1); floatPlus(gained); } else sfx.tone(240, .03, 'sine', .05);
+  if (gained) SK.fx.pop($('score-box'));
   setTimeout(() => {
     dying.forEach(([t, o]) => { t.el.remove(); st.tiles.delete(t.id); paintTile(o); o.el.classList.add('merged'); });
+    mergeFx(dying.map(d => d[1]));
     addRandom();
     paintScores(); paintUndo();
     st.busy = false;
@@ -226,6 +236,27 @@ function paintScores(){
   if (st.score > st.best) { st.best = st.score; SK.store.set(`sk-2048-best-${st.n}`, st.best); }
   $('best').textContent = st.best.toLocaleString('es-MX');
 }
+const TILE_FX = { 4:'#e4dbff', 8:'#ffc38a', 16:'#ff9f6b', 32:'#ff7a6b', 64:'#ff5470', 128:'#ffd34d', 256:'#ffc233', 512:'#ffaa00', 1024:'#3ddcb8', 2048:'#38b6ff' };
+function mergeFx(list){
+  if (!list.length) return;
+  const fx = SK.fx;
+  let biggest = 0;
+  list.forEach(o => {
+    const col = TILE_FX[o.v] || '#a77bff', big = o.v >= 128;
+    fx.burst(o.el, { colors:[col, '#fff'], n: big ? 16 : 7, speed: big ? 240 : 150, size: big ? 7 : 5, g: 250, life: .55 });
+    if (big) fx.ring(o.el, { color: col, size: st.cell * .9 });
+    biggest = Math.max(biggest, o.v);
+  });
+  if (list.length >= 3) { fx.float($('board'), `¡Combo x${list.length}!`, { color:'#ffd34d', size: 26 }); sfx.combo(list.length * 2); }
+  // primera vez que llegas a una ficha grande en esta partida
+  if (biggest >= 128 && biggest > (st.topSeen || 0)) {
+    st.topSeen = biggest;
+    const o = list.find(x => x.v === biggest);
+    fx.float(o.el, `¡${biggest}!`, { color: TILE_FX[biggest] || '#fff', size: 30, dy: 80 });
+    fx.sparkle(o.el, { n: 14 }); sfx.chime(); fx.vibrate(25);
+    if (biggest >= 512) fx.shake($('board'), .5);
+  }
+}
 function floatPlus(v){ const s = document.createElement('span'); s.className = 'plus'; s.textContent = '+' + v; $('score-box').appendChild(s); setTimeout(() => s.remove(), 800); }
 function topTile(){ return Math.max(0, ...[...st.tiles.values()].map(t => t.v)); }
 function saveRecords(){
@@ -239,7 +270,7 @@ function shareData(title){
 }
 function win(){
   sfx.win();
-  SK.result({ emoji:'🏆', title:'¡Llegaste a 2048!', text:'Puedes seguir jugando para hacer más puntos', stats:[[st.score.toLocaleString('es-MX'), 'PUNTOS'], [topTile(), 'FICHA']], share: shareData('¡LLEGUÉ A 2048!'),
+  SK.result({ emoji:'🏆', title:'¡Llegaste a 2048!', celebrate:'big', text:'Puedes seguir jugando para hacer más puntos', stats:[[st.score.toLocaleString('es-MX'), 'PUNTOS'], [topTile(), 'FICHA']], share: shareData('¡LLEGUÉ A 2048!'),
     buttons:[{ label:'Seguir jugando →' }, { label:'Nueva partida', kind:'ghost', onClick: newGame }] });
 }
 function gameOver(){
@@ -248,7 +279,7 @@ function gameOver(){
   if (isRec) sfx.newRec(); else sfx.lose();
   const gid = st.gid;
   setTimeout(() => gid === st.gid && st.over && SK.result({
-    emoji: isRec ? '🎉' : '😵', lose: !isRec, title: isRec ? '¡Nuevo récord!' : 'Ya no hay movimientos', newRecord: false,
+    emoji: isRec ? '🎉' : '😵', lose: !isRec, celebrate: isRec, title: isRec ? '¡Nuevo récord!' : 'Ya no hay movimientos', newRecord: false,
     stats:[[st.score.toLocaleString('es-MX'), 'PUNTOS'], [topTile(), 'MEJOR FICHA'], [st.best.toLocaleString('es-MX'), 'RÉCORD']],
     share: shareData(isRec ? '¡NUEVO RÉCORD!' : 'MI PARTIDA'),
     buttons:[{ label:'Jugar otra vez →', onClick: newGame },
