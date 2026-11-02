@@ -25,7 +25,7 @@ enlaces:
     descarga: true
 nota: Pañalazo está en prueba con amigos. Si encuentras un error o tienes una idea, escríbenos a seakingsgames@gmail.com.
 ficha:
-  Precio: Gratis
+  Precio: Gratis, con paquetes de monedas opcionales
   Modos:
     - Duelo 1 vs 1
     - Todos contra todos (4)
@@ -45,7 +45,9 @@ preguntas:
   - p: ¿Cómo juego con mis amigos?
     r: En «Jugar con amigos» uno crea una sala y comparte el código de 5 letras; los demás lo escriben para entrar. Los lugares vacíos los ocupan bots. Todos deben tener la misma versión del juego.
   - p: ¿Lo que compro en la tienda da ventaja?
-    r: No. Los sombreros y las estelas solo se ven bonitos. Se compran con las monedas que ganas jugando.
+    r: No. Los sombreros y las estelas solo se ven bonitos. Se compran con las monedas que ganas jugando o con paquetes de monedas, que son opcionales.
+  - p: ¿Cómo compro monedas?
+    r: En la Tienda, en la pestaña Monedas. Primero guarda tu cuenta con correo en «Tu cuenta». El pago lo hace Mercado Pago, con tarjeta, saldo o efectivo en OXXO, y las monedas llegan solas a tu cuenta. Hay paquetes desde 29 pesos.
   - p: ¿Pierdo mis monedas si cambio de celular?
     r: No, si guardas tu cuenta con correo en «Tu cuenta». Con ese correo entras en cualquier aparato y ahí están tus monedas, tus compras y tu apodo.
   - p: ¿Se actualiza solo?
@@ -90,5 +92,7 @@ En **Partida rápida** juegas contra bots. En **Jugar con amigos** creas una sal
 Al final de cada partida ganas monedas por jugar, por ganar, por cada pañalazo que acomodas, por los cañones que derribas y por los regalos que abres. La primera victoria del día da un bono.
 
 Con las monedas compras **sombreros** para tu cañón (gorrito de fiesta, patito de hule, sombrero de charro, corona…) y **estelas** para tus bebés (arcoíris, confeti, burbujas…). Solo se ven: no dan ventaja.
+
+Si quieres algo sin esperar, en la pestaña **Monedas** de la tienda hay paquetes de monedas desde 29 pesos. Los cobra Mercado Pago (tarjeta, saldo o efectivo en OXXO) y son opcionales: todo lo de la tienda también se consigue jugando. Consulta los [términos de compra](/terminos-panalazo).
 
 Guarda tu cuenta con tu correo para no perder tus monedas ni tus compras, y para usar el mismo apodo en todos tus aparatos.
