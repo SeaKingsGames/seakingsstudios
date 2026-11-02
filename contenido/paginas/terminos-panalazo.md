@@ -14,7 +14,7 @@ Debes tener al menos 13 años. Para comprar monedas con dinero debes ser mayor d
 
 ## Tu cuenta y tu apodo
 
-Al abrir el juego se crea una cuenta de invitado, sin pedirte datos. En **Tu cuenta** puedes guardarla con tu correo y una contraseña para no perderla y usarla en otro aparato. Cuida tu contraseña: lo que pasa en tu cuenta es tu responsabilidad.
+Al abrir el juego se crea una cuenta de invitado, sin pedirte datos. En **Tu cuenta** puedes guardarla con tu correo y una contraseña para no perderla y usarla en otro aparato. Cuida tu contraseña: lo que pasa en tu cuenta es tu responsabilidad. Es una cuenta de SeaKingsGames que también sirve en Arte o Cringe; las monedas y las compras de cada juego van por separado.
 
 Tu apodo lo ven los jugadores de tu sala. No uses apodos con insultos, odio, contenido sexual ni datos personales de nadie. Podemos cambiar un apodo que rompa estas reglas.
 
@@ -42,7 +42,7 @@ Nada de esto limita los derechos que te da la Ley Federal de Protección al Cons
 
 ## Si borras tus datos
 
-En **Tu cuenta** puedes borrar tus datos. Se borran para siempre tu cuenta, tus monedas (también las compradas), lo que compraste en la tienda y tu historial de pedidos con nosotros. Eso no se puede deshacer ni da derecho a un reembolso de monedas que ya recibiste.
+En **Tu cuenta** puedes borrar tus datos. Se borran para siempre tus monedas (también las compradas), lo que compraste en la tienda y tu historial de pedidos con nosotros, y también tu cuenta si no la usas en Arte o Cringe. Eso no se puede deshacer ni da derecho a un reembolso de monedas que ya recibiste.
 
 ## El juego tal como está
 

@@ -14,7 +14,7 @@ El responsable de los datos es {{responsable}}, titular de SeaKingsStudios y Sea
 
 ## Qué datos usamos
 
-- **Tu cuenta del juego.** Al abrir el juego se crea una cuenta de invitado, sin pedirte datos. Con ella guardamos tus monedas, lo que compraste en la tienda, lo que traes puesto, tu apodo y cuántas partidas has jugado y ganado.
+- **Tu cuenta del juego.** Al abrir el juego se crea una cuenta de invitado, sin pedirte datos. Con ella guardamos tus monedas, lo que compraste en la tienda, lo que traes puesto, tu apodo y cuántas partidas has jugado y ganado. Las cuentas son de SeaKingsGames y sirven también en Arte o Cringe: si ya usaste tu correo ahí, entras con esa misma cuenta, pero las monedas y las compras de cada juego van por separado.
 - **Tu apodo.** Lo eliges tú y puede ser inventado. Lo ven los jugadores de tu sala.
 - **Tu correo y tu contraseña, si guardas tu cuenta.** El correo sirve para entrar en otro aparato y para mandarte un código si olvidas tu contraseña. La contraseña la guarda nuestro proveedor de cuentas cifrada; nosotros no podemos verla.
 - **El resumen de cada partida.** Al terminar se guarda el modo, si ganaste, tus golpes, derribos, regalos abiertos, bloques rotos, disparos, la duración y las monedas que ganaste. Lo usamos para pagarte las monedas y para frenar trampas.
@@ -36,11 +36,11 @@ No pedimos teléfono, ubicación, contactos, fotos ni micrófono. El juego no ti
 
 ## Cuánto tiempo los guardamos
 
-Tu cuenta, tus monedas, tus compras, tus pedidos y el resumen de tus partidas se guardan mientras uses el juego. Si borras tus datos, se borra todo al momento. Mercado Pago conserva su propio registro de tus pagos según su aviso de privacidad, y tu número de operación sigue sirviendo para cualquier aclaración.
+Tu cuenta, tus monedas, tus compras, tus pedidos y el resumen de tus partidas se guardan mientras uses el juego. Si borras tus datos, se borra al momento todo lo de Pañalazo. Mercado Pago conserva su propio registro de tus pagos según su aviso de privacidad, y tu número de operación sigue sirviendo para cualquier aclaración.
 
 ## Cómo borrar tus datos
 
-En el juego, entra a **Tu cuenta** (arriba a la derecha del menú) y toca **Borrar mis datos** dos veces. Se borran para siempre tu cuenta, tu correo, tu apodo, tus monedas (también las compradas), tus compras, tus pedidos y tus partidas, y el juego empieza como invitado nuevo. También puedes pedirlo escribiendo a {{correo}}.
+En el juego, entra a **Tu cuenta** (arriba a la derecha del menú) y toca **Borrar mis datos** dos veces. Se borran para siempre tu apodo, tus monedas (también las compradas), tus compras, tus pedidos y tus partidas, y el juego empieza como invitado nuevo. También se borran tu cuenta y tu correo, salvo que uses esa misma cuenta en Arte o Cringe: en ese caso se quedan para ese juego, y para borrarlas usa **Borrar mis datos** de Arte o Cringe. También puedes pedirlo escribiendo a {{correo}}.
 
 ## Con quién se comparten
 
