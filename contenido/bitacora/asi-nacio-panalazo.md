@@ -52,4 +52,4 @@ Al entrar juegas como invitado, sin dar ningún dato. Si quieres no perder tus m
 
 Pañalazo está en **prueba con amigos**. Ahora mismo estamos jugando en celulares y computadoras distintos para encontrar errores antes de abrirlo a más gente. Después queremos agregar misiones diarias, un ranking semanal y más sombreros, estelas y mapas.
 
-Si quieres probarlo antes que nadie, la descarga para Android y PC está en la [página de Pañalazo](/proyectos/panalazo). Y si encuentras un error o se te ocurre un bebé nuevo, escríbenos a seakingsgames@gmail.com.
+Si quieres probarlo antes que nadie, en la [página de Pañalazo](/proyectos/panalazo) está la descarga para PC y los pasos para ser tester de la versión de Android en Google Play, que sale pronto. Y si encuentras un error o se te ocurre un bebé nuevo, escríbenos a seakingsgames@gmail.com.
