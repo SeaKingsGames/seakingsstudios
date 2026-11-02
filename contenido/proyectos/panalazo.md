@@ -15,15 +15,14 @@ tarjeta:
 portada:
   imagen: /img/panalazo/tarjeta.webp
   alt: Pañalazo, batalla de cañones lanza-bebés, con un cañón azul sobre vías de tren y un bebé volando
-# Las descargas viven en los Releases de github.com/SeaKingsGames/Panalazo (ver la guía del juego).
+# Android: prueba cerrada en Google Play (com.seakingsgames.panalazo). PC: Releases de github.com/SeaKingsGames/Panalazo.
 enlaces:
-  - texto: Descargar para Android (APK)
-    url: https://github.com/SeaKingsGames/Panalazo/releases/latest/download/panalazo.apk
-    descarga: true
+  - texto: Probar en Android (Google Play)
+    url: "#prueba-de-android-en-google-play"
   - texto: Descargar para PC (Windows)
     url: https://github.com/SeaKingsGames/Panalazo/releases/latest/download/panalazo-windows.zip
     descarga: true
-nota: Pañalazo está en prueba con amigos. Si encuentras un error o tienes una idea, escríbenos a seakingsgames@gmail.com.
+nota: Próximamente en Google Play. Mientras, puedes probar la versión de Android como tester. Si encuentras un error o tienes una idea, escríbenos a seakingsgames@gmail.com.
 ficha:
   Precio: Gratis, con paquetes de monedas opcionales
   Modos:
@@ -33,28 +32,39 @@ ficha:
     - Frenesí, con paredes y bebés rebotones
   Jugadores: Contra bots o hasta 4 amigos en línea con código de sala
   Plataformas:
-    - Android (APK)
+    - Android (próximamente en Google Play, en prueba cerrada)
     - PC con Windows
   Idioma: Español e inglés
   Hecho con: Unity, PurrNet y Supabase
 preguntas:
   - p: ¿Es violento?
     r: No. Es una caricatura. Los bebés rebotan, se ponen aguaditos y cuando se cansan hacen ¡puf! en una nube de talco y regresan a la guardería. El daño se lo llevan los cañones de juguete y los bloques.
-  - p: ¿Es seguro instalar el APK?
-    r: Sí. Es la app oficial y la descargas directo de nuestro sitio. Android pide permiso para instalar apps fuera de Google Play y Play Protect puede avisar que es una app nueva; es normal mientras no esté en la tienda.
+  - p: ¿Cuándo sale en Google Play?
+    r: Pronto. La versión de Android está en prueba cerrada en Google Play y Google pide que la prueben al menos 12 personas durante 14 días antes de publicarla para todos. Si quieres probarla ya, sigue los pasos de «Prueba de Android en Google Play» en esta página.
   - p: ¿Cómo juego con mis amigos?
     r: En «Jugar con amigos» uno crea una sala y comparte el código de 5 letras; los demás lo escriben para entrar. Los lugares vacíos los ocupan bots. Todos deben tener la misma versión del juego.
   - p: ¿Lo que compro en la tienda da ventaja?
     r: No. Los sombreros y las estelas solo se ven bonitos. Se compran con las monedas que ganas jugando o con paquetes de monedas, que son opcionales.
   - p: ¿Cómo compro monedas?
-    r: En la Tienda, en la pestaña Monedas. Primero guarda tu cuenta con correo en «Tu cuenta». El pago lo hace Mercado Pago, con tarjeta, saldo o efectivo en OXXO, y las monedas llegan solas a tu cuenta. Hay paquetes desde 29 pesos.
+    r: En la versión para PC, en la Tienda, pestaña Monedas. Primero guarda tu cuenta con correo en «Tu cuenta». El pago lo hace Mercado Pago, con tarjeta, saldo o efectivo en OXXO, y las monedas llegan solas a tu cuenta. Hay paquetes desde 29 pesos. En la versión de Google Play, por ahora las monedas se ganan jugando.
   - p: ¿Pierdo mis monedas si cambio de celular?
     r: No, si guardas tu cuenta con correo en «Tu cuenta». Con ese correo entras en cualquier aparato y ahí están tus monedas, tus compras y tu apodo.
   - p: ¿Se actualiza solo?
-    r: Todavía no. Cuando hay una versión nueva, el juego te avisa en el menú y la descargas otra vez desde esta página.
+    r: En Android, Google Play lo actualiza solo. En PC todavía no; cuando hay una versión nueva, el juego te avisa en el menú y la descargas otra vez desde esta página.
+capturas:
+  - imagen: /img/panalazo/captura-1.webp
+    texto: El menú, con los bebés de adorno, tu cuenta y tus monedas.
+  - imagen: /img/panalazo/captura-2.webp
+    texto: La partida rápida encuentra rivales en segundos.
+  - imagen: /img/panalazo/captura-3.webp
+    texto: Duelo 1 vs 1 sobre las vías, con el aviso cuando alguien abre un regalo.
+  - imagen: /img/panalazo/captura-4.webp
+    texto: Frenesí, el corral con paredes, con cuatro cañones a la vez.
 historial:
   - fecha: 2026-11-01
     texto: Empieza la prueba con amigos, con cuatro mapas, salas con código, monedas, tienda de sombreros y estelas, y cuentas con correo.
+  - fecha: 2026-11-02
+    texto: Arranca la prueba cerrada en Google Play con el paquete com.seakingsgames.panalazo.
 esquema:
   tipo: VideoGame
   genero: Juego de acción
@@ -93,6 +103,20 @@ Al final de cada partida ganas monedas por jugar, por ganar, por cada pañalazo 
 
 Con las monedas compras **sombreros** para tu cañón (gorrito de fiesta, patito de hule, sombrero de charro, corona…) y **estelas** para tus bebés (arcoíris, confeti, burbujas…). Solo se ven: no dan ventaja.
 
-Si quieres algo sin esperar, en la pestaña **Monedas** de la tienda hay paquetes de monedas desde 29 pesos. Los cobra Mercado Pago (tarjeta, saldo o efectivo en OXXO) y son opcionales: todo lo de la tienda también se consigue jugando. Consulta los [términos de compra](/terminos-panalazo).
+Si quieres algo sin esperar, en la versión para PC la pestaña **Monedas** de la tienda tiene paquetes de monedas desde 29 pesos. Los cobra Mercado Pago (tarjeta, saldo o efectivo en OXXO) y son opcionales: todo lo de la tienda también se consigue jugando. Consulta los [términos de compra](/terminos-panalazo).
 
 Guarda tu cuenta con tu correo para no perder tus monedas ni tus compras, y para usar el mismo apodo en todos tus aparatos.
+
+## Prueba de Android en Google Play
+
+Pañalazo llega pronto a Google Play. Para publicarlo, Google pide que al menos 12 personas lo prueben durante 14 días. Si quieres jugarlo antes que nadie en tu celular Android y ayudarnos a que salga, hazte tester:
+
+1. **Únete al grupo de testers.** Entra al [grupo de testers de SeaKingsGames](https://groups.google.com/g/testers-arte-o-cringe) con la misma cuenta de Google que usas en Play Store y toca **Unirse al grupo**. Se llama «Testers Arte o Cringe» porque es el mismo grupo para nuestros juegos.
+2. **Acepta la prueba.** Abre la [invitación de Pañalazo en Google Play](https://play.google.com/apps/testing/com.seakingsgames.panalazo) y toca **Convertirse en tester**.
+3. **Instálalo.** Abre [Pañalazo en Google Play](https://play.google.com/store/apps/details?id=com.seakingsgames.panalazo) desde tu celular e instálalo. Si dice que no está disponible, espera unos minutos después de unirte al grupo y vuelve a intentarlo.
+4. **Déjalo instalado 14 días** y juega de vez en cuando. Google solo cuenta a los testers que siguen inscritos esos días.
+
+Si antes instalaste el APK que estaba en esta página, desinstálalo primero: la versión de Google Play no se instala encima. Si guardaste tu cuenta con correo, tus monedas, tus compras y tu apodo te esperan al entrar.
+
+¿Algo no funciona? Escríbenos a seakingsgames@gmail.com.
+
