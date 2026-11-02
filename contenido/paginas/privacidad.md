@@ -6,7 +6,7 @@ descripcion: Política de privacidad de SeaKingsStudios. Qué datos se usan en e
 actualizado: 2026-10-24
 ---
 
-Esta política aplica al sitio www.seakingsstudios.com, incluida la arcada SeaKings Classic Games. Algunos juegos tienen cuentas, compras o funciones en línea y por eso tienen su propio aviso, que puedes consultar dentro de cada juego. Por ejemplo, el de [Arte o Cringe](https://arteocringe.seakingsstudios.com/privacidad.html).
+Esta política aplica al sitio www.seakingsstudios.com, incluida la arcada SeaKings Classic Games. Algunos juegos tienen cuentas, compras o funciones en línea y por eso tienen su propio aviso, que puedes consultar dentro de cada juego. Por ejemplo, el de [Arte o Cringe](https://arteocringe.seakingsstudios.com/privacidad.html) y el de [Pañalazo](/privacidad-panalazo).
 
 ## Responsable
 
