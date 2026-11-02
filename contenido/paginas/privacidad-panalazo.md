@@ -2,11 +2,11 @@
 titulo: Aviso de privacidad de Pañalazo
 ceja: Privacidad
 entrada: Qué datos usa el juego Pañalazo, para qué los usa y qué puedes hacer con ellos.
-descripcion: Aviso de privacidad del juego Pañalazo de SeaKingsGames. Qué datos usa la cuenta del juego, las partidas en línea y la tienda, y cómo borrarlos.
+descripcion: Aviso de privacidad del juego Pañalazo de SeaKingsGames. Qué datos usa la cuenta del juego, las partidas en línea, la tienda y la compra de monedas, y cómo borrarlos.
 actualizado: 2026-11-01
 ---
 
-Este aviso aplica al juego **Pañalazo** para Android y PC, de SeaKingsGames (marca de SeaKingsStudios). Para el sitio web consulta la [política de privacidad del sitio](/privacidad).
+Este aviso aplica al juego **Pañalazo** para Android y PC, de SeaKingsGames (marca de SeaKingsStudios). Para el sitio web consulta la [política de privacidad del sitio](/privacidad). Las reglas del juego y de las compras están en los [términos de Pañalazo](/terminos-panalazo).
 
 ## Responsable
 
@@ -18,33 +18,36 @@ El responsable de los datos es {{responsable}}, titular de SeaKingsStudios y Sea
 - **Tu apodo.** Lo eliges tú y puede ser inventado. Lo ven los jugadores de tu sala.
 - **Tu correo y tu contraseña, si guardas tu cuenta.** El correo sirve para entrar en otro aparato y para mandarte un código si olvidas tu contraseña. La contraseña la guarda nuestro proveedor de cuentas cifrada; nosotros no podemos verla.
 - **El resumen de cada partida.** Al terminar se guarda el modo, si ganaste, tus golpes, derribos, regalos abiertos, bloques rotos, disparos, la duración y las monedas que ganaste. Lo usamos para pagarte las monedas y para frenar trampas.
+- **Tus compras de monedas.** Si compras un paquete de monedas, guardamos el pedido: qué paquete, cuántas monedas, el precio, la fecha, el estado del pago y el número de operación de Mercado Pago. Para abrir el pago le damos a Mercado Pago tu correo, el paquete y el precio. Los datos de tu tarjeta o de tu pago los pide y guarda Mercado Pago; nosotros no los vemos.
 - **Partidas con amigos.** Para conectar la sala, tu juego se comunica con nuestro servidor de salas, que recibe tu dirección IP y reenvía entre los jugadores lo que pasa en la partida (puntería, disparos, golpes) mientras dura. Eso no se guarda.
 - **Aviso de versión nueva.** Al abrir, el juego consulta un archivo de www.seakingsstudios.com para saber si hay una versión nueva. Como cualquier visita, nuestro alojamiento recibe tu dirección IP.
 
 Tus opciones (volumen, sensibilidad, calidad gráfica e idioma) se guardan solo en tu aparato.
 
-No pedimos teléfono, ubicación, contactos, fotos ni micrófono. El juego no tiene anuncios ni compras con dinero real.
+No pedimos teléfono, ubicación, contactos, fotos ni micrófono. El juego no tiene anuncios.
 
 ## Para qué los usamos
 
 - Hacer funcionar tu cuenta, tus monedas y la tienda.
+- Cobrar los paquetes de monedas, entregarte las monedas que pagaste y atender cobros por error o reembolsos.
 - Conectar las partidas con tus amigos.
 - Mandarte el código para cambiar tu contraseña cuando lo pides.
 - Detectar y frenar trampas con las monedas.
 
 ## Cuánto tiempo los guardamos
 
-Tu cuenta, tus monedas, tus compras y el resumen de tus partidas se guardan mientras uses el juego. Si borras tus datos, se borra todo al momento.
+Tu cuenta, tus monedas, tus compras, tus pedidos y el resumen de tus partidas se guardan mientras uses el juego. Si borras tus datos, se borra todo al momento. Mercado Pago conserva su propio registro de tus pagos según su aviso de privacidad, y tu número de operación sigue sirviendo para cualquier aclaración.
 
 ## Cómo borrar tus datos
 
-En el juego, entra a **Tu cuenta** (arriba a la derecha del menú) y toca **Borrar mis datos** dos veces. Se borran para siempre tu cuenta, tu correo, tu apodo, tus monedas, tus compras y tus partidas, y el juego empieza como invitado nuevo. También puedes pedirlo escribiendo a {{correo}}.
+En el juego, entra a **Tu cuenta** (arriba a la derecha del menú) y toca **Borrar mis datos** dos veces. Se borran para siempre tu cuenta, tu correo, tu apodo, tus monedas (también las compradas), tus compras, tus pedidos y tus partidas, y el juego empieza como invitado nuevo. También puedes pedirlo escribiendo a {{correo}}.
 
 ## Con quién se comparten
 
 - Con **Supabase**, que guarda las cuentas y la base de datos del juego.
 - Con **DigitalOcean**, donde vive el servidor de salas.
 - Con **Vercel**, que aloja www.seakingsstudios.com.
+- Con **Mercado Pago**, solo si compras monedas: recibe tu correo, el paquete y el precio, y hace el cobro.
 - Con nuestro proveedor de correo, solo para mandarte el código cuando pides cambiar tu contraseña.
 - Con los jugadores de tu sala, que ven tu apodo y lo que traes puesto.
 - Con autoridades, solo si la ley nos lo exige.

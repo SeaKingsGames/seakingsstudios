@@ -599,6 +599,23 @@ function paginaSimple(pg, { proyectos }) {
   return layout({ titulo: pg.titulo, descripcion: pg.descripcion, ruta, cuerpo, jsonld: [jsonMigas(mg)], proyectos });
 }
 
+// Mercado Pago regresa aquí después de pagar monedas de Pañalazo (?pago=ok|pendiente|error).
+// No se indexa ni va al sitemap. Las monedas no dependen de esta página: las entrega el servidor.
+function paginaPagoPanalazo({ proyectos }) {
+  const mensajes = {
+    ok: ['¡Pago aprobado!', 'Regresa a Pañalazo: tus monedas llegan solas en unos segundos. Si no aparecen, abre la Tienda, entra a Monedas y toca «Ya pagué · revisar».'],
+    pendiente: ['Tu pago está pendiente', 'Si pagaste en OXXO o con transferencia, las monedas llegan solas a tu cuenta cuando Mercado Pago acredite el pago. No tienes que hacer nada más.'],
+    error: ['El pago no se completó', 'No se te cobró nada. Puedes intentarlo otra vez desde la Tienda del juego, en Monedas.'],
+  };
+  const [t, d] = mensajes.ok;
+  const cuerpo = `<section class="envoltura no-encontrada">${AJOLOTE}<div><p class="ceja">Pañalazo · Compra de monedas</p><h1 id="pago-titulo">${esc(t)}</h1>
+<p class="entrada" id="pago-texto">${esc(d)}</p>
+<p>Ya puedes cerrar esta pestaña y volver al juego. Si algo salió mal, escríbenos a <a href="mailto:${esc(SITIO.correo)}">${esc(SITIO.correo)}</a> con tu número de operación de Mercado Pago.</p>
+<div class="acciones"><a class="btn btn--principal" href="/proyectos/panalazo">Ver Pañalazo</a><a class="btn btn--borde" href="/terminos-panalazo">Términos de compra</a></div></div></section>
+<script>(function(){var m=${JSON.stringify(mensajes)};var q=new URLSearchParams(location.search).get('pago');if(!m[q]){var e=new URLSearchParams(location.search).get('status');q=e==='approved'?'ok':e==='pending'||e==='in_process'?'pendiente':e?'error':'ok';}document.getElementById('pago-titulo').textContent=m[q][0];document.getElementById('pago-texto').textContent=m[q][1];})();</script>`;
+  return layout({ titulo: 'Compra de monedas de Pañalazo', descripcion: 'Regresa a Pañalazo: tus monedas llegan solas.', ruta: '/panalazo/pago', cuerpo, anuncios: false, indexar: false, proyectos });
+}
+
 function pagina404({ proyectos }) {
   const cuerpo = `<section class="envoltura no-encontrada">${AJOLOTE}<div><p class="ceja">Error 404</p><h1>Esta página se fue nadando</h1>
 <p class="entrada">No encontramos lo que buscabas. Puede que la dirección esté mal escrita o que la página haya cambiado de lugar.</p>
@@ -731,6 +748,7 @@ function construir() {
   for (const a of articulos) pagina(`/bitacora/${a.id}`, paginaArticulo(a, datos));
   for (const pg of paginas) pagina(`/${pg.id}`, paginaSimple(pg, datos));
   escribir('404.html', pagina404(datos));
+  escribir('panalazo/pago.html', paginaPagoPanalazo(datos)); // regreso de Mercado Pago (sin sitemap)
 
   escribir('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${rutas.map((r) => `  <url><loc>${urlAbs(r)}</loc></url>`).join('\n')}\n</urlset>\n`);
   escribir('robots.txt', `User-agent: *\nAllow: /\nAllow: /arcada/jugar/img/\nDisallow: /arcada/jugar/\n\nSitemap: ${urlAbs('/sitemap.xml')}\n`);
