@@ -12,7 +12,7 @@ Arte o Cringe se puede jugar de muchas formas: en la sala de tu casa, en una vid
 
 ## Antes de empezar
 
-- **Cada quien en su pantalla.** Cada jugador entra desde su celular, su tableta o su computadora. No hace falta que todos usen lo mismo: el navegador, la PC y Android entran a la misma sala.
+- **Cada quien en su pantalla.** Cada jugador entra desde su celular, su tableta o su computadora. No hace falta que todos usen lo mismo: la app de Google Play, el navegador y la PC entran a la misma sala.
 - **Un anfitrión.** Una persona crea la sala y comparte el código de 4 letras. Esa persona elige el tema y el tiempo de cada ronda, así que conviene que sea alguien que conozca al grupo.
 - **Nombres reconocibles.** El nombre se ve cuando se revela cada obra. Un apodo que todos reconozcan hace que la revelación dé más risa.
 
@@ -31,7 +31,7 @@ Un buen ritmo es empezar con 1 minuto, subir a 2 cuando el grupo se emociona y t
 
 ## Temas al azar o escritos por el anfitrión
 
-El juego trae 176 temas, desde «Un perro manejando un microbús» hasta «La Llorona cobrando por llorar». Para las primeras rondas el azar funciona muy bien, porque nadie sabe qué viene.
+El juego trae 242 temas en nueve paquetes, desde «Un perro manejando un microbús» hasta «Un NPC cansado de repetir lo mismo». Para las primeras rondas el azar funciona muy bien, porque nadie sabe qué viene.
 
 Cuando el grupo ya está en confianza, prueba la opción **Lo escribo yo**. Los temas propios dan las mejores rondas porque usan chistes que solo entiende el grupo: el tío que siempre llega tarde, el perro de alguien, lo que pasó en la última fiesta. Dos reglas para que salga bien:
 
@@ -58,6 +58,8 @@ La revelación del autor es el mejor momento de la ronda. Si están en la misma 
 En una **videollamada**, cada quien entra a la sala desde su propio dispositivo mientras siguen hablando por la llamada. Funciona igual que en persona: lo importante es que todos escuchen la revelación al mismo tiempo.
 
 En una **transmisión en vivo**, puedes compartir el código con algunos de tus seguidores para que entren a jugar contigo, y mostrar tu pantalla mientras se revelan las obras. Si al principio no se completa la sala, agrega **bots**: dibujan y califican, y hay de varios estilos, desde Bot Brochazo hasta Bot Garabato y Bot Troll.
+
+Y cuando el grupo ya domine el modo Clásico, prueben los otros tres: Relámpago, Impostor y Teléfono descompuesto. Los explicamos en la nota sobre [la llegada de Arte o Cringe a Google Play](/bitacora/arte-o-cringe-llega-a-google-play).
 
 ## Si juegas con niños
 

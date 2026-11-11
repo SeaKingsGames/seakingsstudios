@@ -27,7 +27,7 @@ De ahí sale el nombre del juego. Cada duelo ocurre bajo ese quinto sol, que sal
 
 Para los mexicas el sol no solo se movía: había que acompañarlo. Por eso en Cartas del Quinto Sol el tiempo es parte del tablero. El **Reloj Solar** está siempre a la vista y recorre cuatro momentos: **alba, mediodía, ocaso y medianoche**.
 
-Cada momento cambia las condiciones del duelo, así que el mismo mazo se juega distinto según la hora. No basta con tener buenas cartas: hay que saber cuándo jugarlas.
+Cada momento dura dos turnos y le da fuerza a un tipo de carta: al alba, las de Tierra; al mediodía, las del Sol; al ocaso, las del Viento, y a medianoche, las de Agua y las de muerte, mientras el Sol se debilita. Así que el mismo mazo se juega distinto según la hora. No basta con tener buenas cartas: hay que saber cuándo jugarlas. En la [guía para empezar](/bitacora/guia-para-empezar-en-cartas-del-quinto-sol) explicamos cómo aprovecharlo.
 
 ## El tonalpohualli y el signo del día
 
@@ -50,7 +50,7 @@ Estos son los 20 signos de los días:
 
 Cada día tenía su número y su signo, como 1 Lagarto, 2 Viento o 3 Casa, y la combinación se repetía cada 260 días. Se pensaba que el signo del día de nacimiento influía en el carácter y el destino de cada persona, y los especialistas en el calendario lo consultaban para elegir fechas importantes.
 
-En el juego, cada duelo tiene su **signo del día**, tomado de esta cuenta. Cambia de un duelo a otro y le da a cada partida un giro distinto.
+En el juego, cada duelo tiene su **signo del día**, tomado de esta cuenta. Cambia de un duelo a otro y le da a cada partida un giro distinto: en día Ehécatl los monstruos de Viento ganan ataque, en día Xóchitl los dos duelistas empiezan con 10,000 de vida y en día Ozomatli las fusiones salen más fuertes. Los efectos de los 20 signos están en la [página del juego](/proyectos/cartas-del-quinto-sol#el-signo-del-dia).
 
 <!-- anuncio -->
 
@@ -64,7 +64,7 @@ En Cartas del Quinto Sol, los **nahuales** son cartas con dos formas: cuando el 
 
 El Mictlán era el lugar al que llegaban la mayoría de los muertos, gobernado por Mictlantecuhtli y Mictecacíhuatl, señor y señora de los muertos. No se llegaba de inmediato: el alma hacía un viaje de cuatro años por nueve niveles, con pruebas como montañas que chocaban entre sí o vientos de navajas. Para cruzar un río ancho, el muerto necesitaba la ayuda de un perro xoloitzcuintle.
 
-En el juego, el Mictlán es el **cementerio**. Cuando una fusión falla, la carta que no sirvió baja al Mictlán. Nos pareció un buen nombre para el lugar donde terminan las cartas que ya no están en el campo.
+En el juego, el Mictlán es el **cementerio**. Cuando una fusión falla, la carta que llevabas hasta ese momento baja al Mictlán. Nos pareció un buen nombre para el lugar donde terminan las cartas que ya no están en el campo.
 
 ## Cómo seguir aprendiendo
 
