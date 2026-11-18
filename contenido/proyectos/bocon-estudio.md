@@ -2,10 +2,10 @@
 nombre: Bocón Estudio
 orden: 3
 tipo: Animación
-estado: desarrollo
+estado: publicado
 color: "#ff9ec0"
 lema: Tus personajes hablan solos, con la boca sincronizada a tu voz.
-resumen: Programa para hacer animaciones de personajes que hablan. Pones la voz, la boca se mueve sola, y en una línea de tiempo agregas gestos, poses, cámara, textos, efectos de voz y momentos meme. Exporta videos para TikTok, YouTube o WhatsApp y tiene un modo en vivo para transmitir con OBS.
+resumen: Programa para hacer animaciones de personajes que hablan. Pones la voz o escribes lo que dicen, la boca se mueve sola, y en una línea de tiempo agregas gestos, poses, cámara, textos, efectos de voz y momentos meme. Exporta videos para TikTok, YouTube o WhatsApp y tiene un modo en vivo para transmitir con OBS.
 descripcion: Bocón Estudio es un programa de animación con lip-sync automático. Anima personajes que hablan con tu voz, agrega gestos y poses en una línea de tiempo y exporta videos o transmite en vivo con OBS.
 icono: /img/bocon-estudio/icono.png
 compartir: /img/bocon-estudio/compartir.jpg
@@ -15,18 +15,19 @@ tarjeta:
 portada:
   imagen: /img/bocon-estudio/editor.webp
   alt: Editor de Bocón Estudio con dos personajes, sus capas, la línea de tiempo con voz, gestos y acciones
-# Cuando Bocón esté publicado, pon aquí su dirección:
 enlaces:
   - texto: Abrir Bocón Estudio
-    url: ""
+    url: https://bocon.seakingsstudios.com
+  - texto: Cómo instalarlo en PC, Android o iPhone
+    url: /bitacora/instala-bocon-estudio-en-pc-android-y-iphone
   - texto: Cómo usarlo en vivo con OBS
     url: /bitacora/bocon-estudio-en-vivo-con-obs
-nota: Bocón Estudio está en su última etapa de pruebas. Si quieres probarlo antes que nadie, escríbenos a seakingsgames@gmail.com.
+nota: "Precio de lanzamiento: las primeras 100 personas tienen Bocón Pro a $49 MXN al mes mientras sigan suscritas."
 ficha:
-  Precio: Gratis
+  Precio: Gratis · Bocón Pro desde $79 MXN al mes
   Plataformas:
-    - Navegador en PC, Mac y Chromebook
-    - Instalable como programa desde Chrome o Edge
+    - Navegador en PC, Mac, Chromebook, Android y iPhone
+    - Se instala como app desde el navegador, sin tienda
     - Funciona sin internet una vez instalado
   Exporta: Video MP4, GIF animado y cuadros PNG sin fondo
   Formatos: 16:9 horizontal, 9:16 vertical y 1:1 cuadrado
@@ -51,11 +52,15 @@ preguntas:
   - p: ¿Puedo usar mis propios personajes?
     r: Sí. Puedes subir tu personaje en capas PNG, o una sola imagen y dejar que Bocón le arme los ojos y la boca. También trae personajes listos, como el ajolote, el gato, el robot y la calaverita.
   - p: ¿Cuánto cuesta?
-    r: Nada. Bocón Estudio es gratis con todas sus funciones. Exporta MP4 hasta 1080p, GIF y cuadros PNG sin fondo.
+    r: Bocón es gratis y no necesitas cuenta. Con el plan gratis tus videos salen en 720p con la marca «Hecho con Bocón» y puedes tener hasta 2 personajes por escena. Bocón Pro cuesta $79 MXN al mes o $690 MXN al año, y las primeras 100 personas tienen el precio fundador de $49 al mes.
+  - p: ¿Qué incluye Bocón Pro?
+    r: Videos sin marca y en 1080p, GIF y cuadros PNG sin fondo, personajes sin límite, la ropa y los accesorios marcados con ✦, texto a voz sin límite y guardar tus propios efectos de voz. La primera vez tienes 7 días gratis.
+  - p: ¿Cómo cancelo Bocón Pro?
+    r: En Bocón entra a Tu cuenta, toca Ver mi Pro y luego Cancelar suscripción. También puedes cancelarla desde tu cuenta de Mercado Pago. Conservas Pro hasta que termine el periodo que ya pagaste.
   - p: ¿Qué es un momento meme?
     r: Un atajo que pone de un solo toque el sonido, el gesto, el movimiento de cámara y el efecto de un meme en el punto de la línea de tiempo donde estás. Trae 15 listos, como Zoom dramático o Silencio incómodo, y puedes crear los tuyos. Se abre con la tecla E.
   - p: ¿Funciona en el celular?
-    r: Sí, la pantalla se acomoda a celulares y tabletas. Para proyectos largos es más cómodo en una computadora con mouse y teclado.
+    r: Sí, en Android y en iPhone, y se instala como app desde el navegador. Te explicamos cómo en la guía para instalarlo en PC, Android o iPhone. Para proyectos largos es más cómodo en una computadora con mouse y teclado.
   - p: ¿Dónde se guardan mis proyectos?
     r: En tu propio navegador o en la app instalada, se guardan solos. Para pasarlos a otra computadora usa Archivo, Guardar proyecto en archivo, y en la otra, Abrir proyecto.
 historial:
@@ -63,10 +68,16 @@ historial:
     texto: Sale la primera versión de Bocón Estudio, con lip-sync automático y gestos en una línea de tiempo para varios personajes.
   - fecha: 2026-11-09
     texto: Llega la versión 21, con gestos propios y adornos animados, 24 efectos de voz, estilos de letra con brillo y 3D, efectos nuevos, momentos meme y marionetas con brazos y pies.
+  - fecha: 2026-11-13
+    texto: Llegan 34 prendas y accesorios nuevos, como turbantes, uniformes, alas, gorros, parches, bastones y grilletes, y las marionetas estrenan la pieza Cola, que se menea sola.
+  - fecha: 2026-11-14
+    texto: Llegan el texto a voz, que genera la voz en tu propio aparato, y la voz de Lito, con tono y timbre por separado para voces de caricatura sin sonar a ardilla.
+  - fecha: 2026-11-18
+    texto: Bocón Estudio se abre para todos en bocon.seakingsstudios.com, con plan gratis y Bocón Pro.
 esquema:
   tipo: SoftwareApplication
   categoria: MultimediaApplication
-  plataformas: [Navegador web, Windows, macOS, ChromeOS, Android]
+  plataformas: [Navegador web, Windows, macOS, ChromeOS, Android, iOS]
   gratis: true
 ---
 
@@ -100,7 +111,7 @@ Con los gestos pasa lo mismo. En **Crear gesto** puedes partir de uno que ya exi
 
 ## Tus propios personajes
 
-Bocón trae personajes listos para usar, como el ajolote, el gato, el robot y la calaverita. Cada uno se puede recolorear y vestir con accesorios: gorras, lentes, corona, moño, bufanda, capa, audífonos, espada o escudo, entre muchos otros.
+Bocón trae personajes listos para usar, como el ajolote, el gato, el robot y la calaverita. Cada uno se puede recolorear y vestir con ropa y accesorios: gorras, lentes, corona, moño, bufanda, capa, audífonos, espada o escudo, y también turbante de genio, uniforme de comandante, traje de preso, túnica, delantal de chef, alas de ángel o de murciélago, sombrero pirata, barba de sabio y muchos más. La ropa se pinta sobre el cuerpo de cada personaje, respeta su contorno y pinta las mangas en los brazos.
 
 Para usar tus propios dibujos hay dos caminos:
 
@@ -121,7 +132,13 @@ Los **efectos** se dividen en dos: los de partículas, como confeti, lluvia, nie
 
 ## Efectos de voz
 
-Cada personaje puede llevar uno de **24 efectos de voz listos**, que se aplica a todo lo que dice: Ardilla, Globo de helio, Duende, Gigante, Monstruo, Demonio con voz doble, Robot, Extraterrestre, Videojuego de 8 bits, Radio o teléfono, Megáfono, Anunciador de radio, Susurro, Fantasma, Voz temblorosa, Bajo el agua, Cinta vieja, Coro, Eco, Estadio o Cueva, entre otros. Si quieres afinarlo, el editor tiene 23 controles y puedes guardar el resultado en tus efectos para usarlo otra vez.
+Cada personaje puede llevar uno de **25 efectos de voz listos**, que se aplica a todo lo que dice: Ardilla, Globo de helio, Duende, Gigante, Monstruo, Demonio con voz doble, Robot, Extraterrestre, Videojuego de 8 bits, Radio o teléfono, Megáfono, Anunciador de radio, Susurro, Fantasma, Voz temblorosa, Bajo el agua, Cinta vieja, Coro, Eco, Estadio o Cueva, entre otros. Si quieres afinarlo, el editor tiene sus propios controles, y con Bocón Pro puedes guardar el resultado en tus efectos para usarlo otra vez.
+
+El efecto **Lito (caricatura)** convierte tu voz en una voz de personaje animado, como la de Lito el ajolote. Bocón separa el **tono** (qué tan aguda suena) del **timbre** (qué tan chica suena la voz), así que puede subir la voz sin que suene a ardilla. Con el **tono automático** cualquier voz llega a la altura que eliges, sea de hombre, de mujer o de niño.
+
+## Texto a voz
+
+Si no quieres grabar, escribe lo que dice tu personaje. Bocón genera la voz ahí mismo, en tu aparato, con voces de México y de España, y la pone en la línea de tiempo con su lip-sync y su efecto de voz. Puedes escucharla antes de agregarla y cambiar la velocidad. La primera vez se descarga la voz; después funciona sin internet.
 
 ## Letras y textos
 
@@ -171,6 +188,10 @@ El modo en vivo convierte a tu personaje en un avatar para transmitir. Hablas al
 
 Lo explicamos completo en la guía de [Bocón Estudio en vivo con OBS](/bitacora/bocon-estudio-en-vivo-con-obs).
 
-## Gratis y sin cuenta
+## Gratis, y Pro si quieres más
 
-Bocón Estudio es gratis, con todas sus funciones, y no necesitas crear una cuenta: abres el programa y empiezas a animar.
+Bocón Estudio es gratis y no necesitas crear una cuenta: abres el programa y empiezas a animar. El plan gratis trae todo el editor, exporta en 720p con la marca «Hecho con Bocón» y deja hasta 2 personajes por escena.
+
+**Bocón Pro** quita la marca, exporta en 1080p y sin fondo, deja todos los personajes que quieras, abre la ropa y los accesorios marcados con ✦, el texto a voz sin límite y guardar tus propios efectos de voz. Cuesta $79 MXN al mes o $690 MXN al año, con 7 días gratis la primera vez, y se paga con Mercado Pago. Las reglas están en los [términos de Bocón Estudio](/terminos-bocon) y lo que pasa con tus datos en su [aviso de privacidad](/privacidad-bocon).
+
+Para instalarlo en tu computadora o tu celular, sigue la [guía de instalación](/bitacora/instala-bocon-estudio-en-pc-android-y-iphone).
