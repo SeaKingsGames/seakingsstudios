@@ -10,27 +10,29 @@ pie: Bocón en el celular. Instalado abre en su propia ventana, con su ícono, y
 
 Bocón Estudio ya está abierto para todos. Lo abres en **[bocon.seakingsstudios.com](https://bocon.seakingsstudios.com)** y empiezas a animar: no necesitas cuenta ni descargar nada de una tienda. Si lo instalas como app, abre en su propia ventana con su ícono, carga más rápido y funciona sin internet.
 
-Aquí te decimos cómo instalarlo en cada aparato.
+En Chrome y Edge, Bocón mismo te avisa: a los pocos segundos de abrirlo aparece un cuadro **Instala Bocón** con su botón **Instalar**. En iPhone te dice qué tocar. Si cerraste el aviso, aquí tienes los pasos para cada aparato.
+
+**¿Abriste el enlace desde TikTok, Instagram o Facebook?** Desde el navegador de esas apps no se puede instalar, y lo que guardes ahí se puede perder. Toca **⋯** y elige **Abrir en el navegador**; luego sigue los pasos de abajo.
 
 ## En la computadora (Windows, Mac o Chromebook)
 
 Usa **Chrome** o **Edge**.
 
 1. Abre [bocon.seakingsstudios.com](https://bocon.seakingsstudios.com).
-2. A la derecha de la barra de direcciones aparece el ícono de instalar, una pantallita con una flecha. Tócalo y luego **Instalar**.
-3. Si no lo ves:
+2. Toca **Instalar** en el aviso que aparece, o en el botón **Instalar** de arriba, junto a **En vivo**.
+3. También puedes usar el ícono de instalar del navegador, una pantallita con una flecha a la derecha de la barra de direcciones. Si no lo ves:
    - En **Chrome**, abre el menú **⋮** y busca **Instalar Bocón**. En algunas versiones está dentro de **Transmitir, guardar y compartir**.
    - En **Edge**, abre el menú **…** y entra a **Aplicaciones → Instalar Bocón**.
 
-Bocón queda en el menú Inicio (o en el Launchpad de la Mac). Puedes anclarlo a la barra de tareas para tenerlo a la mano.
+Bocón queda en el menú Inicio (o en el Launchpad de la Mac). Puedes anclarlo a la barra de tareas para tenerlo a la mano. En Safari de Mac abre el menú **Archivo** y elige **Agregar al Dock**.
 
 ## En Android
 
 Usa **Chrome**.
 
 1. Abre [bocon.seakingsstudios.com](https://bocon.seakingsstudios.com).
-2. Toca el menú **⋮**, arriba a la derecha.
-3. Toca **Instalar app** o **Agregar a la pantalla principal**, y luego **Instalar**.
+2. Toca **Instalar** en el aviso **Instala Bocón** que aparece arriba. También está en el menú de Bocón (las tres rayitas), en **Instalar Bocón como app**.
+3. Si no te sale el aviso, toca el menú **⋮** de Chrome, arriba a la derecha, y luego **Instalar app** o **Agregar a la pantalla principal**.
 
 El ícono de Bocón aparece en tu pantalla de inicio, como cualquier app. Si usas el navegador de Samsung, el camino es menú **☰ → Agregar página a → Pantalla de inicio**.
 
@@ -41,8 +43,10 @@ El ícono de Bocón aparece en tu pantalla de inicio, como cualquier app. Si usa
 Usa **Safari**.
 
 1. Abre [bocon.seakingsstudios.com](https://bocon.seakingsstudios.com).
-2. Toca el botón **Compartir**, el cuadrito con una flecha hacia arriba.
+2. Toca el botón **Compartir**, el cuadrito con una flecha hacia arriba. En iOS 26, con la barra compacta de Safari, está dentro del botón **⋯**, junto a la dirección.
 3. Baja en la lista y toca **Agregar a inicio**, y luego **Agregar**.
+
+Bocón te recuerda estos pasos con un aviso la primera vez que lo abres en Safari.
 
 Ábrelo siempre desde ese ícono. Así el iPhone guarda tus proyectos aunque pases varios días sin abrir Bocón; si lo usas solo desde Safari, el iPhone puede borrar lo guardado de las páginas que no visitas en una semana.
 
