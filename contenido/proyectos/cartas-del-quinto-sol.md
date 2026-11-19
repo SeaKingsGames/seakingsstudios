@@ -40,7 +40,9 @@ capturas:
   - imagen: /img/cartas-del-quinto-sol/duelo.webp
     texto: Un duelo en la PC. Las cartas numeradas en la mano forman una cadena de fusión; a la izquierda se ve la carta elegida y al centro el Reloj Solar y el signo del día.
   - imagen: /img/cartas-del-quinto-sol/menu.webp
-    texto: El menú principal, con campaña, misiones, duelo libre, duelos contra otro jugador, tiendas, mercado y ruleta.
+    texto: El menú nuevo. La rueda del Quinto Sol tiene la Campaña al centro y seis medallones abajo, Misiones, Multijugador, Duelo libre, Mi mazo, Tienda y Biblioteca.
+  - imagen: /img/cartas-del-quinto-sol/opciones.webp
+    texto: Opciones. Volumen de efectos y música, la descarga de recursos para que las cartas no se queden en blanco con mala señal, el tutorial y el botón para instalar.
   - imagen: /img/cartas-del-quinto-sol/campana.webp
     texto: La campaña. Cada duelista se desbloquea al vencer al anterior y tiene su carta firma.
   - imagen: /img/cartas-del-quinto-sol/mazo.webp
@@ -60,6 +62,10 @@ preguntas:
     r: Puedes tener hasta 3 copias de cada carta. Algunas cartas ascienden si juntas tres copias, y cuando ya tienes tres, las copias nuevas se convierten en cacao y jade.
   - p: ¿Por qué se llama Cartas del Quinto Sol?
     r: Según la tradición mexica, el mundo ha pasado por cinco soles o eras, y vivimos en la quinta. El juego toma de ahí su nombre y su reloj de duelo.
+  - p: ¿Qué hago si las cartas se ven en blanco cuando tengo mala señal?
+    r: Entra a Opciones (el engrane del menú) y toca Descargar en la sección Descargas. Se guardan en tu teléfono el arte de las 220 cartas, los retratos, los sonidos y la música, unos 22 MB. Se baja una sola vez y, si salen cartas nuevas, solo baja esas. Usa Wi-Fi si tu plan de datos es limitado.
+  - p: ¿Pierdo mis cartas si cambio de teléfono?
+    r: Si juegas como invitado, tu progreso se queda en ese teléfono. Para no perderlo, en Opciones guarda tu cuenta con tu correo; así entras con tus cartas desde otro aparato.
   - p: ¿Cuándo sale en Google Play y en Steam?
     r: Primero queremos terminar más duelistas y ampliar la colección de cartas. Lo anunciaremos aquí y en nuestras redes.
 historial:
@@ -69,6 +75,8 @@ historial:
     texto: El juego ya se descarga como app para Android, con música, sonidos y animaciones nuevas.
   - fecha: 2026-11-06
     texto: Ya se juega La Guerra Florida, el capítulo 2 de la campaña, con 120 cartas, tres duelistas y tres sobres nuevos. También hay misiones del día y de la semana y recompensa por entrar siete días seguidos.
+  - fecha: 2026-11-13
+    texto: Menú nuevo con la rueda del Quinto Sol, tienda con pestañas, opciones de sonido, descarga de recursos y música de jefe contra Mictlantecuhtli y Tlamacazqui. El botín de los duelistas se reparte mejor y ninguno suelta ultra raras.
 esquema:
   tipo: VideoGame
   genero: Juego de cartas coleccionables
@@ -151,7 +159,9 @@ Vale la pena voltear a ver el signo antes de tu primer turno: un mazo de jaguare
 
 ## La campaña
 
-En la campaña vences a los duelistas en orden. Cada uno tiene su mazo temático, su lugar y su **carta firma**: al ganarle te llevas una carta de su mazo, y la primera vez también su carta firma.
+En la campaña vences a los duelistas en orden. Cada uno tiene su mazo temático, su lugar y su **carta firma**. Al ganarle te llevas una carta de su botín, que incluye cartas de su mazo y otras del juego; la primera vez también te da su carta firma, como Xólotl en el caso de Mictlantecuhtli. Ningún duelista suelta ultra raras, y las normales salen más seguido que las raras y las súper raras.
+
+Los últimos rivales de cada capítulo, Mictlantecuhtli y Tlamacazqui, tienen su propia **música de jefe**.
 
 **Capítulo 1**
 
@@ -179,9 +189,11 @@ Las cartas no se quedan igual para siempre:
 
 Hay dos monedas: el **cacao**, que se gana jugando, y el **jade**, la moneda valiosa. Las cartas nuevas salen de:
 
-- **Seis sobres temáticos** de 5 cartas: del Quinto Sol, de Tlalocan y del Mictlán, y los de La Guerra Florida: Guerreros Jaguar, Guerreros Águila y Templo Mayor.
+- **Seis sobres temáticos** de 5 cartas, que cuestan 150 de jade: del Quinto Sol, de Tlalocan y del Mictlán, y los de La Guerra Florida: Guerreros Jaguar, Guerreros Águila y Templo Mayor. Cada carta tiene 60 % de probabilidad de salir normal, 28 % rara, 10 % súper rara y 2 % ultra rara, y si abres 10 sobres seguidos sin una ultra rara, el décimo trae una segura.
 - El **mercado de cartas**, con 6 cartas al azar cada día.
 - La **ruleta de premios**, que se gira con tickets.
+
+Los sobres, el mercado, la ruleta y la tienda de jade están juntos en la **Tienda**, cada uno en su pestaña.
 - Las **misiones**: una recompensa por entrar siete días seguidos, misiones del día como «Haz 5 fusiones» o «Gana un duelo de noche», y misiones de la semana como «Gana 3 duelos en 12 turnos o menos».
 
 ## Duelos contra otro jugador

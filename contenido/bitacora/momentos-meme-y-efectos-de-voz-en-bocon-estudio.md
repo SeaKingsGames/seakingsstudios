@@ -49,7 +49,7 @@ Si repites un recurso en tus videos, crea el tuyo con **Crear mi momento**: elig
 
 Ahora cada personaje puede tener su propio **efecto de voz**. Selecciona al personaje y, en su panel, elige uno en «Efecto de voz». Se aplica a todo lo que dice ese personaje, y con **▶ Probar** lo escuchas antes de reproducir la escena.
 
-Hay 24 listos. Algunos que funcionan muy bien:
+Hay 25 listos, incluida la voz de **Lito (caricatura)**. Algunos que funcionan muy bien:
 
 - **Ardilla** o **Globo de helio** para personajes pequeños o tiernos.
 - **Gigante**, **Monstruo** o **Demonio** para el villano.
@@ -58,7 +58,7 @@ Hay 24 listos. Algunos que funcionan muy bien:
 - **Fantasma**, **Eco** o **Cueva** para escenas de miedo.
 - **Bajo el agua** o **Cinta vieja** para un recuerdo o un sueño.
 
-Una ventaja de esto es que puedes grabar todas las voces tú mismo y que cada personaje suene distinto. Si quieres afinar un efecto, abre **Efecto de voz…** desde el menú Agregar: tiene 23 controles, como tono, graves, agudos, distorsión, vibrato, eco y tamaño de sala. Cuando te guste, tócale «Guardar en mis efectos» y lo tendrás en cualquier proyecto.
+Una ventaja de esto es que puedes grabar todas las voces tú mismo y que cada personaje suene distinto. Si quieres afinar un efecto, abre **Efecto de voz…** desde el menú Agregar: tiene 26 controles, como tono, timbre, graves, agudos, distorsión, vibrato, eco y tamaño de sala. Con Bocón Pro, cuando te guste, tócale «Guardar en mis efectos» y lo tendrás en cualquier proyecto. Para hacer voces de caricatura, lee [cómo usar el texto a voz y la voz de Lito](/bitacora/voces-de-caricatura-en-bocon-estudio).
 
 ## Gestos propios con adornos
 
@@ -91,4 +91,4 @@ Para juntar todo, así armamos un video corto de reacción:
 
 Si es la primera vez que usas tus propios dibujos, empieza por la [guía para preparar tu personaje](/bitacora/como-preparar-tu-personaje-para-bocon-estudio). Ahora la marioneta también puede tener brazos y pies: si subes un solo dibujo con los brazos separados del cuerpo y los pies abiertos, Bocón los separa para que se muevan.
 
-Bocón Estudio está en su última etapa de pruebas y es gratis. Puedes ver todo lo que hace en su [página](/proyectos/bocon-estudio).
+Bocón Estudio ya está abierto para todos, con plan gratis y Bocón Pro. Puedes ver todo lo que hace en su [página](/proyectos/bocon-estudio) y cómo instalarlo en la [guía de instalación](/bitacora/instala-bocon-estudio-en-pc-android-y-iphone).

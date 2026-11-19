@@ -80,7 +80,7 @@ Otras formas de conseguir cartas sin gastar:
 - **La recompensa por entrar siete días seguidos.**
 - **El mercado de cartas**, que cambia 6 cartas cada día.
 - **La ruleta de premios**, que se gira con tickets.
-- **La campaña**: cada victoria te da una carta del mazo del duelista, y la primera vez también su carta firma.
+- **La campaña**: cada victoria te da una carta del botín del duelista, y la primera vez también su carta firma.
 
 Si ya tienes 3 copias de una carta, las nuevas se convierten en cacao y jade, así que las repetidas nunca se desperdician.
 
