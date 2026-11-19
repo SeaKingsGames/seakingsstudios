@@ -17,6 +17,7 @@ tarjeta:
 portada:
   imagen: /img/cartas-del-quinto-sol/duelo.webp
   alt: Duelo en la PC. A la izquierda la carta Cipactli en grande; al centro el campo, el Reloj Solar en Alba y el signo del día Ollin; abajo la mano con una cadena de fusión marcada
+discord: "Encuentra rivales para duelo, comparte tus mazos y platica de fusiones con otros jugadores. Cartas del Quinto Sol tiene su propio espacio en nuestro Discord."
 enlaces:
   - texto: Descargar para Android (APK)
     url: /descargas/cartas-del-quinto-sol.apk

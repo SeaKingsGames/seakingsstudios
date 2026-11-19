@@ -15,6 +15,7 @@ tarjeta:
 portada:
   imagen: /img/bocon-estudio/editor.webp
   alt: Editor de Bocón Estudio con dos personajes, sus capas, la línea de tiempo con voz, gestos y acciones
+discord: "Comparte tus animaciones, pide ayuda con tus marionetas y entérate primero de las versiones nuevas. Bocón Estudio tiene su propio espacio en nuestro Discord."
 enlaces:
   - texto: Abrir Bocón Estudio
     url: https://bocon.seakingsstudios.com

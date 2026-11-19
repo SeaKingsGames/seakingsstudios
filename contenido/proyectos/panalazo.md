@@ -16,6 +16,7 @@ portada:
   imagen: /img/panalazo/tarjeta.webp
   alt: Pañalazo, batalla de cañones lanza-bebés, con un cañón azul sobre vías de tren y un bebé volando
 # Android: prueba cerrada en Google Play (com.seakingsgames.panalazo). PC: Releases de github.com/SeaKingsGames/Panalazo.
+discord: "Encuentra partida, comparte tus mejores pañalazos, reporta errores y entérate de cómo ser tester. Pañalazo tiene su propio espacio en nuestro Discord."
 enlaces:
   - texto: Probar en Android (Google Play)
     url: "#prueba-de-android-en-google-play"

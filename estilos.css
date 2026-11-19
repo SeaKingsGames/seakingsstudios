@@ -393,3 +393,37 @@ a.carta:nth-child(even):hover { transform: rotate(1.2deg) translateY(-4px); }
 .rejilla-juegos:has(.juego--arte) { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
 .tira-juegos:has(.juego--arte) { grid-auto-columns: 250px; }
 @media (max-width: 420px) { .tira-juegos:has(.juego--arte) { grid-auto-columns: 78%; } }
+
+/* ---------- Comunidad en Discord ---------- */
+.icono-discord { width: 1.2em; height: 1.2em; flex: none; }
+.btn--discord { background: #5865f2; color: #fff; }
+.btn--discord:hover { background: #4752c4; }
+.btn--chico { padding: 9px 14px; font-size: .9rem; justify-self: start; }
+.cab-discord {
+  display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px; border-radius: 999px;
+  background: #5865f2; color: #fff; font: 700 .84rem/1 var(--f-body); text-decoration: none; white-space: nowrap;
+}
+.cab-discord:hover { background: #4752c4; }
+.caja-discord {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px 22px;
+  padding: 22px 24px; border-radius: 14px; border: 2px solid rgba(88, 101, 242, .55);
+  background: linear-gradient(135deg, rgba(88, 101, 242, .2), rgba(88, 101, 242, .06)), var(--agua-2);
+}
+.caja-discord-icono { width: 56px; height: 56px; border-radius: 14px; display: grid; place-items: center; background: #5865f2; color: #fff; }
+.caja-discord-icono .icono-discord { width: 32px; height: 32px; }
+.caja-discord-texto { display: grid; gap: 6px; min-width: 0; }
+.caja-discord h2 { font: 400 1.45rem/1.15 var(--f-display); }
+.caja-discord p:not(.ceja) { color: var(--niebla); }
+.enlace-discord { display: inline-flex; align-items: center; gap: 8px; margin-top: 2px; font-weight: 700; color: var(--espuma); text-decoration: none; }
+.enlace-discord .icono-discord { color: #5865f2; }
+.enlace-discord:hover { text-decoration: underline; text-underline-offset: 4px; }
+.bloque-final { padding-block: 36px 8px; }
+.articulo .caja-discord, .articulo + .caja-discord { margin-block: 8px; }
+@media (max-width: 760px) {
+  .cab-discord { order: 2; }
+  .menu { order: 3; }
+  .caja-discord { grid-template-columns: auto minmax(0, 1fr); align-items: start; padding: 18px; }
+  .caja-discord .btn { grid-column: 1 / -1; }
+  .caja-discord-icono { width: 46px; height: 46px; }
+  .caja-discord-icono .icono-discord { width: 26px; height: 26px; }
+}

@@ -20,6 +20,7 @@ portada:
       alt: Pantalla de dibujo de Arte o Cringe con el tema «Un ajolote con bigote en la playa» y la paleta de colores
     - imagen: /img/arte-o-cringe/captura-4.webp
       alt: Resultados de la ronda con los premios Obra maestra y Premio cringe
+discord: "Encuentra con quién jugar, presume tus obras maestras (y tus premios cringe) y propón temas nuevos. Arte o Cringe tiene su propio espacio en nuestro Discord."
 enlaces:
   - texto: Descargar en Google Play
     url: https://play.google.com/store/apps/details?id=com.seakingsgames.arteocringe

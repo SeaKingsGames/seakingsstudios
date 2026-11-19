@@ -185,6 +185,21 @@ const ICONOS = {
   </svg>`,
 };
 
+// ---------------------------------------------------------------------
+//  Comunidad en Discord
+// ---------------------------------------------------------------------
+const REDES = [...SITIO.redes, ...(SITIO.discord ? [{ red: 'Discord', usuario: 'Comunidad SeaKings', seguidores: '', url: SITIO.discord }] : [])];
+const ICONO_DISCORD = `<svg viewBox="0 0 24 24" aria-hidden="true" class="icono-discord"><path fill="currentColor" d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>`;
+const EXTERNO = 'target="_blank" rel="noopener"';
+function bloqueDiscord({ ceja = 'Comunidad', titulo = 'Únete a nuestro Discord', texto = 'Platica con otros jugadores, encuentra con quién jugar y entérate antes que nadie de lo nuevo en nuestros juegos.' } = {}) {
+  if (!SITIO.discord) return '';
+  return `<aside class="caja-discord" aria-label="Comunidad en Discord">
+  <div class="caja-discord-icono">${ICONO_DISCORD}</div>
+  <div class="caja-discord-texto"><p class="ceja">${esc(ceja)}</p><h2>${esc(titulo)}</h2><p>${esc(texto)}</p></div>
+  <a class="btn btn--discord" href="${esc(SITIO.discord)}" ${EXTERNO}>${ICONO_DISCORD}Entrar al Discord</a>
+</aside>`;
+}
+
 function cabecera(rutaActual) {
   const items = SITIO.menu.map((m) => {
     const activo = rutaActual === m.url || rutaActual.startsWith(m.url + '/');
@@ -193,19 +208,21 @@ function cabecera(rutaActual) {
   return `<header class="cabecera"><div class="envoltura cabecera-in">
   <a class="marca-chica" href="/" aria-label="${esc(SITIO.nombre)}, inicio">${ICONO_MARCA}<span>SeaKings<b>Studios</b></span></a>
   <nav class="menu" aria-label="Principal">${items}</nav>
+  ${SITIO.discord ? `<a class="cab-discord" href="${esc(SITIO.discord)}" ${EXTERNO} aria-label="Únete a nuestro Discord">${ICONO_DISCORD}<span>Discord</span></a>` : ''}
 </div></header>`;
 }
 const ICONO_MARCA = `<svg viewBox="0 0 64 64" aria-hidden="true" class="marca-icono"><rect width="64" height="64" rx="14" fill="#0a2129"/><g fill="none" stroke="#ff8fb1" stroke-width="4" stroke-linecap="round"><path d="M14 26 Q8 21 4 16"/><path d="M12 33 Q6 33 2 34"/><path d="M14 40 Q8 44 5 49"/><path d="M50 26 Q56 21 60 16"/><path d="M52 33 Q58 33 62 34"/><path d="M50 40 Q56 44 59 49"/></g><ellipse cx="32" cy="36" rx="20" ry="16" fill="#7fe3c4" stroke="#16222b" stroke-width="2.5"/><circle cx="25" cy="33" r="2.6" fill="#16222b"/><circle cx="39" cy="33" r="2.6" fill="#16222b"/><path d="M27 41 Q32 45 37 41" fill="none" stroke="#16222b" stroke-width="2.2" stroke-linecap="round"/><path d="M22 21 L21 11 L27 16 L32 8 L37 16 L43 11 L42 21 Z" fill="#ffd24d" stroke="#16222b" stroke-width="2.2" stroke-linejoin="round"/></svg>`;
 
 function pie(proyectos) {
   const listaProy = proyectos.map((p) => `<li><a href="${p.ruta}">${esc(p.nombre)}</a></li>`).join('');
-  const redes = SITIO.redes.map((r) => `<li><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.red)} <span>${esc(r.usuario)}</span></a></li>`).join('');
+  const redes = REDES.map((r) => `<li><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.red)} <span>${esc(r.usuario)}</span></a></li>`).join('');
   return `<footer class="pie"><div class="envoltura">
   <div class="pie-rejilla">
     <div class="pie-marca">
       <a class="marca-chica" href="/">${ICONO_MARCA}<span>SeaKings<b>Studios</b></span></a>
       <p>Estudio independiente de juegos y herramientas creativas hecho en el ${esc(SITIO.lugar.split(',')[0])}. ${esc(SITIO.lineaDeJuegos)} es nuestra línea de juegos.</p>
       <p class="pie-correo">${esc(SITIO.correo)}</p>
+      ${SITIO.discord ? `<a class="btn btn--discord btn--chico" href="${esc(SITIO.discord)}" ${EXTERNO}>${ICONO_DISCORD}Únete a nuestro Discord</a>` : ''}
     </div>
     <div><h2>Proyectos</h2><ul>${listaProy}</ul></div>
     <div><h2>Estudio</h2><ul><li><a href="/bitacora">Bitácora</a></li><li><a href="/acerca">Acerca de</a></li><li><a href="/contacto">Contacto</a></li><li><a href="/privacidad">Política de privacidad</a></li></ul></div>
@@ -391,6 +408,8 @@ function paginaInicio({ proyectos, juegos, articulos, proyectosPorId }) {
   <div class="tira-juegos">${juegos.map(tarjetaJuego).join('')}</div>
 </section>
 
+${SITIO.discord ? `<section class="seccion envoltura">${bloqueDiscord({ titulo: 'Únete a la comunidad en Discord', texto: 'Platica con otros jugadores, encuentra con quién jugar, comparte tus dibujos, mazos y animaciones, y entérate antes que nadie de lo nuevo. Arte o Cringe, Cartas del Quinto Sol, Bocón Estudio y Pañalazo tienen su propio espacio.' })}</section>` : ''}
+
 ${anuncio('inicio') ? `<div class="envoltura">${anuncio('inicio')}</div>` : ''}
 
 <section class="seccion envoltura" aria-labelledby="t-bitacora">
@@ -409,7 +428,7 @@ ${anuncio('inicio') ? `<div class="envoltura">${anuncio('inicio')}</div>` : ''}
     <p>Lito, nuestro ajolote con corona, aparece en los videos y en las redes de ${esc(SITIO.lineaDeJuegos)}, donde más de 70 mil personas siguen lo que vamos haciendo.</p>
     <a class="enlace-flecha" href="/acerca">Conoce el estudio <span aria-hidden="true">→</span></a>
   </div>
-  <ul class="estudio-redes">${SITIO.redes.map((r) => `<li><a href="${esc(r.url)}" target="_blank" rel="noopener"><b>${esc(r.red)}</b><span>${esc(r.usuario)}</span>${r.seguidores ? `<em>${esc(r.seguidores)} seguidores</em>` : ''}</a></li>`).join('')}</ul>
+  <ul class="estudio-redes">${REDES.map((r) => `<li><a href="${esc(r.url)}" target="_blank" rel="noopener"><b>${esc(r.red)}</b><span>${esc(r.usuario)}</span>${r.seguidores ? `<em>${esc(r.seguidores)} seguidores</em>` : ''}</a></li>`).join('')}</ul>
 </section>
 
 <script>
@@ -422,7 +441,7 @@ ${anuncio('inicio') ? `<div class="envoltura">${anuncio('inicio')}</div>` : ''}
 </script>`;
   const org = {
     '@context': 'https://schema.org', '@type': 'Organization', name: SITIO.nombre, url: SITIO.dominio, logo: urlAbs('/icono.svg'),
-    email: SITIO.correo, founder: { '@type': 'Person', name: SITIO.responsable }, sameAs: SITIO.redes.map((r) => r.url),
+    email: SITIO.correo, founder: { '@type': 'Person', name: SITIO.responsable }, sameAs: REDES.map((r) => r.url),
   };
   return layout({ titulo: SITIO.nombre, descripcion: SITIO.descripcion, ruta: '/', cuerpo, jsonld: [org], proyectos });
 }
@@ -442,7 +461,8 @@ function paginaProyectos({ proyectos }) {
   const cuerpo = `<div class="envoltura">${migas(mg)}
 <header class="cab-pagina"><p class="ceja">La baraja del estudio</p><h1>Proyectos</h1>
 <p class="entrada">Todo lo que estamos haciendo en SeaKingsStudios: juegos para jugar con amigos, una arcada de clásicos y un programa para animar personajes. Cada proyecto tiene su página con detalles, capturas y preguntas frecuentes.</p></header>
-<div class="lista-proyectos">${items}</div></div>`;
+<div class="lista-proyectos">${items}</div>
+${SITIO.discord ? `<div class="bloque-final">${bloqueDiscord({ texto: 'Cada proyecto tiene su espacio en nuestro Discord: ahí avisamos primero de las versiones nuevas, respondemos dudas y escuchamos ideas.' })}</div>` : ''}</div>`;
   return layout({ titulo: 'Proyectos', descripcion: 'Juegos y herramientas de SeaKingsStudios: Arte o Cringe, Cartas del Quinto Sol, Bocón Estudio y SeaKings Classic Games.', ruta: '/proyectos', cuerpo, jsonld: [jsonMigas(mg)], proyectos });
 }
 
@@ -487,6 +507,7 @@ function paginaProyecto(p, { proyectos, juegos, articulos, proyectosPorId }) {
     <div class="acciones">${botones(p.enlaces)}</div>
     ${p.instalable ? BOTON_INSTALAR : ''}
     ${p.nota ? `<p class="nota-boton">${esc(p.nota)}</p>` : ''}
+    ${SITIO.discord ? `<a class="enlace-discord" href="${esc(SITIO.discord)}" ${EXTERNO}>${ICONO_DISCORD}Únete a la comunidad de ${esc(p.nombre)} en Discord</a>` : ''}
   </div>
   <div class="heroe-arte">${portada}</div>
 </section>
@@ -497,6 +518,7 @@ function paginaProyecto(p, { proyectos, juegos, articulos, proyectosPorId }) {
 <div class="envoltura extras">
   ${galeria}
   ${preguntas}
+  ${bloqueDiscord({ ceja: `Comunidad de ${p.nombre}`, titulo: 'Platícalo en Discord', texto: p.discord || `Pregunta, comparte y entérate primero de lo nuevo de ${p.nombre} en nuestro Discord.` })}
   ${anuncio('final')}
   ${historial}
   ${relacionados.length ? `<section aria-labelledby="t-rel"><h2 id="t-rel">En la bitácora</h2><div class="rejilla-notas">${relacionados.map((a) => tarjetaArticulo(a, proyectosPorId)).join('')}</div></section>` : ''}
@@ -535,6 +557,7 @@ function paginaJuego(j, { juegos, proyectos }) {
   <article class="contenido">${html}</article>
 </div>
 <div class="envoltura extras">
+  ${bloqueDiscord({ ceja: 'Comunidad', titulo: '¿Rompiste tu récord?', texto: `Presúmelo en nuestro Discord, reta a otros jugadores de ${j.nombre} o propón el próximo juego de la arcada.` })}
   ${anuncio('final')}
   <section aria-labelledby="t-mas"><h2 id="t-mas">Más juegos de la arcada</h2><div class="rejilla-juegos">${otros.map(tarjetaJuego).join('')}</div></section>
 </div>`;
@@ -551,7 +574,8 @@ function paginaBitacora({ articulos, proyectos, proyectosPorId }) {
   const cuerpo = `<div class="envoltura">${migas(mg)}
 <header class="cab-pagina"><p class="ceja">Guías, tutoriales y notas</p><h1>Bitácora</h1>
 <p class="entrada">Explicamos cómo se juegan y cómo se usan nuestros proyectos, contamos de dónde salen sus ideas y avisamos qué hay de nuevo. Todo lo escribimos nosotros.</p></header>
-<div class="rejilla-notas rejilla-notas--lista">${articulos.map((a) => tarjetaArticulo(a, proyectosPorId)).join('')}</div></div>`;
+<div class="rejilla-notas rejilla-notas--lista">${articulos.map((a) => tarjetaArticulo(a, proyectosPorId)).join('')}</div>
+${SITIO.discord ? `<div class="bloque-final">${bloqueDiscord({ texto: '¿Te quedó una duda después de leer una guía o quieres proponer una nota? Platícalo con nosotros y con otros jugadores en nuestro Discord.' })}</div>` : ''}</div>`;
   return layout({ titulo: 'Bitácora', descripcion: 'Guías, tutoriales y notas de SeaKingsStudios sobre Arte o Cringe, Cartas del Quinto Sol, Bocón Estudio y la arcada.', ruta: '/bitacora', cuerpo, jsonld: [jsonMigas(mg)], proyectos });
 }
 
@@ -571,6 +595,7 @@ function paginaArticulo(a, { articulos, proyectos, proyectosPorId }) {
   </header>
   ${a.imagen ? `<figure class="articulo-foto${(medidas(a.imagen) || [1, 0])[1] > (medidas(a.imagen) || [1, 0])[0] ? ' vertical' : ''}">${img(a.imagen, a.alt || '', { perezosa: false })}${a.pie ? `<figcaption>${esc(a.pie)}</figcaption>` : ''}</figure>` : ''}
   <div class="contenido">${html}</div>
+  ${bloqueDiscord({ ceja: 'Comunidad', titulo: '¿Algo que agregar?', texto: p ? `Comenta esta nota, pregunta lo que te faltó o comparte lo que hiciste con ${p.nombre} en nuestro Discord.` : 'Comenta esta nota o pregunta lo que te faltó en nuestro Discord.' })}
   ${p ? `<aside class="caja-proyecto"><div><p class="ceja">Sobre el proyecto</p><h2>${esc(p.nombre)}</h2><p>${esc(p.resumen)}</p></div><a class="btn btn--principal" href="${p.ruta}">Ver ${esc(p.nombre)}</a></aside>` : ''}
   ${anuncio('final')}
 </article>
@@ -585,7 +610,7 @@ function paginaArticulo(a, { articulos, proyectos, proyectosPorId }) {
 
 function paginaSimple(pg, { proyectos }) {
   const ruta = `/${pg.id}`;
-  const { html } = markdown(pg.cuerpo.replace(/\{\{correo\}\}/g, SITIO.correo).replace(/\{\{responsable\}\}/g, SITIO.responsable));
+  const { html } = markdown(pg.cuerpo.replace(/\{\{correo\}\}/g, SITIO.correo).replace(/\{\{responsable\}\}/g, SITIO.responsable).replace(/\{\{discord\}\}/g, SITIO.discord || '/contacto'));
   const mg = [{ texto: 'Inicio', url: '/' }, { texto: pg.titulo, url: ruta }];
   const extra = pg.id === 'contacto' ? `<div class="caja-correo"><p class="ceja">Correo del estudio</p><p class="correo" id="correo">${esc(SITIO.correo)}</p>
   <div class="acciones"><a class="btn btn--principal" href="mailto:${esc(SITIO.correo)}">Escribir un correo</a><button class="btn btn--borde" type="button" id="copiar">Copiar dirección</button></div><p class="aviso" id="aviso" aria-live="polite"></p></div>
@@ -594,6 +619,7 @@ function paginaSimple(pg, { proyectos }) {
 <article class="envoltura articulo">
   <header class="cab-articulo"><p class="ceja">${esc(pg.ceja || SITIO.nombre)}</p><h1>${esc(pg.titulo)}</h1>${pg.entrada ? `<p class="entrada">${esc(pg.entrada)}</p>` : ''}${pg.actualizado ? `<p class="nota-meta">Última actualización: ${fechaLarga(pg.actualizado)}</p>` : ''}</header>
   ${extra}
+  ${pg.id === 'contacto' ? bloqueDiscord({ ceja: 'Comunidad', titulo: '¿Prefieres platicar?', texto: 'En nuestro Discord respondemos dudas de todos nuestros juegos, y otros jugadores también te pueden ayudar. Para temas privados, como pagos o tus datos, mejor escríbenos por correo.' }) : ''}
   <div class="contenido">${html}</div>
 </article>`;
   return layout({ titulo: pg.titulo, descripcion: pg.descripcion, ruta, cuerpo, jsonld: [jsonMigas(mg)], proyectos });
@@ -619,7 +645,7 @@ function paginaPagoPanalazo({ proyectos }) {
 function pagina404({ proyectos }) {
   const cuerpo = `<section class="envoltura no-encontrada">${AJOLOTE}<div><p class="ceja">Error 404</p><h1>Esta página se fue nadando</h1>
 <p class="entrada">No encontramos lo que buscabas. Puede que la dirección esté mal escrita o que la página haya cambiado de lugar.</p>
-<div class="acciones"><a class="btn btn--principal" href="/">Ir al inicio</a><a class="btn btn--borde" href="/proyectos">Ver proyectos</a><a class="btn btn--borde" href="/arcada">Ir a la arcada</a></div></div></section>`;
+<div class="acciones"><a class="btn btn--principal" href="/">Ir al inicio</a><a class="btn btn--borde" href="/proyectos">Ver proyectos</a><a class="btn btn--borde" href="/arcada">Ir a la arcada</a>${SITIO.discord ? `<a class="btn btn--discord" href="${esc(SITIO.discord)}" ${EXTERNO}>${ICONO_DISCORD}Pregunta en Discord</a>` : ''}</div></div></section>`;
   return layout({ titulo: 'Página no encontrada', descripcion: 'La página que buscas no existe.', ruta: '/404', cuerpo, anuncios: false, indexar: false, proyectos });
 }
 

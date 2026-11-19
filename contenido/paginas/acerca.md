@@ -35,4 +35,4 @@ Programamos en HTML, CSS, JavaScript y TypeScript, sin motores pesados, para que
 
 ## Escríbenos
 
-Si tienes una duda sobre algún juego, una idea o una propuesta de colaboración, escríbenos a {{correo}} o visita la página de [contacto](/contacto).
+Si tienes una duda sobre algún juego, una idea o una propuesta de colaboración, escríbenos a {{correo}} o visita la página de [contacto](/contacto). También puedes platicar con nosotros y con otros jugadores en nuestro [servidor de Discord]({{discord}}), donde nuestros juegos tienen su propio espacio.

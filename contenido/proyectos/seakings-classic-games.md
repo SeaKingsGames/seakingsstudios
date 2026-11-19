@@ -22,6 +22,7 @@ portada:
       alt: Nivel de Tuercas Locas con piezas hexagonales de colores en sus barras
     - imagen: /img/arcada/smash-brick.webp
       alt: Partida de Smash Brick con ladrillos azules y la pala abajo
+discord: "Presume tus récords, reta a otros jugadores y propón el próximo juego de la arcada en nuestro Discord."
 enlaces:
   - texto: Abrir la arcada
     url: /arcada/jugar

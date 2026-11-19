@@ -36,6 +36,11 @@ export default {
     { red: 'Facebook', usuario: 'SeaKingsGames', seguidores: '25 mil', url: 'https://www.facebook.com/share/1Bp8ELTga8/' },
   ],
 
+  // Comunidad en Discord. El enlace aparece en la cabecera, el pie, la portada,
+  // cada proyecto, cada juego, cada nota, Contacto y Acerca, y se suma a las
+  // redes. Usa una invitación que no caduque. Déjalo vacío ('') para quitarlo.
+  discord: 'https://discord.gg/aXV7qjRSd',
+
   // -------------------------------------------------------------------
   //  GOOGLE ADSENSE
   //  cliente: tu ID de editor (AdSense → Cuenta → Información de la cuenta).

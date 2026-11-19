@@ -7,7 +7,7 @@ descripcion: Escribe a SeaKingsStudios para soporte de Arte o Cringe, Cartas del
 
 ## Ayuda con un juego
 
-Si algo no funciona, dinos qué juego es, qué estabas haciendo y si lo juegas en el navegador, en la PC o en Android. Una captura de pantalla ayuda mucho.
+Si algo no funciona, dinos qué juego es, qué estabas haciendo y si lo juegas en el navegador, en la PC o en Android. Una captura de pantalla ayuda mucho. Si prefieres, también puedes reportarlo en nuestro [Discord]({{discord}}), donde otros jugadores quizá ya encontraron la solución.
 
 Para **Arte o Cringe**, incluye tu código de dispositivo. El juego te lo muestra en su sección de privacidad. Con él podemos revisar compras, monedas o una suspensión.
 
@@ -25,5 +25,6 @@ Si tienes un canal, una comunidad o un evento y quieres jugar o hablar de nuestr
 
 - TikTok: [@litoelajolote](https://www.tiktok.com/@litoelajolote) y [@seakingsstudios](https://www.tiktok.com/@seakingsstudios)
 - Facebook: [SeaKingsGames](https://www.facebook.com/share/1Bp8ELTga8/)
+- Discord: [nuestro servidor]({{discord}}), donde también puedes pedir ayuda con cualquier juego
 
 SeaKingsStudios es responsabilidad de {{responsable}}, con domicilio en el Estado de México, México.
