@@ -3,7 +3,7 @@ titulo: Aviso de privacidad de Bocón Estudio
 ceja: Privacidad
 entrada: Qué datos usa Bocón Estudio, para qué los usa y qué puedes hacer con ellos.
 descripcion: Aviso de privacidad de Bocón Estudio de SeaKingsStudios. Qué datos usan la cuenta y la suscripción Pro, qué se queda solo en tu aparato y cómo borrar tus datos.
-actualizado: 2026-11-18
+actualizado: 2026-11-26
 ---
 
 Este aviso aplica a **Bocón Estudio**, el programa de animación de SeaKingsStudios que se usa en el navegador o instalado en tu computadora o celular. Para el sitio web consulta la [política de privacidad del sitio](/privacidad). Las reglas del programa y de la suscripción están en los [términos de Bocón Estudio](/terminos-bocon).
@@ -22,10 +22,11 @@ Bocón se puede usar sin cuenta. Tus **proyectos, personajes, dibujos, fondos, v
 
 ## Qué datos usamos si entras a tu cuenta
 
-La cuenta solo hace falta para **Bocón Pro**.
+La cuenta solo hace falta para **Bocón Pro** y para **Dibujar con IA**.
 
 - **Tu correo.** Sirve para entrar: te mandamos un enlace y un código, sin contraseña. Es una cuenta de SeaKingsGames: si ya usas ese correo en Arte o Cringe o en Pañalazo, es la misma cuenta.
 - **Tu suscripción Pro.** Guardamos el plan (mensual, anual o fundador), el precio, el número de la suscripción en Mercado Pago, su estado (pendiente, activa, pausada o cancelada), el correo de tu cuenta de Mercado Pago, la fecha del próximo cobro, hasta cuándo tienes Pro pagado y si ya usaste la prueba gratis.
+- **Dibujar con IA.** Guardamos cuántos dibujos llevas en el mes, para respetar el límite de tu plan. Lo que escribes, y el dibujo actual cuando pides un cambio, se manda a Gemini, de Google, para hacer el dibujo; no le mandamos tu correo. Funciona igual que Trazo: los detalles están en el [aviso de privacidad de Trazo](/privacidad-trazo).
 - **Tus pagos.** Los hace Mercado Pago. Para abrir la suscripción le damos tu correo de Mercado Pago, el plan y el precio. Los datos de tu tarjeta los pide y guarda Mercado Pago; nosotros no los vemos.
 
 No pedimos tu nombre, teléfono, ubicación, contactos ni fotos. Bocón no tiene anuncios.
@@ -36,6 +37,7 @@ No pedimos tu nombre, teléfono, ubicación, contactos ni fotos. Bocón no tiene
 - Saber si tienes Bocón Pro y activarte sus funciones.
 - Cobrar la suscripción, avisarte de su estado y atender cobros por error, cancelaciones o reembolsos.
 - Mandarte el enlace y el código para entrar cuando los pides.
+- Hacer tus dibujos con IA y contar cuántos llevas en el mes.
 
 ## Cuánto tiempo los guardamos
 
@@ -48,7 +50,8 @@ Tu cuenta y los datos de tu suscripción se guardan mientras la uses. Si pides q
 
 ## Con quién se comparten
 
-- Con **Supabase**, que guarda las cuentas y los datos de la suscripción.
+- Con **Supabase**, que guarda las cuentas, los datos de la suscripción y el contador de dibujos con IA.
+- Con **Google (Gemini)**, solo si usas Dibujar con IA: recibe lo que escribes y, si pides un cambio, el dibujo actual.
 - Con **Vercel**, que aloja Bocón y el servidor que habla con Mercado Pago.
 - Con **Mercado Pago**, solo si te suscribes a Pro: recibe tu correo de Mercado Pago, el plan y el precio, y hace los cobros.
 - Con nuestro proveedor de correo, solo para mandarte el enlace y el código para entrar.
