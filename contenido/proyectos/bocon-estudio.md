@@ -55,7 +55,9 @@ preguntas:
   - p: ¿Cuánto cuesta?
     r: Bocón es gratis y no necesitas cuenta. Con el plan gratis tus videos salen en 720p con la marca «Hecho con Bocón» y puedes tener hasta 2 personajes por escena. Bocón Pro cuesta $79 MXN al mes o $690 MXN al año, y las primeras 100 personas tienen el precio fundador de $49 al mes.
   - p: ¿Qué incluye Bocón Pro?
-    r: Videos sin marca y en 1080p, GIF y cuadros PNG sin fondo, personajes sin límite, la ropa y los accesorios marcados con ✦, texto a voz sin límite y guardar tus propios efectos de voz. La primera vez tienes 7 días gratis.
+    r: Videos sin marca y en 1080p, GIF y cuadros PNG sin fondo, personajes sin límite, la ropa y los accesorios marcados con ✦, texto a voz sin límite, guardar tus propios efectos de voz y 30 dibujos con IA al mes en vez de 10. La primera vez tienes 7 días gratis.
+  - p: ¿Puedo dibujar con IA en Bocón?
+    r: Sí. En Imagen → Dibujar con IA escribes qué quieres y sale un dibujo de caricatura que entra directo a la escena y se guarda en tus Dibujos con IA. Con tu cuenta gratis tienes 10 al mes y con Bocón Pro, 30, contados junto con los que hagas en Trazo.
   - p: ¿Cómo cancelo Bocón Pro?
     r: En Bocón entra a Tu cuenta, toca Ver mi Pro y luego Cancelar suscripción. También puedes cancelarla desde tu cuenta de Mercado Pago. Conservas Pro hasta que termine el periodo que ya pagaste.
   - p: ¿Qué es un momento meme?
@@ -75,6 +77,8 @@ historial:
     texto: Llegan el texto a voz, que genera la voz en tu propio aparato, y la voz de Lito, con tono y timbre por separado para voces de caricatura sin sonar a ardilla.
   - fecha: 2026-11-18
     texto: Bocón Estudio se abre para todos en bocon.seakingsstudios.com, con plan gratis y Bocón Pro.
+  - fecha: 2026-11-26
+    texto: Llega Dibujar con IA, con la misma herramienta de Trazo, y la ventana Imagen estrena Mis imágenes, Dibujos con IA y secciones desplegables.
 esquema:
   tipo: SoftwareApplication
   categoria: MultimediaApplication
