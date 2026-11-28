@@ -608,7 +608,34 @@ function paginaArticulo(a, { articulos, proyectos, proyectosPorId }) {
   return layout({ titulo: a.titulo, descripcion: a.descripcion, ruta: `/bitacora/${a.id}`, imagen: a.imagen, cuerpo, jsonld: [jsonMigas(mg), ld], tipoOg: 'article', proyectos });
 }
 
-function paginaSimple(pg, { proyectos }) {
+// ---------------------------------------------------------------------
+//  Galería de Trazo: los dibujos aprobados se leen de Trazo al publicar el
+//  sitio (para que Google los vea) y la página los vuelve a pedir al abrirse.
+// ---------------------------------------------------------------------
+const TRAZO = 'https://trazo.seakingsstudios.com';
+async function traerGaleria() {
+  try {
+    const corte = new AbortController(); const t = setTimeout(() => corte.abort(), 8000);
+    const r = await fetch(`${TRAZO}/api/galeria`, { signal: corte.signal }); clearTimeout(t);
+    if (!r.ok) throw new Error(String(r.status));
+    const j = await r.json(); return Array.isArray(j.dibujos) ? j.dibujos : [];
+  } catch (e) { console.warn(`  ⚠ No pude leer la galería de Trazo (${e.message}); la página la pide al abrirse.`); return []; }
+}
+const itemGaleria = (d) => `<figure class="galeria-item${d.modo === 'fondo' ? ' es-fondo' : ''}"><img src="${TRAZO}/api/galeria?svg=${encodeURIComponent(d.id)}" alt="${esc(d.titulo)}" loading="lazy" decoding="async"><figcaption>${esc(d.titulo)}</figcaption></figure>`;
+function bloqueGaleria(dibujos) {
+  return `<section class="galeria" aria-label="Dibujos de la galería">
+  <div class="galeria-rejilla" id="galeria">${dibujos.map(itemGaleria).join('')}</div>
+  <p class="galeria-vacia" id="galeriaVacia"${dibujos.length ? ' hidden' : ''}>Todavía no hay dibujos aprobados. ¡El tuyo puede ser el primero!</p>
+  <p><a class="btn btn--principal" href="${TRAZO}" target="_blank" rel="noopener">Dibujar en Trazo</a></p>
+</section>
+<script>(function(){var g=document.getElementById('galeria'),v=document.getElementById('galeriaVacia'),T=${JSON.stringify(TRAZO)};
+var e=function(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+fetch(T+'/api/galeria').then(function(r){return r.ok?r.json():null;}).then(function(j){if(!j||!j.dibujos) return;
+g.innerHTML=j.dibujos.map(function(d){return '<figure class="galeria-item'+(d.modo==='fondo'?' es-fondo':'')+'"><img src="'+T+'/api/galeria?svg='+encodeURIComponent(d.id)+'" alt="'+e(d.titulo)+'" loading="lazy" decoding="async"><figcaption>'+e(d.titulo)+'</figcaption></figure>';}).join('');
+v.hidden=j.dibujos.length>0;}).catch(function(){});})();</script>`;
+}
+
+function paginaSimple(pg, { proyectos, galeria }) {
   const ruta = `/${pg.id}`;
   const { html } = markdown(pg.cuerpo.replace(/\{\{correo\}\}/g, SITIO.correo).replace(/\{\{responsable\}\}/g, SITIO.responsable).replace(/\{\{discord\}\}/g, SITIO.discord || '/contacto'));
   const mg = [{ texto: 'Inicio', url: '/' }, { texto: pg.titulo, url: ruta }];
@@ -619,6 +646,7 @@ function paginaSimple(pg, { proyectos }) {
 <article class="envoltura articulo">
   <header class="cab-articulo"><p class="ceja">${esc(pg.ceja || SITIO.nombre)}</p><h1>${esc(pg.titulo)}</h1>${pg.entrada ? `<p class="entrada">${esc(pg.entrada)}</p>` : ''}${pg.actualizado ? `<p class="nota-meta">Última actualización: ${fechaLarga(pg.actualizado)}</p>` : ''}</header>
   ${extra}
+  ${pg.galeria === 'trazo' ? bloqueGaleria(galeria || []) : ''}
   ${pg.id === 'contacto' ? bloqueDiscord({ ceja: 'Comunidad', titulo: '¿Prefieres platicar?', texto: 'En nuestro Discord respondemos dudas de todos nuestros juegos, y otros jugadores también te pueden ayudar. Para temas privados, como pagos o tus datos, mejor escríbenos por correo.' }) : ''}
   <div class="contenido">${html}</div>
 </article>`;
@@ -739,7 +767,7 @@ self.addEventListener('fetch', (e) => {
 // ---------------------------------------------------------------------
 const VERSION_CSS = String(AHORA.getTime()).slice(-8);
 
-function construir() {
+function construir(galeria = []) {
   fs.rmSync(DIST, { recursive: true, force: true });
   fs.mkdirSync(DIST, { recursive: true });
 
@@ -752,7 +780,7 @@ function construir() {
   const articulos = leerCarpeta('bitacora').filter((a) => !a.borrador).sort((a, b) => iso(b.fecha).localeCompare(iso(a.fecha)));
   const paginas = leerCarpeta('paginas');
   const proyectosPorId = Object.fromEntries(proyectos.map((p) => [p.id, p]));
-  const datos = { proyectos, juegos, articulos, paginas, proyectosPorId };
+  const datos = { proyectos, juegos, articulos, paginas, proyectosPorId, galeria };
 
   for (const a of articulos) if (a.proyecto && !proyectosPorId[a.proyecto]) console.warn(`  ⚠ El artículo ${a.id} menciona un proyecto que no existe: ${a.proyecto}`);
 
@@ -782,4 +810,4 @@ function construir() {
   console.log(`✓ Sitio listo en dist/: ${rutas.length} páginas (${proyectos.length} proyectos, ${juegos.length} juegos, ${articulos.length} artículos).`);
 }
 
-construir();
+construir(await traerGaleria());

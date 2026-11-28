@@ -427,3 +427,14 @@ a.carta:nth-child(even):hover { transform: rotate(1.2deg) translateY(-4px); }
   .caja-discord-icono { width: 46px; height: 46px; }
   .caja-discord-icono .icono-discord { width: 26px; height: 26px; }
 }
+
+/* Galería de Trazo */
+.galeria { display: grid; gap: 18px; }
+.galeria-rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; }
+.galeria-item { margin: 0; display: grid; gap: 8px; align-content: start; }
+.galeria-item img { width: 100%; aspect-ratio: 1 / 1; object-fit: contain; padding: 12px; border-radius: 14px; background: var(--papel); border: 2px solid var(--linea); }
+.galeria-item.es-fondo { grid-column: span 2; }
+.galeria-item.es-fondo img { aspect-ratio: 16 / 9; object-fit: cover; padding: 0; }
+.galeria-item figcaption { font-size: .92rem; color: var(--niebla); line-height: 1.35; }
+.galeria-vacia { color: var(--niebla); }
+@media (max-width: 420px) { .galeria-rejilla { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
